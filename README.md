@@ -8,8 +8,8 @@ any widgets, but should be easy to use with most UI widget libraries.
 With composer the idea is to create a Lua-like layout file. The layout file 
 can be loaded and resized to fit a target area (e.g. the window).
 
-*PLEASE NOTE:*
-_While the layout file is Lua-like, the file should conform to a 
+_*PLEASE NOTE:*
+While the layout file is Lua-like, the file should conform to a 
 certain structure, otherwise the layout loader will not be able to parse the 
 file properly._
 
@@ -48,7 +48,8 @@ Border(Margin(10), {
 })
 ```
 
-_In the above example we see a layout that has a border margin of 10 on all 
+_*PLEASE NOTE:*
+In the above example we see a layout that has a border margin of 10 on all 
 sides. The `Border` contains a vertical stack with 2 child elements. The top 
 element has a minimum widget of 0 and height of 50, but stretches horizontally & 
 vertically. The bottom element has a similar size but only stretches horizontally._
@@ -88,11 +89,10 @@ layout.eachElement(function(e)
 end)
 ```
 
-*PLEASE NOTE:*
-_In the above code the resizing involves 2 steps:
+As shown above, resizing involves 2 steps:
 
 1. Resize the layout to a target size.
-2. Resize each element widget to the element rect._
+2. Resize each element widget to the element rect.
 
 ## Using Custom Widgets
 
