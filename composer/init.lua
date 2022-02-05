@@ -29,6 +29,6 @@ local composer = {
 	]],	
 }
 
-composer.Loader = loader
+composer.Loader = Loader
 
 return composer
