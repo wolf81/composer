@@ -75,7 +75,7 @@ Use the Loader to load a layout file from a path. Loading can be achieved as
 follows:
 
 ```lua
-local layout = LayoutLoader.load("layouts/loading.lua")
+local layout = Composer.load("layouts/loading.lua")
 ```
 
 After loading the layout needs to be resized to a target area. In order to 
@@ -126,7 +126,7 @@ In the above code we defined a `Button` and `Label` widget. We can add this file
 the required imports in the Loader as follows:
 
 ```
-LayoutLoader.require("hud/widgets.lua")
+Composer.require("hud/widgets.lua")
 ```
 
 If widgets are shared across the project, we can require the widgets just once 
@@ -135,7 +135,7 @@ required widgets from the `Loader`.
 
 Based on the above widgets, a layout file might now look as follows:
 
-```
+```lua
 Border(Margin(10), {
 	VStack({
 		Label("Hello", ID("title"), Stretch(1), MinSize(0, 50)),
