@@ -3,17 +3,17 @@ local layout = require(_PATH .. "layout")
 local Elem = layout.Elem
 
 local ATTRIBUTE_IMPORTS = [[
-	local Margin = attr.Margin
-	local Stretch = attr.Stretch
-	local MinSize = attr.MinSize
-	local ID = attr.ID
+local Margin = attr.Margin
+local Stretch = attr.Stretch
+local MinSize = attr.MinSize
+local ID = attr.ID
 ]]
 
 local LAYOUT_IMPORTS = [[
-	local Border = layout.Border
-	local VStack = layout.VStack
-	local HStack = layout.HStack
-	local Elem = layout.Elem
+local Border = layout.Border
+local VStack = layout.VStack
+local HStack = layout.HStack
+local Elem = layout.Elem
 ]]
 
 -- the default imports from the layout engine.
