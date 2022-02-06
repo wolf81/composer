@@ -127,17 +127,27 @@ local button = function(title, fg_color, bg_color)
 	local text_w = font:getWidth(title)
 	local text_h = font:getHeight()
 
+	local is_highlight = false
+
 	local setFrame = function(x, y, w, h)
 		frame = { x, y, w, h }
 	end
 
 	local update = function(dt)
-		-- body
+		local mouse_x, mouse_y = love.mouse.getPosition()
+		local x, y, w, h = unpack(frame)		
+		
+		is_highlight = (
+			mouse_x > x and mouse_x < x + w and
+			mouse_y > y and mouse_y < y + h
+		)
 	end
 
 	local draw = function()
 		local x, y, w, h = unpack(frame)
-		
+
+		local fg_color = is_highlight and { 0.0, 1.0, 1.0 } or fg_color
+
 		-- draw background
 		love.graphics.setColor(unpack(bg_color))
 		love.graphics.rectangle("fill", x, y, w, h)

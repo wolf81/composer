@@ -10,14 +10,14 @@ end
 function Label(text, ...)
 	assert(type(text) == "string", "text is required")
 
-	local label = UI.Label(text)
+	local label = UI.Label(text, { 1.0, 1.0, 1.0 }, { 0.3, 0.0, 0.0, 1.0 })
 	return Elem(label, ...) 
 end
 
 function Button(title, ...)
 	assert(type(title) == "string", "title is required")
 
-	local button = UI.Button(title)
+	local button = UI.Button(title, { 0.0, 0.0, 0.0 }, { 0.0, 0.5, 0.6, 1.0 })
 	return Elem(button, ...)
 end
 

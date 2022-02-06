@@ -32,7 +32,7 @@ local function getElements(parent, elements)
 	elements = elements or {}
 
 	for _, child in ipairs(parent.children) do
-		if child.widget ~= nil or getmetatable(child) == layout.Elem then
+		if getmetatable(child) == layout.Elem then
 			elements[#elements + 1] = child
 		else
 			getElements(child, elements)

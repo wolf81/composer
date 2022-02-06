@@ -65,21 +65,10 @@ local function spread(target_size, ...)
 	return spreads
 end
 
--- reverse ipairs
-local function ripairs(tbl)	
-	local iter = function(t, i)
-		if i == 0 then return nil end
-
-		i = i - 1
-		return i, t[i]
-	end
-
-	return iter, tbl, #tbl
-end
-
 -- remove a value from a table if function fn returns true
 local function removeMatch(tbl, fn)
-	for i, value in ripairs(tbl) do
+	for i = #tbl, 1, -1 do
+		local value = tbl[i]
 		if fn(value) then
 			table.remove(tbl, i)
 			return value

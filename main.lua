@@ -5,6 +5,9 @@ local composer = require "composer"
 local layout_idx = 0
 local layout = nil
 
+local window_w = 0
+local window_h = 0
+
 local function updateLayout()
 	layout_idx = layout_idx + 1
 	if layout_idx > 3 then layout_idx = 1 end
@@ -18,8 +21,8 @@ local function updateLayout()
 	end)
 end
 
-local function resizeLayout(w, h)
-	layout.resize(w, h, function(e)
+local function resizeLayout()
+	layout.resize(window_w, window_h, function(e)
 		e.widget.setFrame(e.rect.x, e.rect.y, e.rect.w, e.rect.h)
 	end)
 end
@@ -47,8 +50,8 @@ function love.load(args)
     composer.require("widgets/widgets.lua")
     updateLayout()
 
-	local window_w, window_h = love.window.getMode()
-    resizeLayout(window_w, window_h)
+	window_w, window_h = love.window.getMode()
+    resizeLayout()
 
     love.window.setTitle("Composer " .. composer._VERSION)
 
@@ -65,16 +68,19 @@ function love.update(dt)
 end
 
 function love.draw()
+	-- draw white background
+	love.graphics.setColor(1.0, 1.0, 1.0)
+	love.graphics.rectangle("fill", 0, 0, window_w, window_h)
+
 	layout:draw()
 end
 
 function love.resize(w, h)
-    resizeLayout(w, h)
+	window_w, window_h = w, h
+    resizeLayout()
 end
 
 function love.keypressed(key, code)
-	print(key, code)
-
 	if key == "g" then
 		updateLayout()
 		
