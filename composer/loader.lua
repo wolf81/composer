@@ -16,13 +16,6 @@ local HStack = layout.HStack
 local Elem = layout.Elem
 ]]
 
--- the default imports from the layout engine.
-local DEFAULT_IMPORTS = [[
-	local attr = require "lib.composer.composer.attributes"
-
-	local layout = require "lib.composer.composer.layout"
-]]
-
 -- this pattern matches the full component directive with square hooks
 local PATH_DIRECTIVE_PATTERN = "%[%[.-%]%]"
 -- ignore commented out directives
@@ -32,12 +25,6 @@ local PATH_CAPTURE_PATTERN = "\"(.-)\""
 
 -- all required custom controls are stored in this registry
 local registry = {}
-
-local function getPath(module_name)
-	local path = _PATH .. module_name
-	print(path)
-	return path
-end
 
 -- internal function to recursively retrieve a list of elements from a parent
 -- element
@@ -67,7 +54,10 @@ end
 
 -- internal function to recursively load components from a file at path
 local function loadComponent(path)
-	print("load component: ", path)	
+	if love.filesystem.getInfo(path, "file") == nil then
+		error("file does not exist: " .. path)
+	end
+
 	local contents, _ = love.filesystem.read(path)
 
 	while true do
@@ -91,7 +81,7 @@ end
 
 -- load a layout file at given path; optionally set debug to true to log the 
 -- full content including engine imports and required imports
-local function load(path, debug)
+local function load(path, is_debug)
 	local contents = loadComponent(path)
 
 	local attr_path = _PATH .. "attributes"
@@ -116,22 +106,22 @@ local function load(path, debug)
 
 	contents = table.concat(imports, "\n\n")
 
-	if debug == true then
+	if is_debug == true then
 		print(contents)
 	end
 
 	local hud_contents = loadstring(contents)
 	local hud = hud_contents()
 
-	hud.resize = function(w, h)
-		hud:reshape(0, 0, w, h)
-	end
-
 	-- create a list of elements for use with the eachElement() function
 	local elements = getElements(hud)
-	hud.eachElement = function(fn)
-		for _, element in ipairs(elements) do
-			fn(element)
+
+	hud.resize = function(w, h, fn)
+		fn = fn or function() end
+		
+		hud:reshape(0, 0, w, h)
+		for _, e in ipairs(elements) do
+			fn(e)
 		end
 	end
 
