@@ -19,6 +19,11 @@ local function updateLayout()
 	layout.getElement("test1", function(e)
 		e.widget.setText("this text is changed using the ID")
 	end)
+
+	layout.getElement("button", function(e)
+		e.widget.setTitle("these colors are changed using the ID")
+		e.widget.setColors({ 0.5, 0.0, 0.0 }, { 0.0, 0.5, 0.0, 0.5 })
+	end)
 end
 
 local function resizeLayout()

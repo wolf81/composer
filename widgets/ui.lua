@@ -133,6 +133,16 @@ local button = function(title, fg_color, bg_color)
 		frame = { x, y, w, h }
 	end
 
+	local setTitle = function(new_title)
+		title = new_title or title
+		text_w = font:getWidth(title)
+	end
+
+	local setColors = function(new_fg_color, new_bg_color)
+		fg_color = new_fg_color or fg_color
+		bg_color = new_bg_color or bg_color
+	end
+
 	local update = function(dt)
 		local mouse_x, mouse_y = love.mouse.getPosition()
 		local x, y, w, h = unpack(frame)		
@@ -165,6 +175,8 @@ local button = function(title, fg_color, bg_color)
 	end
 
 	return {
+		setTitle = setTitle,
+		setColors = setColors,
 		setFrame = setFrame,
 		update = update,
 		draw = draw,
