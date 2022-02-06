@@ -12,6 +12,9 @@ function ID:new(value)
 	}, ID)
 end
 
+function ID:__tostring()
+	return "ID { " .. tostring(self.value) .. " }"
+end
 setmetatable(ID, {
 	__call = ID.new
 })

@@ -1,5 +1,7 @@
-local attr = require "src.layout.attributes"
-local f = require "src.layout.functions"
+local _PATH = (...):match("(.-)[^%.]+$") 
+
+local attr = require(_PATH .. "attributes")
+local f = require(_PATH .. "functions")
 
 local Stretch = attr.Stretch
 local MinSize = attr.MinSize
@@ -343,6 +345,7 @@ end
 
 function Elem:__tostring()
 	local values = { 
+		tostring(self.id),
 		tostring(self.rect),
 		tostring(self.stretch), 
 		tostring(self.min_size) 

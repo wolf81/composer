@@ -1,18 +1,26 @@
-local layout = require "src.layout.layout"
+local _PATH = (...):match("(.-)[^%.]+$") 
+local layout = require(_PATH .. "layout")
+local Elem = layout.Elem
 
--- the default imports from the layout engine.
-local DEFAULT_IMPORTS = [[
-	local attr = require "src.layout.attributes"
+local ATTRIBUTE_IMPORTS = [[
 	local Margin = attr.Margin
 	local Stretch = attr.Stretch
 	local MinSize = attr.MinSize
 	local ID = attr.ID
+]]
 
-	local layout = require "src.layout.layout"
+local LAYOUT_IMPORTS = [[
 	local Border = layout.Border
 	local VStack = layout.VStack
 	local HStack = layout.HStack
 	local Elem = layout.Elem
+]]
+
+-- the default imports from the layout engine.
+local DEFAULT_IMPORTS = [[
+	local attr = require "lib.composer.composer.attributes"
+
+	local layout = require "lib.composer.composer.layout"
 ]]
 
 -- this pattern matches the full component directive with square hooks
@@ -25,13 +33,19 @@ local PATH_CAPTURE_PATTERN = "\"(.-)\""
 -- all required custom controls are stored in this registry
 local registry = {}
 
+local function getPath(module_name)
+	local path = _PATH .. module_name
+	print(path)
+	return path
+end
+
 -- internal function to recursively retrieve a list of elements from a parent
 -- element
 local function getElements(parent, elements)
 	elements = elements or {}
 
 	for _, child in ipairs(parent.children) do
-		if getmetatable(child) == layout.Elem then
+		if child.widget ~= nil or getmetatable(child) == layout.Elem then
 			elements[#elements + 1] = child
 		else
 			getElements(child, elements)
@@ -80,19 +94,27 @@ end
 local function load(path, debug)
 	local contents = loadComponent(path)
 
-	local custom_imports = ""
+	local attr_path = _PATH .. "attributes"
+	local layout_path = _PATH .. "layout"
+
+	local imports = {
+		"--[[ " .. attr_path .. " ]]--",
+		"local attr = require \"" .. attr_path .. "\"",
+		ATTRIBUTE_IMPORTS,
+		"--[[ " .. layout_path .. " ]]--",
+		"local layout = require \"" .. layout_path .. "\"",		
+		LAYOUT_IMPORTS,
+	}
+
 	for path, _ in pairs(registry) do
-		-- TODO: probably a good idea to remove Elem require directives to 
-		-- prevent layout engine Elem from being overwritten, causing bugs
-		custom_imports = custom_imports .. love.filesystem.read(path)
+		imports[#imports + 1] = "--[[ " .. path .. " ]]--"
+		imports[#imports + 1] = love.filesystem.read(path)
 	end
 
-	contents = table.concat({
-		DEFAULT_IMPORTS,
-		custom_imports,
-		" return ",
-		contents,
-	})
+	imports[#imports + 1] = "--[[ " .. path .. " ]]--"
+	imports[#imports + 1] = "return " .. contents
+
+	contents = table.concat(imports, "\n\n")
 
 	if debug == true then
 		print(contents)

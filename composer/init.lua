@@ -1,4 +1,4 @@
-local Loader = require "src.layout.loader"
+local PATH = (...):gsub('%.init$', '')
 
 local composer = {
 	_VERSION = "Composer v0.1.0",
@@ -29,6 +29,14 @@ local composer = {
 	]],	
 }
 
-composer.Loader = Loader
+local Loader = require(PATH .. ".loader")
+composer.require = Loader.require
+composer.load = Loader.load
+
+local layout = require(PATH .. ".layout")
+composer.layout = layout
+
+local attributes = require(PATH .. ".attributes")
+composer.attributes = attributes
 
 return composer
