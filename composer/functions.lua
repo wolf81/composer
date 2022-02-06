@@ -76,9 +76,19 @@ local function removeMatch(tbl, fn)
 	end
 end
 
+local function describe(name, tbl)
+	local values = {}
+	for k, v in pairs(tbl) do
+		values[#values + 1] = k .. " = " .. tostring(v)
+	end
+
+	return name .. " { " .. table.concat(values, ", ") .. " }"
+end
+
 -- the module
 return {
 	zip = zip,
 	spread = spread,
 	removeMatch = removeMatch,
+	describe = describe,
 }

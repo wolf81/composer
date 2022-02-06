@@ -1,7 +1,6 @@
 local _PATH = (...):match("(.-)[^%.]+$") 
-
 local attr = require(_PATH .. "attributes")
-local f = require(_PATH .. "functions")
+local F = require(_PATH .. "functions")
 
 local Stretch = attr.Stretch
 local MinSize = attr.MinSize
@@ -26,8 +25,7 @@ function Rect:new(x, y, w, h)
 end
 
 function Rect:__tostring()
-	local values = { self.x, self.y, self.w, self.h }
-	return "Rect { " .. table.concat(values, ", ") .. " }"
+	return F.describe("Rect", self)
 end
 
 setmetatable(Rect, {
@@ -106,12 +104,7 @@ function Layout:update(dt)
 end
 
 function Layout:__tostring()
-	local values = { 
-		tostring(self.rect),
-		tostring(self.stretch), 
-		tostring(self.min_size) 
-	}
-	return "Layout { " .. table.concat(values, ", ") .. " }"
+	return F.describe("Layout", self)
 end
 
 setmetatable(Layout, {
@@ -130,7 +123,7 @@ Border.__index = Border
 function Border:new(...)
 	local args = {...}
 
-	local margin = f.removeMatch(args, function(v)
+	local margin = F.removeMatch(args, function(v)
 		return getmetatable(v) == Margin
 	end)
 
@@ -162,13 +155,7 @@ function Border:layoutChildren(rect)
 end
 
 function Border:__tostring()
-	local values = { 
-		tostring(self.rect),
-		tostring(self.margin), 
-		tostring(self.stretch), 
-		tostring(self.min_size) 
-	}
-	return "Border { " .. table.concat(values, ", ") .. " }"
+	return F.describe("Border", self)
 end
 
 setmetatable(Border, {
@@ -208,10 +195,10 @@ function HStack:layoutChildren(rect)
 	end
 	
 	if #ch_widths > 0 then
-		ch_widths = f.spread(rect.w, unpack(ch_widths))
+		ch_widths = F.spread(rect.w, unpack(ch_widths))
 	end
 
-	local results = f.zip(self.children, ch_widths)
+	local results = F.zip(self.children, ch_widths)
 	for _, result in ipairs(results) do
 		local ch, w = unpack(result)
 
@@ -227,12 +214,7 @@ function HStack:layoutChildren(rect)
 end
 
 function HStack:__tostring()
-	local values = { 
-		tostring(self.rect),
-		tostring(self.stretch), 
-		tostring(self.min_size) 
-	}
-	return "HStack { " .. table.concat(values, ", ") .. " }"
+	return F.describe("HStack", self)
 end
 
 setmetatable(HStack, {
@@ -272,10 +254,10 @@ function VStack:layoutChildren(rect)
 	end
 	
 	if #ch_heights > 0 then
-		ch_heights = f.spread(rect.h, unpack(ch_heights))
+		ch_heights = F.spread(rect.h, unpack(ch_heights))
 	end
 
-	local results = f.zip(self.children, ch_heights)
+	local results = F.zip(self.children, ch_heights)
 	for _, result in ipairs(results) do
 		local ch, h = unpack(result)
 
@@ -297,12 +279,7 @@ function VStack:update(dt)
 end
 
 function VStack:__tostring()
-	local values = { 
-		tostring(self.rect),
-		tostring(self.stretch), 
-		tostring(self.min_size) 
-	}
-	return "VStack { " .. table.concat(values, ", ") .. " }"
+	return F.describe("VStack", self)
 end
 
 setmetatable(VStack, {
@@ -322,7 +299,7 @@ Elem.__index = Elem
 function Elem:new(widget, ...)
 	local args = { ... }
 
-	local id = f.removeMatch(args, function(v)
+	local id = F.removeMatch(args, function(v)
 		return getmetatable(v) == ID
 	end)
 
@@ -344,13 +321,7 @@ function Elem:layoutChildren(rect)
 end
 
 function Elem:__tostring()
-	local values = { 
-		tostring(self.id),
-		tostring(self.rect),
-		tostring(self.stretch), 
-		tostring(self.min_size) 
-	}
-	return "Elem { " .. table.concat(values, ", ") .. " }"
+	return F.describe("Elem", self)
 end
 
 function Elem:draw()

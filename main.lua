@@ -9,12 +9,14 @@ local window_w = 0
 local window_h = 0
 
 local function updateLayout()
+	local is_debug = true
+
 	layout_idx = layout_idx + 1
 	if layout_idx > 3 then layout_idx = 1 end
 
 	local path = "examples/example" .. layout_idx .. ".lua"
 	print("loading:", path)
-	layout = composer.load(path, true)
+	layout = composer.load(path, is_debug)
 
 	layout.getElement("test1", function(e)
 		e.widget.setText("this text is changed using the ID")
@@ -29,6 +31,7 @@ end
 local function resizeLayout()
 	layout.resize(window_w, window_h, function(e)
 		e.widget.setFrame(e.rect.x, e.rect.y, e.rect.w, e.rect.h)
+		print(e)
 	end)
 end
 
