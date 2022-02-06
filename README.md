@@ -125,7 +125,7 @@ Every function should return an `Elem` layout that contains a widget.
 In the above code we defined a `Button` and `Label` widget. We can add this file to
 the required imports in the Loader as follows:
 
-```
+```lua
 Composer.require("hud/widgets.lua")
 ```
 
