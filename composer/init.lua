@@ -1,7 +1,7 @@
 local PATH = (...):gsub('%.init$', '')
 
 local composer = {
-	_VERSION = "Composer v0.1.0",
+	_VERSION = "0.1.0",
 	_DESCRIPTION = "A simple layout engine.",
 	_URL = "http://github.com/wolf81/composer",
 	_LICENSE = [[

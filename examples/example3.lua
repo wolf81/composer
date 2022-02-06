@@ -4,9 +4,9 @@ Border(Margin(40, 40, 0, 0), {
 		[[ "examples/shared.lua" ]],
 		Label("Hello", MinSize(100, 50), Stretch(1, 0)),
 		FlexibleSpace(),
-		Label("Hello", MinSize(100, 50), Stretch(1, 0)),
+		Label("press G to see next layout", MinSize(100, 50), Stretch(1, 0)),
 		[[ "examples/shared.lua" ]],		
-		Button("Bottom", MinSize(100, 50), Stretch(1, 0)),
+		Button("...", MinSize(100, 50), Stretch(1, 0)),
 		HStack(Stretch(1, 0), {
 			FlexibleSpace(),
 			ImageButton("gfx/ankh.png", MinSize(60), Stretch(0)),

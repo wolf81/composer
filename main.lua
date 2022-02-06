@@ -17,7 +17,7 @@ local function updateLayout()
 	layout = composer.load(path, true)
 
 	layout.getElement("test1", function(e)
-		e.widget.setText("blaat")
+		e.widget.setText("this text is changed using the ID")
 	end)
 end
 
@@ -53,7 +53,7 @@ function love.load(args)
 	window_w, window_h = love.window.getMode()
     resizeLayout()
 
-    love.window.setTitle("Composer " .. composer._VERSION)
+    love.window.setTitle("Composer v" .. composer._VERSION)
 
 --[[    print("\n\n")
     for k, v in pairs(_G.package.loaded) do

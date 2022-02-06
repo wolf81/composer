@@ -1,12 +1,12 @@
 Border(Margin(0), {
 	VStack({
 		Label("Hello", MinSize(0, 50), Stretch(1, 0), ID("test1")),
-		Button("From", ID("test2")),
-		Label("Me", ID("test3")),
+		Button("press G to see next layout", ID("test2")),
+		Label("...", ID("test3")),
 		HStack(MinSize(0, 80), Stretch(1, 0), {
-			Button("Hello", MinSize(40), Stretch(0, 1)),
-			Label("From", MinSize(40), Stretch(1)),
-			Button("Me", MinSize(40), Stretch(0, 1)),		
+			Button("Composer", MinSize(120, 50), Stretch(0, 1)),
+			Label("Says", MinSize(40), Stretch(1)),
+			Button("Hello", MinSize(50), Stretch(0, 1)),		
 		})
 	}),
 })
