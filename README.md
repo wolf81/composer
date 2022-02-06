@@ -51,10 +51,10 @@ Border(Margin(10), {
 _*PLEASE NOTE:*
 In the above example we see a layout that has a border margin of 10 on all 
 sides. The `Border` contains a vertical stack with 2 child elements. The top 
-element has a minimum widget of 0 and height of 50, but stretches horizontally & 
-vertically. The bottom element has a similar size but only stretches horizontally._
+element has a minimum width of 0 and height of 50, but stretches horizontally & 
+vertically. The bottom element has the same size but only stretches horizontally._
 
-A layout file *SHOULD* return a single root layout and *NOT* contain any require 
+A layout file *MUST* return a single root layout and *NOT* contain any require 
 statements. 
 
 Optionally a layout file may include other layout files as follows:
@@ -71,12 +71,14 @@ Border(Margin(10), {
 
 ## Loading layout files
 
-Use the Loader to load a layout file from a path. Loading can be achieved as 
-follows:
+Use the `load(path)` function to load a layout file from a path. Loading 
+can be achieved as follows:
 
 ```lua
 local layout = Composer.load("layouts/loading.lua")
 ```
+
+_In the above example we load the layout file at path: layouts/loading.lua_
 
 After loading the layout needs to be resized to a target area. In order to 
 resize to the window size we could do the following:
@@ -88,21 +90,23 @@ layout.resize(w_width, w_height, function(e)
 end)
 ```
 
-In the above code the layout is first resized and afterwards we iterate upon 
-each element. For each element we set the widget frame to the element frame. 
+Using the `resize(w, h, fn)` function we set the size of the layout. We also
+loop through each element and for each element we set the widget size to the
+element rect.
 
 Different widget libraries might have different methods for setting the frame. 
 The callback allows us to use whatever code we need to set a widget frame.
 
 ## Using Custom Widgets
 
-In order to use custom widgets in a layout file, the `Loader` needs to know 
-function names use to retrieve a widget type. We can define a file in the 
-project that defines all widget functions and load this file in the `Loader`.
+In order to use custom widgets in layout files we can expose our own widget 
+factory functions to Composer. For each widget we want to add, we return an 
+`Elem` object that contains the widget.
 
-A simple widget file might look as such:
+A simple widget loading file might look as such:
 
 ```lua
+-- we assume the widgets are imported from: src.ui
 local UI = require "src.ui"
 
 function Label(text, ...)
@@ -120,13 +124,11 @@ function Button(title, ...)
 end
 ```
 
-Every function should return an `Elem` layout that contains a widget.
-
-In the above code we defined a `Button` and `Label` widget. We can add this file to
-the required imports in the Loader as follows:
+In the above code we defined a `Button` and `Label` widget. We can use the 
+widgets with Composer by calling the `require(path)` function. 
 
 ```lua
-Composer.require("hud/widgets.lua")
+Composer.require("ui/widgets.lua")
 ```
 
 If widgets are shared across the project, we can require the widgets just once 
