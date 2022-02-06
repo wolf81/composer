@@ -83,16 +83,16 @@ resize to the window size we could do the following:
 
 ```lua
 local w_width, w_height = love.window.getMode()
-layout.resize(w_width, w_height)
-layout.eachElement(function(e)
+layout.resize(w_width, w_height, function(e) 
 	e.widget.setFrame(e.rect.x, e.rect.y, e.rect.w, e.rect.h)
 end)
 ```
 
-As shown above, resizing involves 2 steps:
+In the above code the layout is first resized and afterwards we iterate upon 
+each element. For each element we set the widget frame to the element frame. 
 
-1. Resize the layout to a target size.
-2. Resize each element widget to the element rect.
+Different widget libraries might have different methods for setting the frame. 
+The callback allows us to use whatever code we need to set a widget frame.
 
 ## Using Custom Widgets
 
@@ -145,3 +145,11 @@ Border(Margin(10), {
 })
 ```
 
+## Credits
+
+This library has been based on a Python project by fips as described [here](fips).
+
+I've also taken some inspiration on layouts as used by Xamarin Forms, mainly in 
+the way attributes are constructed.
+
+[fips]: https://forums.4fips.com/viewtopic.php?f=3&t=6896
