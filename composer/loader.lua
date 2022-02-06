@@ -55,12 +55,12 @@ local function getElements(parent, elements)
 	return elements
 end
 
--- add controls at given path to the internal control registry
+-- add widgets at given path to the internal control registry
 local function require(path)
 	registry[path] = true
 end
 
--- remove controls at given path from the internal control registry
+-- remove widgets at given path from the internal control registry
 local function unrequire(path)
 	registry[path] = nil
 end

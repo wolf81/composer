@@ -33,10 +33,4 @@ local Loader = require(PATH .. ".loader")
 composer.require = Loader.require
 composer.load = Loader.load
 
-local layout = require(PATH .. ".layout")
-composer.layout = layout
-
-local attributes = require(PATH .. ".attributes")
-composer.attributes = attributes
-
 return composer
