@@ -220,7 +220,7 @@ function HStack:layoutChildren(rect)
 		else
 			h = ch.exp_size.y
 		end
-		ch.rect = Rect(x, y, w, h)
+		ch.rect = Rect(x, y, w - 1, h)
 
 		x = x + w
 	end
@@ -261,7 +261,7 @@ function VStack:expandChildren()
 		w = math.max(w, child.exp_size.x)
 		h = h + child.exp_size.y
 	end
-	self.exp_size = ExpSize(w, h)
+	self.exp_size = ExpSize(w, h - 1)
 end
 
 function VStack:layoutChildren(rect)
