@@ -1,3 +1,6 @@
+local _PATH = (...):match("(.-)[^%.]+$") 
+local F = require(_PATH .. "functions")
+
 --[[
 --	ID
 --	Use the ID attribute to assign an identifier to an element. This identifier
@@ -13,8 +16,9 @@ function ID:new(value)
 end
 
 function ID:__tostring()
-	return "ID { " .. tostring(self.value) .. " }"
+	return F.describe("ID", self)
 end
+
 setmetatable(ID, {
 	__call = ID.new
 })
@@ -50,8 +54,7 @@ function Margin:new(l, t, r, b)
 end
 
 function Margin:__tostring()
-	local values = { self.l, self.t, self.r, self.b }
-	return "Margin { " .. table.concat(values, ", ") .. " }"
+	return F.describe("Margin", self)
 end
 
 setmetatable(Margin, {
@@ -81,8 +84,7 @@ function MinSize:new(x, y)
 end
 
 function MinSize:__tostring()
-	local values = { self.x, self.y }
-	return "MinSize { " .. table.concat(values, ", ") .. " }"
+	return F.describe("MinSize", self)
 end
 
 setmetatable(MinSize, {
@@ -106,8 +108,7 @@ function ExpSize:new(x, y)
 end
 
 function ExpSize:__tostring()
-	local values = { self.x, self.y }
-	return "ExpSize { " .. table.concat(values, ", ") .. " }"
+	return F.describe("ExpSize", self)
 end
 
 setmetatable(ExpSize, {
@@ -139,8 +140,7 @@ function Stretch:new(x, y)
 end
 
 function Stretch:__tostring()
-	local values = { self.x, self.y }
-	return "Stretch { " .. table.concat(values, ", ") .. " }"
+	return F.describe("Stretch", self)
 end
 
 setmetatable(Stretch, {
