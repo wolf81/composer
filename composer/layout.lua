@@ -266,7 +266,7 @@ function VStack:layoutChildren(rect)
 		else
 			w = ch.exp_size.x
 		end
-		ch.rect = Rect(x, y, w, h)
+		ch.rect = Rect(x, y, w, h - 1)
 
 		y = y + h
 	end
