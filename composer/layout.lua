@@ -91,18 +91,6 @@ function Layout:layoutChildren(rect)
 	error("implementation required by subclasses")
 end
 
-function Layout:draw()
-	for _, child in ipairs(self.children) do
-		child:draw()
-	end
-end
-
-function Layout:update(dt)
-	for _, child in ipairs(self.children) do
-		child:update(dt)
-	end
-end
-
 function Layout:__tostring()
 	return F.describe("Layout", self)
 end
@@ -272,12 +260,6 @@ function VStack:layoutChildren(rect)
 	end
 end
 
-function VStack:update(dt)
-	for _, child in ipairs(self.children) do
-		child:update(dt)
-	end
-end
-
 function VStack:__tostring()
 	return F.describe("VStack", self)
 end
@@ -322,14 +304,6 @@ end
 
 function Elem:__tostring()
 	return F.describe("Elem", self)
-end
-
-function Elem:draw()
-	self.widget:draw()
-end
-
-function Elem:update(dt)
-	self.widget:update(dt)
 end
 
 setmetatable(Elem, {
