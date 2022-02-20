@@ -176,7 +176,7 @@ function HStack:expandChildren()
 end
 
 function HStack:layoutChildren(rect)
-	local x, y = rect.x, rect.y
+	local x, y, h = rect.x, rect.y, 0
 	local ch_widths = {}
 	for _, child in ipairs(self.children) do
 		ch_widths[#ch_widths + 1] = { child.exp_size.x, child.stretch.x }
@@ -235,7 +235,7 @@ function VStack:expandChildren()
 end
 
 function VStack:layoutChildren(rect)
-	local x, y = rect.x, rect.y
+	local x, y, w = rect.x, rect.y, 0
 	local ch_heights = {}
 	for _, child in ipairs(self.children) do
 		ch_heights[#ch_heights + 1] = { child.exp_size.y, child.stretch.y }

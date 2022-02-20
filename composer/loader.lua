@@ -151,7 +151,7 @@ local function load(path, is_debug)
 
 	hud.getWidget = function(element_id, fn)
 		local e = elements_by_id[element_id]
-		if e.widget ~= nil then fn(e.widget) end
+		if e and e.widget ~= nil then fn(e.widget) end
 	end
 
 	hud.eachWidget = function(fn)
