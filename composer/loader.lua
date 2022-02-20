@@ -149,6 +149,11 @@ local function load(path, is_debug)
 		end
 	end
 
+	hud.getWidget = function(element_id, fn)
+		local e = elements_by_id[element_id]
+		if e.widget ~= nil then fn(e.widget) end
+	end
+
 	hud.eachWidget = function(fn)
 		for _, w in ipairs(widgets) do
 			fn(w)
