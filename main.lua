@@ -72,7 +72,7 @@ function love.load(args)
 end
 
 function love.update(dt)
-	layout:update(dt)
+	layout.update(dt)
 end
 
 function love.draw()

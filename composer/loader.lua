@@ -130,6 +130,18 @@ local function load(path, is_debug)
 		end
 	end
 
+	hud.update = function(dt)
+		for _, widget in ipairs(widgets) do
+			widget.update(dt)
+		end
+	end
+
+	hud.draw = function()
+		for _, widget in ipairs(widgets) do
+			widget.draw()
+		end
+	end
+
 	-- create a table of elements by id for use with the getElement() function
 	local elements_by_id = {}
 	for _, element in ipairs(elements) do
