@@ -43,12 +43,35 @@ function Label:new(text)
     self.text = text
 end
 
+function Label:draw()
+    love.graphics.setColor(1.0, 0.0, 1.0)
+    love.graphics.rectangle('fill', unpack(self.frame))
+end
+
 function Label:__tostring()
     return F.describe('Label', self)
 end
 
 
+--[[ BUTTON ]]
+
+local Button = Control:extend()
+
+function Button:new(title)
+    Control.new(self)
+
+    self.title = title
+end
+
+function Button:__tostring()
+    return F.describe('Button', self)
+end
+
+
+--[[ MODULE ]]--
+
 return {
     Control = Control,
     Label = Label,
+    Button = Button,
 }

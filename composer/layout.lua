@@ -6,10 +6,8 @@ local Object = require(_PATH .. 'classic')
 local Rect = require(_PATH .. 'rect')
 local controls = require(_PATH .. 'controls')
 
-local Stretch = attr.Stretch
-local MinSize = attr.MinSize
+local Size = attr.Size
 local Margin = attr.Margin
-local ExpSize = attr.ExpSize
 local ID = attr.ID
 
 
@@ -18,14 +16,15 @@ function Stack:new(...)
 	print('NEW STACK')
 
 	self.children = {}
+	self.size = Size(0)
 
 	for _, arg in ipairs({...}) do
 		if getmetatable(arg) == Margin then
 			self.margin = arg
 		-- if getmetatable(arg) == Stretch then
 		-- 	stretch = arg
-		-- elseif getmetatable(arg) == MinSize then
-		-- 	min_size = arg
+		elseif getmetatable(arg) == Size then
+			self.size = arg
 		elseif type(arg) == "table" then
 			self.children = arg
 		end
