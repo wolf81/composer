@@ -2,7 +2,7 @@ io.stdout:setvbuf('no') -- show debug output live in SublimeText console
 
 local composer = require "composer"
 
-local layout_idx = 0
+local layout_idx = -1
 local layout = nil
 
 local window_w = 0
@@ -18,21 +18,18 @@ local function updateLayout()
 	print("loading:", path)
 	layout = composer.load(path, is_debug)
 
-	layout.getElement("test1", function(e)
-		e.widget.setText("this text is changed using the ID")
-	end)
+    layout.getWidget('label', function(w)
+        w.setText("this text is changed using the ID")
+    end)
 
-	layout.getElement("button", function(e)
-		e.widget.setTitle("these colors are changed using the ID")
-		e.widget.setColors({ 0.5, 0.0, 0.0 }, { 0.0, 0.5, 0.0, 0.5 })
+	layout.getWidget('button', function(w)
+		w.setTitle("these colors are changed using the ID")
+		w.setColors({ 0.5, 0.0, 0.0 }, { 0.0, 0.5, 0.0, 0.5 })
 	end)
 end
 
 local function resizeLayout()
-	layout.resize(window_w, window_h, function(e)
-		e.widget.setFrame(e.rect.x, e.rect.y, e.rect.w, e.rect.h)
-		print(e)
-	end)
+	layout.resize(window_w, window_h)
 end
 
 function love.load(args)
@@ -55,20 +52,12 @@ function love.load(args)
     end
 
     -- add custom controls to the layout engine loader
-    composer.require("widgets/widgets.lua")
     updateLayout()
 
 	window_w, window_h = love.window.getMode()
     resizeLayout()
 
     love.window.setTitle("Composer v" .. composer._VERSION)
-
---[[    print("\n\n")
-    for k, v in pairs(_G.package.loaded) do
-    	print(k, v)
-    end
-    print("\n\n")
---]]
 end
 
 function love.update(dt)
@@ -77,7 +66,7 @@ end
 
 function love.draw()
 	-- draw white background
-	love.graphics.setColor(1.0, 1.0, 1.0)
+	love.graphics.setColor(0.0, 0.0, 0.0)
 	love.graphics.rectangle("fill", 0, 0, window_w, window_h)
 
 	layout:draw()

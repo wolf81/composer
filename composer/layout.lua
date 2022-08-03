@@ -2,16 +2,65 @@ local _PATH = (...):match("(.-)[^%.]+$")
 local attr = require(_PATH .. "attributes")
 local F = require(_PATH .. "functions")
 
+local Object = require(_PATH .. 'classic')
+local Rect = require(_PATH .. 'rect')
+local controls = require(_PATH .. 'controls')
+
 local Stretch = attr.Stretch
 local MinSize = attr.MinSize
 local Margin = attr.Margin
 local ExpSize = attr.ExpSize
 local ID = attr.ID
 
---[[
---	Rect
---]]
 
+local Stack = Object:extend()
+function Stack:new(...)
+	print('NEW STACK')
+
+	self.children = {}
+
+	for _, arg in ipairs({...}) do
+		if getmetatable(arg) == Margin then
+			self.margin = arg
+		-- if getmetatable(arg) == Stretch then
+		-- 	stretch = arg
+		-- elseif getmetatable(arg) == MinSize then
+		-- 	min_size = arg
+		elseif type(arg) == "table" then
+			self.children = arg
+		end
+	end
+
+	self.frame = Rect(0, 0, 0, 0)
+end
+
+function Stack:resize(x, y, w, h)
+	print('RESIZE STACK')
+	for _, child in ipairs(self.children) do
+		print('CHILD', child)
+		if child:is(controls.Control) then
+			child:setFrame(x, y, w, h)
+		end
+	end
+end
+
+function Stack:__tostring()
+	return F.describe('Stack', self)
+end
+
+
+local VStack = Stack:extend()
+function VStack:new(...)
+	Stack.new(self, ...)
+
+	print('NEW VStack')
+end
+
+function VStack:__tostring()
+	return F.describe('VStack', self)
+end
+
+--[[
 local Rect = {}
 Rect.__index = Rect
 
@@ -31,10 +80,6 @@ end
 setmetatable(Rect, {
 	__call = Rect.new
 })
-
---[[
---	Layout
---]] 
 
 local Layout = {}
 Layout.__index = Layout
@@ -99,12 +144,6 @@ setmetatable(Layout, {
 	__call = Layout.new,
 })
 
---[[
---	Border
---	A Border element can be used to add a margin around a child element. The 
---	Border element should only contain a single child element.
---]]
-
 local Border = {}
 Border.__index = Border
 
@@ -150,12 +189,6 @@ setmetatable(Border, {
 	__index = Layout,
 	__call = Border.new,
 })
-
---[[
---	HStack
---	A HStack element can contain multiple child elements that will be arranged
---	horizontally.
---]]
 
 local HStack = {}
 HStack.__index = HStack
@@ -210,12 +243,6 @@ setmetatable(HStack, {
 	__call = HStack.new
 })
 
---[[
---	VStack
---	A VStack element can contain multiple child elements that will be arranged
---	vertically.
---]]
-
 local VStack = {}
 VStack.__index = VStack
 
@@ -269,12 +296,6 @@ setmetatable(VStack, {
 	__call = VStack.new,
 })
 
---[[
---	Elem
---	An Elem element can be contained in a VStack, HStack or Border. A custom 
---	widget can be assigned to an element. 
---]]
-
 local Elem = {}
 Elem.__index = Elem
 
@@ -311,14 +332,16 @@ setmetatable(Elem, {
 	__call = Elem.new,
 })
 
---[[
---	The module
---]]
-
 return {
 	Rect = Rect,
 	Border = Border,
 	HStack = HStack,
 	VStack = VStack,
 	Elem = Elem,
+}
+
+--]]
+
+return {
+	VStack = VStack,
 }

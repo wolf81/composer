@@ -1,6 +1,6 @@
 local _PATH = (...):match("(.-)[^%.]+$") 
 local layout = require(_PATH .. "layout")
-local Elem = layout.Elem
+local controls = require(_PATH .. 'controls')
 
 local ATTRIBUTE_IMPORTS = [[
 local Margin = attr.Margin
@@ -10,10 +10,11 @@ local ID = attr.ID
 ]]
 
 local LAYOUT_IMPORTS = [[
-local Border = layout.Border
 local VStack = layout.VStack
-local HStack = layout.HStack
-local Elem = layout.Elem
+]]
+
+local CONTROLS_IMPORTS = [[
+local Label = controls.Label
 ]]
 
 -- this pattern matches the full component directive with square hooks
@@ -23,37 +24,20 @@ local PATH_DIRECTIVE_EXCLUDE_PATTERN = "%-%-%s-%[%[.-%]%]"
 -- this pattern is used to capture the path for a directive pattern match
 local PATH_CAPTURE_PATTERN = "\"(.-)\""
 
--- all required custom controls are stored in this registry
-local registry = {}
-
 -- internal function to recursively retrieve a list of elements from a parent
 -- element
-local function getElementsAndWidgets(parent, elements, widgets)
-	elements = elements or {}
+local function getWidgets(parent, widgets)
 	widgets = widgets or {}
 
 	for _, child in ipairs(parent.children) do
-		if getmetatable(child) == layout.Elem then
-			elements[#elements + 1] = child
-			if child.widget ~= nil then
-				widgets[#widgets + 1] = child.widget
-			end
+		if child:is(controls.Control) then
+			widgets[#widgets + 1] = child
 		else
-			getElementsAndWidgets(child, elements, widgets)
-		end		
+			getWidgets(child, widgets)			
+		end
 	end
 
-	return elements, widgets
-end
-
--- add widgets at given path to the internal control registry
-local function require(path)
-	registry[path] = true
-end
-
--- remove widgets at given path from the internal control registry
-local function unrequire(path)
-	registry[path] = nil
+	return widgets
 end
 
 -- internal function to recursively load components from a file at path
@@ -83,6 +67,8 @@ local function loadComponent(path)
 	return contents
 end
 
+--[[
+
 -- load a layout file at given path; optionally set debug to true to log the 
 -- full content including engine imports and required imports
 local function load(path, is_debug)
@@ -92,20 +78,12 @@ local function load(path, is_debug)
 	local layout_path = _PATH .. "layout"
 
 	local imports = {
-		"--[[ " .. attr_path .. " ]]--",
 		"local attr = require \"" .. attr_path .. "\"",
 		ATTRIBUTE_IMPORTS,
-		"--[[ " .. layout_path .. " ]]--",
 		"local layout = require \"" .. layout_path .. "\"",		
 		LAYOUT_IMPORTS,
 	}
 
-	for path, _ in pairs(registry) do
-		imports[#imports + 1] = "--[[ " .. path .. " ]]--"
-		imports[#imports + 1] = love.filesystem.read(path)
-	end
-
-	imports[#imports + 1] = "--[[ " .. path .. " ]]--"
 	imports[#imports + 1] = "return " .. contents
 
 	contents = table.concat(imports, "\n\n")
@@ -162,10 +140,77 @@ local function load(path, is_debug)
 
 	return hud
 end
+--]]
+
+local function getPath(module_name)
+	return _PATH .. module_name
+end
+
+function load(path, is_debug)
+	print('load: ' .. path)
+
+	local contents = loadComponent(path)
+
+	local imports = {
+		'local attr = require "' .. getPath('attributes') .. '"',
+		ATTRIBUTE_IMPORTS,
+		'local layout = require "' .. getPath('layout') .. '"',		
+		LAYOUT_IMPORTS,
+		'local controls = require "' .. getPath('controls') .. '"',		
+		CONTROLS_IMPORTS,
+	}
+
+	imports[#imports + 1] = "return " .. contents
+
+	contents = table.concat(imports, "\n\n")
+
+	if is_debug == true then
+		print(contents)
+	end
+
+	local layout = loadstring(contents)()
+	print('LAYOUT LOADED', layout)
+
+	local widgets = getWidgets(layout)
+
+	local widgets_by_id = {}
+	for _, widget in ipairs(widgets) do
+		if widget.id ~= nil then
+			widgets_by_id[widget.id.value] = widget
+		end
+	end
+
+	local resize = function(w, h)
+		layout:resize(0, 0, w, h)
+	end
+
+	local update = function(dt)
+		for _, widget in ipairs(widgets) do
+			widget:update(dt)
+		end
+	end
+
+	local draw = function()		
+		for _, widget in ipairs(widgets) do
+			widget:draw()
+		end
+	end
+
+	local getWidget = function(widget_id, fn)
+		print('get widget', widget_id)
+		local widget = widgets_by_id[widget_id]
+		if widget then fn(widget) end
+	end	
+
+	return {
+		resize = resize,
+		getWidget = getWidget,
+		update = update,
+		draw = draw,
+	}
+end
 
 -- The module
 return {
-	require = require,
-	unrequire = unrequire,
 	load = load,
 }
