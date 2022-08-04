@@ -12,7 +12,7 @@ local function updateLayout()
 	local is_debug = true
 
 	layout_idx = layout_idx + 1
-	if layout_idx > 3 then layout_idx = 1 end
+	if layout_idx > 4 then layout_idx = 1 end
 
 	local path = 'examples/example' .. layout_idx .. '.lua'
 	print('loading: ', path)
