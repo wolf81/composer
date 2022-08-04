@@ -15,6 +15,7 @@ local Dummy = Object:extend()
 function Dummy:draw() end
 function Dummy:update(dt) end
 function Dummy:layoutChildren() end
+function Dummy:__tostring() return F.describe('Dummy', self) end
 
 function Cols:new(children)
 	assert(children ~= nil)

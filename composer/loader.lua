@@ -21,22 +21,6 @@ local PATH_DIRECTIVE_EXCLUDE_PATTERN = '%-%-%s-%[%[.-%]%]'
 -- this pattern is used to capture the path for a directive pattern match
 local PATH_CAPTURE_PATTERN = '\"(.-)\"'
 
--- internal function to recursively retrieve a list of elements from a parent
--- element
-local function getControls(parent, controls)
-	controls = controls or {}
-
-	for _, child in ipairs(parent.children) do
-		if child:is(controls.Control) then
-			controls[#controls + 1] = child
-		else
-			getControls(child, controls)
-		end
-	end
-
-	return controls
-end
-
 -- internal function to recursively load components from a file at path
 local function loadComponent(path)
 	if love.filesystem.getInfo(path, 'file') == nil then
@@ -64,6 +48,24 @@ local function loadComponent(path)
 	return contents
 end
 
+local function getControls(element, control_list)
+	local control_list = control_list or {}
+
+	if element:is(controls.Control) then
+		control_list[#control_list + 1] = element
+	else
+		if element.child then
+			return getControls(element.child, control_list)
+		elseif element.children then
+			for _, child in ipairs(element.children) do
+				getControls(child, control_list)
+			end	
+		end
+	end
+
+	return control_list
+end
+
 -- load a layout file at given path; optionally set debug to true to log the 
 -- full content including engine imports and required imports
 local function load(path, is_debug)
@@ -72,25 +74,32 @@ local function load(path, is_debug)
 
 	-- combine layout file with composer modules into one file
 	local contents = table.concat({
-		'local layout = require "layout"',		
+		'local controls = require \'' .. PATH .. 'controls\'',		
+		'local layout = require \'' .. PATH .. 'layout\'',		
 		LAYOUT_IMPORTS,
-		'local controls = require "controls"',		
 		CONTROL_IMPORTS,
 		'return ' .. contents,
 	}, '\n\n')
 
 	-- log file if debug flag is set to true
-	if is_debug == true then print(contents) end
+	if is_debug == true then print(contents) end	
 
 	-- load combined file
 	local ui = loadstring(contents)()
+
+	-- get list of controls
+	local controls = getControls(ui)
 
 	-- return a facade 
 	return {
 		draw = function() ui:draw() end,
 		update = function(dt) ui:update(dt) end,
 		getControl = function() end,
-		eachControl = function() end,
+		eachControl = function(fn) 
+			for _, control in ipairs(controls) do
+				fn(control)
+			end
+		end,
 		resize = function(w, h) ui:resize(w, h) end
 	}
 end

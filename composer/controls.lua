@@ -33,6 +33,10 @@ end
 
 local Button = Control:extend()
 
+function Button:__tostring()
+	return F.describe('Button', self)
+end
+
 --[[ MODULE ]]--
 
 return {
