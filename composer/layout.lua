@@ -14,6 +14,7 @@ local Row = Layout:extend()
 local Dummy = Object:extend()
 function Dummy:draw() end
 function Dummy:update(dt) end
+function Dummy:layout() end
 
 function Cols:new(children)
 	Layout.new(self, children)
@@ -135,7 +136,7 @@ function Layout:new(...)
 
 		if type(arg) == 'number' then
 			self.size = arg
-		else
+		elseif arg.is ~= nil then
 			self.child = arg
 		end
 
@@ -149,26 +150,22 @@ function Layout:resize(w, h)
 end
 
 function Layout:layout()
-	if not self.child then return end
-
 	self.child.frame = self.frame
 	self.child:layout()
-	print(self.child)
 end
 
 function Layout:update(dt)
-	if not self.child then return end
 	self.child:update(dt)
 end
 
 function Layout:draw()
-	self.child:draw()
-
 	local l = love.graphics.getLineWidth()
 
 	love.graphics.setColor(unpack(self.color))
 	local x, y, w, h = self.frame:unpack()
 	love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
+
+	self.child:draw()
 end
 
 function Layout:__tostring()
