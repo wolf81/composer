@@ -1,12 +1,33 @@
-Border(Margin(0), {
-	VStack({
-		Label("Hello", MinSize(0, 50), Stretch(1, 0), ID("test1")),
-		Button("press G to see next layout", ID("test2")),
-		Label("...", ID("test3")),
-		HStack(MinSize(0, 80), Stretch(1, 0), {
-			Button("Composer", MinSize(120, 50), Stretch(0, 1)),
-			Label("Says", MinSize(40), Stretch(1)),
-			Button("Hello", MinSize(50), Stretch(0, 1)),		
-		})
-	}),
+Layout(Cols {
+    Col(), -- fill space 50% - 50 px
+    Col(300, Rows {
+        Row(), -- fill space 50% - 40 px
+        Row(20, Button('NEW GAME', { ... })),
+        Row(20, Button('CONTINUE', { ... })),
+        Row(20, Button('SETTINGS', { ... })),
+        Row(20, Button('QUIT', { ... })),
+        Row(), -- fill space 50% - 40 px
+    }),
+    Col(), -- fill space 50% - 50 px
 })
+
+
+--[[
+Layout:
+    (Rows|Cols)
+
+Rows:
+    (Row[])
+
+Cols:
+    (Col[])
+
+Col:
+    (Cols|Rows|Control)
+
+Row:
+    (Cols|Rows|Control)
+
+Control:
+    ...
+]]
