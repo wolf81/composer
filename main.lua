@@ -69,7 +69,7 @@ end
 
 function love.draw()
 	-- draw white background
-	love.graphics.setColor(1.0, 1.0, 1.0)
+	love.graphics.setColor(0.0, 0.0, 0.0)
 	love.graphics.rectangle('fill', 0, 0, window_w, window_h)
 
 	layout.draw()
