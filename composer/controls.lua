@@ -3,10 +3,14 @@ local Object = require(PATH .. 'classic')
 local F = require(PATH .. 'functions')
 local Theme = require(PATH .. 'theme')
 
-local mfloor = math.floor
+local mfloor, mceil = math.floor, math.ceil
 
 local getColorsForState = function(state)
 	return Theme[state] or Theme['normal']
+end
+
+local getTextSize = function(text, font)
+	return font:getWidth(text), font:getHeight()
 end
 
 local rectContainsPoint = function(rect, x, y)
@@ -60,6 +64,9 @@ function Button:new(...)
 	self.is_highlighted = false
 
 	self.text = 'HELLO'
+
+	local font = love.graphics.getFont()
+	self.text_size = { getTextSize(self.text, font) }
 end
 
 function Button:update(dt)
@@ -88,9 +95,9 @@ function Button:draw()
 		self.text, 
 		mfloor(text_x), 
 		mfloor(text_y), 
-		0, 1, 1
-		-- mceil(text_size.x / 2), 
-		-- mceil(text_size.y / 2)
+		0, 1, 1,
+		mceil(self.text_size[1] / 2), 
+		mceil(self.text_size[2] / 2)
 	)
 end
 
