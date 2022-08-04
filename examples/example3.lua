@@ -1,10 +1,10 @@
 Layout(Rows {
 	Row(),
-	Row(600, Cols {
+	Row(400, Cols {
 		Col(),
-		Col(300),
-		Col(300),
-		Col(300),
+		Col(200),
+		Col(200),
+		Col(200),
 		Col(),
 	}),
 	Row(),
