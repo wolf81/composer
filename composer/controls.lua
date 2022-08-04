@@ -1,6 +1,26 @@
 local PATH = (...):match('(.-)[^%.]+$') 
 local Object = require(PATH .. 'classic')
 local F = require(PATH .. 'functions')
+local Theme = require(PATH .. 'theme')
+
+local mfloor = math.floor
+
+local getColorsForState = function(state)
+	return Theme[state] or Theme['normal']
+end
+
+local rectContainsPoint = function(rect, x, y)
+	return (
+		x > rect[1] and 
+		x < rect[1] + rect[3] and 
+		y > rect[2] and 
+		y < rect[2] + rect[4]
+	)
+end
+
+local getMidXY = function(rect)
+	return rect[1] + rect[3] / 2, rect[2] + rect[4] / 2
+end
 
 --[[ CONTROL ]]--
 
@@ -32,6 +52,47 @@ end
 --[[ BUTTON ]]--
 
 local Button = Control:extend()
+
+function Button:new(...)
+	Control.new(self, ...)
+
+	self.is_selected = false
+	self.is_highlighted = false
+
+	self.text = 'HELLO'
+end
+
+function Button:update(dt)
+	local m_x, m_y = love.mouse.getPosition()
+	self.is_highlighted = rectContainsPoint(self.frame, m_x, m_y)
+end
+
+function Button:draw()
+	local state = "normal"
+
+	if self.is_selected then 
+		state = "active"
+	elseif self.is_highlighted then
+		state = "hovered"
+	end
+
+	local c = getColorsForState(state)
+	local text_x, text_y = getMidXY(self.frame)
+
+	love.graphics.setColor(c.bg)
+	love.graphics.rectangle('fill', unpack(self.frame))
+	love.graphics.setColor(c.fg)
+
+	--love.graphics.setFont(font)
+	love.graphics.print(
+		self.text, 
+		mfloor(text_x), 
+		mfloor(text_y), 
+		0, 1, 1
+		-- mceil(text_size.x / 2), 
+		-- mceil(text_size.y / 2)
+	)
+end
 
 function Button:__tostring()
 	return F.describe('Button', self)
