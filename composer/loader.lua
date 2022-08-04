@@ -67,59 +67,32 @@ end
 -- load a layout file at given path; optionally set debug to true to log the 
 -- full content including engine imports and required imports
 local function load(path, is_debug)
+	-- first load the layout file
 	local contents = loadComponent(path)
 
-	local layout_path = PATH .. 'layout'
-	local controls_path = PATH .. 'controls'
-
-	local imports = {
-		'--[[ ' .. layout_path .. ' ]]--',
-		'local layout = require \'' .. layout_path .. '\'',		
+	-- combine layout file with composer modules into one file
+	local contents = table.concat({
+		'local layout = require "layout"',		
 		LAYOUT_IMPORTS,
-		'--[[ ' .. controls_path .. ' ]]--',
-		'local controls = require \'' .. controls_path .. '\'',		
+		'local controls = require "controls"',		
 		CONTROL_IMPORTS,
-	}
+		'return ' .. contents,
+	}, '\n\n')
 
-	imports[#imports + 1] = '--[[ ' .. path .. ' ]]--'
-	imports[#imports + 1] = 'return ' .. contents
+	-- log file if debug flag is set to true
+	if is_debug == true then print(contents) end
 
-	contents = table.concat(imports, '\n\n')
-
-	if is_debug == true then
-		print(contents)
-	end
-
+	-- load combined file
 	local ui = loadstring(contents)()
 
-	--[[
-	-- create a list of elements for use with the eachElement() function
-	-- create a list of wdgets
-	local controls_list = getControls(ui)
-
-	-- create a table of elements by id for use with the getElement() function
-	local controls_by_id = {}
-	for _, control in ipairs(controls_list) do
-		if control.id ~= nil then
-			controls_by_id[control.id] = control
-		end
-	end
-
-	ui.getControl = function(id, fn)
-		local control = controls_by_id[id]
-		if control then fn(control) end
-	end
-
-	ui.eachControl = function(fn)
-		for _, control in ipairs(controls_list) do
-			fn(control)
-		end
-	end
-	--]]
-	ui.getControl = function() end
-	ui.eachControl = function() end
-
-	return ui
+	-- return a facade 
+	return {
+		draw = function() ui:draw() end,
+		update = function(dt) ui:update(dt) end,
+		getControl = function() end,
+		eachControl = function() end,
+		resize = function(w, h) ui:resize(w, h) end
+	}
 end
 
 return load

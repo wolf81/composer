@@ -29,7 +29,7 @@ local function updateLayout()
 end
 
 local function resizeLayout()
-    layout:resize(window_w, window_h)
+    layout.resize(window_w, window_h)
 end
 
 function love.load(args)
@@ -64,7 +64,7 @@ function love.load(args)
 end
 
 function love.update(dt)
-	layout:update(dt)
+	layout.update(dt)
 end
 
 function love.draw()
@@ -72,7 +72,7 @@ function love.draw()
 	love.graphics.setColor(0.0, 0.0, 0.0)
 	love.graphics.rectangle('fill', 0, 0, window_w, window_h)
 
-	layout:draw()
+	layout.draw()
 end
 
 function love.resize(w, h)
