@@ -175,16 +175,13 @@ function ImageButton:draw()
 
 	local c = getColorsForState(state)
 
-	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', unpack(self.frame))
-
 	if self.image then
 		love.graphics.setColor(c.fg)		
 
 		local iw, ih = self.image:getDimensions()
 		local ox = (iw - self.frame[3]) / 2
 		local oy = (ih - self.frame[4]) / 2
-		love.graphics.draw(self.image, self.frame[1], self.frame[2], 0, 1, 1, ox, oy)
+		love.graphics.draw(self.image, self.frame[1], self.frame[2], 0, 1, 1, ox, oy)		
 	end
 end
 
