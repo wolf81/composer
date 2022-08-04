@@ -17,8 +17,6 @@ function Dummy:update(dt) end
 function Dummy:layout() end
 
 function Cols:new(children)
-	Layout.new(self, children)
-
 	assert(children ~= nil)
 
 	self.frame = Rect(0, 0, 0, 0)
@@ -44,14 +42,11 @@ function Cols:layout()
 
 	local x, y, w, h = self.frame.x, self.frame.y, self.frame.w, self.frame.h
 	local flex_w = math.floor((w - fixed_w) / flex_cols)
-	print('flex_w', flex_w)
 
 	for _, child in ipairs(self.children) do
 		local w = child.size == math.huge and flex_w or child.size
 		child.frame = Rect(x, y, w, h)
-		print('ch', child)
 		child:layout()
-		print('layout', child)
 		x = x + w
 	end
 end
@@ -87,8 +82,6 @@ end
 function Rows:layout()
 	local fixed_h = 0
 	local flex_rows = 0
-
-	print('total_h', self.frame.h)
 
 	for _, row in ipairs(self.children) do
 		if row.size ~= math.huge then			

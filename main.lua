@@ -9,7 +9,7 @@ local window_w = 0
 local window_h = 0
 
 local function updateLayout()
-	local is_debug = false
+	local is_debug = true
 
 	layout_idx = layout_idx + 1
 	if layout_idx > 3 then layout_idx = 1 end
