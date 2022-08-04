@@ -25,6 +25,10 @@ function Control:draw()
     love.graphics.rectangle('fill', unpack(self.frame))
 end
 
+function Control:__tostring()
+    return F.describe('Control', self)
+end
+
 --[[ BUTTON ]]--
 
 local Button = Control:extend()
@@ -32,5 +36,6 @@ local Button = Control:extend()
 --[[ MODULE ]]--
 
 return {
+    Control = Control,
     Button = Button,
 }

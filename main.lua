@@ -52,7 +52,7 @@ function love.load(args)
     end
 
     math.randomseed(os.time())
-    love.graphics.setLineWidth(10)
+    love.graphics.setLineWidth(4)
 
     -- add custom controls to the layout engine loader
     updateLayout()

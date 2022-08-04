@@ -1,4 +1,19 @@
 Layout(Cols {
+    Col(300, Rows {
+        Row(Cols {
+            Col(100),
+            Col(),
+        }),
+        Row(50),
+        Row(50),
+        Row(),
+    }),
+    Col(),
+    Col(100, Button()),
+})
+
+--[[
+Layout(Cols {
     Col(), -- fill space 50% - 50 px
     Col(300, Rows {
         Row(), -- fill space 50% - 40 px
@@ -10,11 +25,11 @@ Layout(Cols {
     }),
     Col(), -- fill space 50% - 50 px
 })
-
+]]
 
 --[[
 Layout:
-    (Rows|Cols)
+    (Rows|Cols|Layout)
 
 Rows:
     (Row[])

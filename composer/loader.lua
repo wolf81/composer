@@ -92,6 +92,7 @@ local function load(path, is_debug)
 
 	local ui = loadstring(contents)()
 
+	--[[
 	-- create a list of elements for use with the eachElement() function
 	-- create a list of wdgets
 	local controls_list = getControls(ui)
@@ -114,6 +115,9 @@ local function load(path, is_debug)
 			fn(control)
 		end
 	end
+	--]]
+	ui.getControl = function() end
+	ui.eachControl = function() end
 
 	return ui
 end
