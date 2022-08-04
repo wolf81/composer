@@ -14,7 +14,7 @@ local Row = Layout:extend()
 local Dummy = Object:extend()
 function Dummy:draw() end
 function Dummy:update(dt) end
-function Dummy:layout() end
+function Dummy:layoutChildren() end
 
 function Cols:new(children)
 	assert(children ~= nil)
@@ -28,7 +28,7 @@ function Cols:new(children)
 	self.children = children
 end
 
-function Cols:layout()
+function Cols:layoutChildren()
 	local fixed_w = 0
 	local flex_cols = 0
 
@@ -46,7 +46,7 @@ function Cols:layout()
 	for _, child in ipairs(self.children) do
 		local w = child.size == math.huge and flex_w or child.size
 		child.frame = Rect(x, y, w, h)
-		child:layout()
+		child:layoutChildren()
 		x = x + w
 	end
 end
@@ -79,7 +79,7 @@ function Rows:new(children)
 	self.children = children
 end
 
-function Rows:layout()
+function Rows:layoutChildren()
 	local fixed_h = 0
 	local flex_rows = 0
 
@@ -97,7 +97,7 @@ function Rows:layout()
 	for _, child in ipairs(self.children) do
 		local h = child.size == math.huge and flex_h or child.size
 		child.frame = Rect(x, y, w, h)
-		child:layout()
+		child:layoutChildren()
 		y = y + h
 	end
 end
@@ -139,12 +139,12 @@ end
 
 function Layout:resize(w, h)
 	self.frame = Rect(self.frame.x, self.frame.y, w, h)
-	self:layout()
+	self:layoutChildren()
 end
 
-function Layout:layout()
+function Layout:layoutChildren()
 	self.child.frame = self.frame
-	self.child:layout()
+	self.child:layoutChildren()
 end
 
 function Layout:update(dt)
@@ -168,11 +168,11 @@ end
 --[[ COL ]]--
 
 
-function Col:layout()
+function Col:layoutChildren()
 	if self.child then
 		if self.child:is(Layout) then
 			self.child.frame = self.frame
-			self.child:layout()
+			self.child:layoutChildren()
 		else
 			self.child.frame = { self.frame:unpack() }
 		end
@@ -185,11 +185,11 @@ end
 
 --[[ ROW ]]--
 
-function Row:layout()
+function Row:layoutChildren()
 	if self.child then
 		if self.child:is(Layout) then
 			self.child.frame = self.frame
-			self.child:layout()
+			self.child:layoutChildren()
 		else
 			self.child.frame = { self.frame:unpack() }
 		end
