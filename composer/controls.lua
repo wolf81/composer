@@ -170,14 +170,25 @@ end
 function ImageButton:draw()
 	local c = getColorsForState(self.state)
 
-	local bg, fg = c.bg, c.fg
+	-- create a copy, so we don't modify the original theme colors
+	local bg, fg = { unpack(c.bg) }, { unpack(c.fg) }
 
+	-- in case of image button, we use the background color as foreground color
+	-- when hovering
 	if self.state == 'hovered' then
 		bg, fg = c.fg, c.bg
 	end
-	
-	love.graphics.setColor(fg)		
 
+	-- if custom alpha value is set, replace alpha value of color
+	if self.alpha then
+		bg[4] = self.alpha
+		fg[4] = self.alpha
+	end
+
+	-- now we can use the color for drawing
+	love.graphics.setColor(fg)
+
+	-- draw the image
 	if self.image then
 		local iw, ih = self.image:getDimensions()
 		local ox = (iw - self.frame.w) / 2
@@ -185,8 +196,9 @@ function ImageButton:draw()
 		love.graphics.draw(self.image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
 	end
 	
+	-- use original foreground color for the border
 	love.graphics.setColor(c.fg)
-	love.graphics.rectangle('line', self.frame:unpack())		
+	love.graphics.rectangle('line', self.frame:unpack())	
 end
 
 function ImageButton:__tostring()
@@ -223,6 +235,12 @@ function ScrollView:update(dt)
 	self.btn_up:update(dt)
 	self.btn_dn:update(dt)
 	self.scroller:update(dt)
+
+	if self.scroller.state == 'normal' then
+		self.scroller.alpha = 0.5
+	else
+		self.scroller.alpha = 1.0
+	end
 end
 
 function ScrollView:draw()
