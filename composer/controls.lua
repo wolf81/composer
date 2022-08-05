@@ -95,7 +95,7 @@ function Control:setFrame(x, y, w, h)
 end
 
 function Control:setEnabled(is_enabled)
-	self.state = is_enabled and 'normal' or 'disabled'
+	if is_enabled then self.state = 'normal' else self.state = 'disabled' end
 end
 
 function Control:update(dt)
@@ -214,6 +214,8 @@ function ImageButton:new(opts)
 end
 
 function ImageButton:update(dt)
+	if self.state == 'disabled' then return end
+
 	local m_x, m_y = love.mouse.getPosition()
 	self.state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
 
@@ -260,9 +262,13 @@ function ScrollView:new(...)
 	self.btn_dn = ImageButton({ image = 'composer/assets/arrow_dn.png' })
 	self.scroller = ImageButton({ image = 'composer/assets/scroller.png' })
 
-	-- self.scroller.drawBorder = function() end
+	self.btn_up:setEnabled(false)
+	self.btn_dn:setEnabled(false)
+	self.scroller:setEnabled(false)
+
 	self.btn_up.drawBorder = function() end
 	self.btn_dn.drawBorder = function() end
+	self.scroller.drawBorder = function() end
 
 	self.content_y = 0
 	self.content_h = 0
@@ -301,21 +307,10 @@ function ScrollView:draw()
 	local line_w = love.graphics.getLineWidth()
 	local line_x = self.frame:maxX() - ScrollView.BUTTON_SIZE + line_w / 2
 
-	-- draw outer border
-	drawBorder(self.frame, self.state)
-
-	-- draw border between content area and scroll area
-	love.graphics.line(
-		line_x, 
-		self.frame.y + line_w / 2, 
-		line_x, 
-		self.frame:maxY() - line_w / 2
-	)
-
 	self.btn_up:draw()
 	self.btn_dn:draw()
 
-	-- draw borders for scroll up & down buttons
+	-- draw seperator between up & down buttons and scroll area
 	love.graphics.setColor(c.fg)
 	for _, y in ipairs({ 
 		self.btn_up.frame:maxY() - line_w / 2, 
@@ -324,8 +319,26 @@ function ScrollView:draw()
 		love.graphics.line(line_x, y, line_x + ScrollView.BUTTON_SIZE - line_w, y)
 	end
 
-	-- finally draw scroller so scroller border always appears on top
-	self.scroller:draw()
+	-- draw scroller so scroller border always appears on top
+	if self.content_h > self.frame:maxY() then
+		self.scroller:draw()
+		drawBorder(self.scroller.frame, self.state)
+	end
+
+	-- draw border between content area and scroll area
+	love.graphics.setColor(c.fg)
+	love.graphics.line(
+		line_x, 
+		self.frame.y + line_w / 2, 
+		line_x, 
+		self.frame:maxY() - line_w / 2
+	)
+
+	drawBorder(self.btn_up.frame, self.state)
+	drawBorder(self.btn_dn.frame, self.state)
+
+	-- draw outer border
+	drawBorder(self.frame, self.state)
 end
 
 function ScrollView:__tostring()
