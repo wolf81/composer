@@ -197,8 +197,6 @@ function ScrollView:setFrame(x, y, w, h)
 	self.btn_up:setFrame(control_x, y, control_s, control_s)
 	self.btn_dn:setFrame(control_x, y + h - control_s, control_s, control_s)
 	self.scroller:setFrame(control_x, y + control_s, control_s, control_s)
-
-	print(self.frame, self.btn_up.frame, self.btn_dn.frame, self.scroller.frame)
 end
 
 function ScrollView:update(dt)
@@ -209,10 +207,13 @@ end
 
 function ScrollView:draw()
 	local c = getColorsForState(self.state)
-	
-	love.graphics.setColor(c.fg)
 
+	-- love.graphics.setColor(c.bg)
+	-- love.graphics.rectangle('fill', unpack(self.frame))
+	
 	local line_x = self.frame[1] + self.frame[3] - ScrollView.BUTTON_SIZE
+
+	love.graphics.setColor(c.fg)
 	love.graphics.line(line_x, self.frame[2], line_x, self.frame[2] + self.frame[4])
 	love.graphics.rectangle('line', unpack(self.frame))
 
