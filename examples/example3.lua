@@ -1,4 +1,4 @@
-Layout(Rows {
+return Layout(Rows {
 	Row(),
 	Row(400, Cols {
 		Col(),

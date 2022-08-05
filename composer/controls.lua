@@ -17,6 +17,20 @@ local getTextSize = function(text, font)
 	return { w = font:getWidth(text), h = font:getHeight() }
 end
 
+local getStencilFunc = function(frame, corner_radius)
+	local x, y, w, h = frame:unpack()
+
+	if corner_radius > 0 then
+		local r = corner_radius
+
+		return function()
+			love.graphics.rectangle('fill', x, y, w, h, r, r)
+		end
+	end
+
+	return nil
+end
+
 local parseFont = function(font_info)
 	local font_size = 16
 	local font_name = nil
@@ -40,7 +54,8 @@ local parseFont = function(font_info)
 	end
 end
 
-local drawRect = function(frame)
+local drawRect = function(frame, corner_r)
+	local corner_r = corner_r or 0
 	local line_width = love.graphics.getLineWidth()
 
 	local x = frame.x + line_width / 2
@@ -48,7 +63,7 @@ local drawRect = function(frame)
 	local w = frame.w - line_width
 	local h = frame.h - line_width 
 
-	love.graphics.rectangle('line', x, y, w, h)
+	love.graphics.rectangle('line', x, y, w, h, corner_r, corner_r)
 end
 
 local drawLine = function(x1, y1, x2, y2, state)
@@ -67,14 +82,14 @@ local drawLine = function(x1, y1, x2, y2, state)
 	love.graphics.line(x1, y1, x2, y2)
 end
 
-local drawBorder = function(frame, state)	
+local drawBorder = function(frame, state, corner_r)	
 	-- TODO: color should probably be set in draw() function or we can get 
 	-- unexpected results
 	local state = state == 'disabled' and 'disabled' or 'normal'
 	local c = getColorsForState(state)
 
 	love.graphics.setColor(c.fg)
-	drawRect(frame)
+	drawRect(frame, corner_r)
 end
 
 --[[ RECT ]]--
@@ -178,8 +193,9 @@ function Button:new(opts)
 	local opts = opts or {}
 
 	self.text = opts.text or ''
-	self.font = opts.font and parseFont(opts.font) or love.graphics.getFont()	
+	self.font = opts.font and parseFont(opts.font) or love.graphics.getFont()
 	self.text_size = getTextSize(self.text, self.font)
+	self.corner_radius = opts.corner_radius or 0
 end
 
 function Button:update(dt)
@@ -197,8 +213,11 @@ function Button:draw()
 	local c = getColorsForState(self.state)
 	local text_x, text_y = self.frame:midXY(self.frame)
 
+	local x, y, w, h = self.frame:unpack()
+	local r = self.corner_radius
+
 	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', self.frame:unpack())
+	love.graphics.rectangle('fill', x, y, w, h, r, r)
 
 	love.graphics.setColor(c.fg)
 	love.graphics.setFont(self.font)
@@ -211,7 +230,7 @@ function Button:draw()
 		mceil(self.text_size.h / 2)
 	)
 
-	drawBorder(self.frame, self.state)
+	drawBorder(self.frame, self.state, r)
 end
 
 function Button:__tostring()
@@ -241,11 +260,19 @@ function ImageButton:new(opts)
 
 	self.state = 'normal'
 	self.image = opts.image and love.graphics.newImage(opts.image) or nil
-	
+	self.corner_radius = opts.corner_radius or 0
+	self.stencilFunc = nil
+
 	self.drawBorder = function(c)
 		love.graphics.setColor(c.fg)
 		drawRect(self.frame)
 	end
+end
+
+function ImageButton:setFrame(x, y, w, h)
+	Control.setFrame(self, x, y, w, h)
+
+	self.stencilFunc = getStencilFunc(self.frame, self.corner_radius)
 end
 
 function ImageButton:update(dt)
@@ -262,21 +289,31 @@ end
 function ImageButton:draw()
 	local c = getColorsForState(self.state)
 
+	local x, y, w, h = self.frame:unpack()
+	local r = self.corner_radius
+
 	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', self.frame:unpack())
+	love.graphics.rectangle('fill', x, y, w, h, r, r)
 
 	-- now we can use the color for drawing
 	love.graphics.setColor(c.fg)
 
 	-- draw the image
 	if self.image then
+		if self.stencilFunc then
+			love.graphics.stencil(self.stencilFunc)
+			love.graphics.setStencilTest('greater', 0)
+		end
+
 		local iw, ih = self.image:getDimensions()
 		local ox = (iw - self.frame.w) / 2
 		local oy = (ih - self.frame.h) / 2
 		love.graphics.draw(self.image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
+
+		love.graphics.setStencilTest()
 	end
 
-	drawBorder(self.frame, self.state)
+	drawBorder(self.frame, self.state, self.corner_radius)
 end
 
 function ImageButton:__tostring()

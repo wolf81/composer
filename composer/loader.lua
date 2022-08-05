@@ -88,7 +88,7 @@ local function load(path, is_debug)
 		CONTROL_IMPORTS,
 		'local attr = require "' .. PATH .. 'attributes"',		
 		ATTR_IMPORTS,
-		'return ' .. contents,
+		contents,
 	}, '\n')
 
 	-- log file if debug flag is set to true
