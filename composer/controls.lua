@@ -169,8 +169,14 @@ end
 
 function ImageButton:draw()
 	local c = getColorsForState(self.state)
+
+	local bg, fg = c.bg, c.fg
+
+	if self.state == 'hovered' then
+		bg, fg = c.fg, c.bg
+	end
 	
-	love.graphics.setColor(c.fg)		
+	love.graphics.setColor(fg)		
 
 	if self.image then
 		local iw, ih = self.image:getDimensions()
@@ -179,6 +185,7 @@ function ImageButton:draw()
 		love.graphics.draw(self.image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
 	end
 	
+	love.graphics.setColor(c.fg)
 	love.graphics.rectangle('line', self.frame:unpack())		
 end
 
