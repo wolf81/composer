@@ -1,9 +1,9 @@
 Layout(Rows {
     Row(80, Cols {
-        Col(Label { text = 'MENU '}),
-        Col(80, ImageButton { image = 'gfx/crossbow.png' }),
-        Col(80, ImageButton { image = 'gfx/sparkling-sabre.png' }),
-        Col(80, ImageButton { image = 'gfx/switch-weapon.png' }),
+        Col(Label { text = 'MENU', font = { 'assets/agricola-rough.otf', 40 }}),
+        Col(80, ImageButton { image = 'assets/crossbow.png' }),
+        Col(80, ImageButton { image = 'assets/sparkling-sabre.png' }),
+        Col(80, ImageButton { image = 'assets/switch-weapon.png' }),
     }),
     Row(),
     Row(80),

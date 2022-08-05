@@ -17,6 +17,25 @@ local getTextSize = function(text, font)
 	return { w = font:getWidth(text), h = font:getHeight() }
 end
 
+local parseFont = function(font_info)
+	local font_size = 16
+	local font_name = 'Bitstream Vera Sans'
+
+	if type(font_info) == 'string' then
+		font_name = font_info
+	elseif type(font_info) == 'number' then
+		font_size = font_info
+	elseif type(font_info) == 'table' then
+		for _, v in ipairs(font_info) do
+			if type(v) == 'number' then font_size = v
+			elseif type(v) == 'string' then font_name = v
+			else error('value should be either a string, number or table containing a string and number') end
+		end
+	end
+
+	return love.graphics.newFont(font_name, font_size)
+end
+
 local drawRect = function(frame)
 	local line_width = love.graphics.getLineWidth()
 
@@ -121,17 +140,16 @@ function Label:new(opts)
 	local opts = opts or {}
 
 	self.text = opts.text or ''
-
-	local font = love.graphics.getFont()
-	self.text_size = getTextSize(self.text, font)
+	self.font = opts.font and parseFont(opts.font) or love.graphics.getFont()	
+	self.text_size = getTextSize(self.text, self.font)
 end
 
 function Label:draw()
 	local c = getColorsForState('normal')
 	local text_x, text_y = self.frame:midXY()
 
-	--love.graphics.setFont(font)
 	love.graphics.setColor(c.fg)
+	love.graphics.setFont(self.font)
 	love.graphics.print(
 		self.text, 
 		mfloor(text_x), 
@@ -154,10 +172,10 @@ function Button:new(opts)
 	Control.new(self)
 
 	local opts = opts or {}
+	
 	self.text = opts.text or ''
-
-	local font = love.graphics.getFont()
-	self.text_size = getTextSize(self.text, font)
+	self.font = opts.font and parseFont(opts.font) or love.graphics.getFont()	
+	self.text_size = getTextSize(self.text, self.font)
 end
 
 function Button:update(dt)
@@ -179,6 +197,7 @@ function Button:draw()
 	love.graphics.rectangle('fill', self.frame:unpack())
 
 	love.graphics.setColor(c.fg)
+	love.graphics.setFont(self.font)
 	love.graphics.print(
 		self.text, 
 		mfloor(text_x), 
@@ -193,6 +212,18 @@ end
 
 function Button:__tostring()
 	return F.describe('Button', self)
+end
+
+--[[ CHECK BOX ]]--
+
+local Checkbox = Object:extend()
+
+function Checkbox:new(opts)
+	-- body
+end
+
+function Checkbox:__tostring()
+	return F.describe('Checkbox', self)
 end
 
 --[[ IMAGE BUTTON ]]--
@@ -353,4 +384,5 @@ return {
     Button = Button,
     ImageButton = ImageButton,
     ScrollView = ScrollView,
+    Checkbox = Checkbox,
 }

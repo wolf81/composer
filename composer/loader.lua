@@ -15,6 +15,7 @@ local Button = controls.Button
 local Label = controls.Label
 local ImageButton = controls.ImageButton
 local ScrollView = controls.ScrollView
+local Checkbox = controls.Checkbox
 ]]
 
 -- this pattern matches the full component directive with square hooks
@@ -77,12 +78,12 @@ local function load(path, is_debug)
 
 	-- combine layout file with composer modules into one file
 	local contents = table.concat({
-		'local controls = require \'' .. PATH .. 'controls\'',		
 		'local layout = require \'' .. PATH .. 'layout\'',		
 		LAYOUT_IMPORTS,
+		'local controls = require \'' .. PATH .. 'controls\'',		
 		CONTROL_IMPORTS,
 		'return ' .. contents,
-	}, '\n\n')
+	}, '\n')
 
 	-- log file if debug flag is set to true
 	if is_debug == true then print(contents) end	
