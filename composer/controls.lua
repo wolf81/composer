@@ -17,6 +17,17 @@ local getTextSize = function(text, font)
 	return { w = font:getWidth(text), h = font:getHeight() }
 end
 
+local drawRect = function(frame, line_width)
+	local line_width = love.graphics.getLineWidth()
+
+	local x = frame.x + line_width / 2
+	local y = frame.y + line_width / 2
+	local w = frame.w - line_width
+	local h = frame.h - line_width 
+
+	love.graphics.rectangle('line', x, y, w, h)
+end
+
 --[[ RECT ]]--
 
 local Rect = Object:extend()
@@ -95,9 +106,6 @@ function Label:draw()
 	local c = getColorsForState('normal')
 	local text_x, text_y = self.frame:midXY()
 
-	-- love.graphics.setColor(c.bg)
-	-- love.graphics.rectangle('fill', unpack(self.frame))
-
 	--love.graphics.setFont(font)
 	love.graphics.setColor(c.fg)
 	love.graphics.print(
@@ -131,6 +139,10 @@ end
 function Button:update(dt)
 	local m_x, m_y = love.mouse.getPosition()
 	self.state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
+
+	if self.state == 'hovered' and love.mouse.isDown(1) then
+		self.state = 'active'
+	end
 end
 
 function Button:draw()
@@ -144,7 +156,8 @@ function Button:draw()
 
 	--love.graphics.setFont(font)
 	love.graphics.setColor(c.fg)
-	love.graphics.rectangle('line', self.frame:unpack())
+	drawRect(self.frame)
+
 	love.graphics.print(
 		self.text, 
 		mfloor(text_x), 
@@ -170,11 +183,20 @@ function ImageButton:new(opts)
 
 	self.state = 'normal'
 	self.image = opts.image and love.graphics.newImage(opts.image) or nil
+	
+	self.drawBorder = function(c)
+		love.graphics.setColor(c.fg)
+		drawRect(self.frame)
+	end
 end
 
 function ImageButton:update(dt)
 	local m_x, m_y = love.mouse.getPosition()
 	self.state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
+
+	if self.state == 'hovered' and love.mouse.isDown(1) then
+		self.state = 'active'
+	end	
 end
 
 function ImageButton:draw()
@@ -207,8 +229,7 @@ function ImageButton:draw()
 	end
 	
 	-- use original foreground color for the border
-	love.graphics.setColor(c.fg)
-	love.graphics.rectangle('line', self.frame:unpack())	
+	self.drawBorder(c)
 end
 
 function ImageButton:__tostring()
@@ -228,6 +249,13 @@ function ScrollView:new(...)
 	self.btn_up = ImageButton({ image = 'composer/assets/arrow_up.png' })
 	self.btn_dn = ImageButton({ image = 'composer/assets/arrow_dn.png' })
 	self.scroller = ImageButton({ image = 'composer/assets/scroller.png' })
+
+	-- self.scroller.drawBorder = function() end
+	self.btn_up.drawBorder = function() end
+	self.btn_dn.drawBorder = function() end
+
+	self.content_y = 0
+	self.content_h = 0
 end
 
 function ScrollView:setFrame(x, y, w, h)
@@ -241,25 +269,44 @@ function ScrollView:setFrame(x, y, w, h)
 	self.scroller:setFrame(control_x, y + control_s, control_s, control_s)
 end
 
+function ScrollView:setContentView(content_view)
+	if not content_view then return end
+
+	local _, h = content_view:sizeThatFits(self.frame.w, math.huge)
+	self.content_y = 0
+	self.content_h = h
+end
+
 function ScrollView:update(dt)
 	self.btn_up:update(dt)
 	self.btn_dn:update(dt)
 	self.scroller:update(dt)
 
 	self.scroller.alpha = self.scroller.state == 'normal' and 0.5 or nil
+	if self.scroller.state == 'active' then
+		self.scroller.alpha = 0.5
+	end
 end
 
 function ScrollView:draw()
 	local c = getColorsForState(self.state)
 	
-	local line_x = self.frame:maxX() - ScrollView.BUTTON_SIZE
+	local line_w = love.graphics.getLineWidth()
+	local line_x = self.frame:maxX() - ScrollView.BUTTON_SIZE + line_w / 2
+	local btn_w = self.btn_up.frame.w
 
 	love.graphics.setColor(c.fg)
-	love.graphics.line(line_x, self.frame.y, line_x, self.frame:maxY())
-	love.graphics.rectangle('line', self.frame:unpack())
+	love.graphics.line(line_x, self.frame.y + line_w / 2, line_x, self.frame:maxY() - line_w)
+	drawRect(self.frame)
 
 	self.btn_up:draw()
 	self.btn_dn:draw()
+
+	love.graphics.setColor(c.fg)
+	for _, y in ipairs({ self.btn_up.frame:maxY(), self.btn_dn.frame.y }) do
+		love.graphics.line(line_x, y, line_x + ScrollView.BUTTON_SIZE - line_w, y)
+	end
+
 	self.scroller:draw()
 end
 

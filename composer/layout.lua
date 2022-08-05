@@ -158,7 +158,7 @@ function Layout:draw()
 
 	love.graphics.setColor(unpack(self.color))
 	local x, y, w, h = self.frame:unpack()
-	love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
+	-- love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
 
 	self.child:draw()
 end
@@ -177,7 +177,8 @@ function Col:layoutChildren()
 			self.child:layoutChildren()
 		else
 			-- either Control or Dummy
-			self.child:setFrame(self.frame:unpack())
+			local x, y, w, h = self.frame:unpack()
+			self.child:setFrame(x, y, w, h)
 		end
 	end
 end
@@ -195,7 +196,8 @@ function Row:layoutChildren()
 			self.child:layoutChildren()
 		else
 			-- either Control or Dummy
-			self.child:setFrame(self.frame:unpack())
+			local x, y, w, h = self.frame:unpack()
+			self.child:setFrame(x, y, w, h)			
 		end
 	end
 end
