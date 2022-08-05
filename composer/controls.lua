@@ -280,9 +280,11 @@ function ScrollView:setFrame(x, y, w, h)
 	local control_x = x + w - ScrollView.BUTTON_SIZE
 	local control_s = ScrollView.BUTTON_SIZE
 
+	local line_w = love.graphics:getLineWidth()
+
 	self.btn_up:setFrame(control_x, y, control_s, control_s)
 	self.btn_dn:setFrame(control_x, y + h - control_s, control_s, control_s)
-	self.scroller:setFrame(control_x, y + control_s, control_s, control_s)
+	self.scroller:setFrame(control_x, y + control_s - line_w, control_s, control_s)
 end
 
 function ScrollView:setContentView(content_view)
