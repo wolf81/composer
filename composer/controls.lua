@@ -131,6 +131,7 @@ function Button:draw()
 
 	--love.graphics.setFont(font)
 	love.graphics.setColor(c.fg)
+	love.graphics.rectangle('line', unpack(self.frame))
 	love.graphics.print(
 		self.text, 
 		mfloor(text_x), 
@@ -176,12 +177,13 @@ function ImageButton:draw()
 	local c = getColorsForState(state)
 
 	if self.image then
-		love.graphics.setColor(c.fg)		
-
 		local iw, ih = self.image:getDimensions()
 		local ox = (iw - self.frame[3]) / 2
 		local oy = (ih - self.frame[4]) / 2
+
+		love.graphics.setColor(c.fg)		
 		love.graphics.draw(self.image, self.frame[1], self.frame[2], 0, 1, 1, ox, oy)		
+		love.graphics.rectangle('line', unpack(self.frame))
 	end
 end
 
