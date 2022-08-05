@@ -17,7 +17,7 @@ local getTextSize = function(text, font)
 	return { w = font:getWidth(text), h = font:getHeight() }
 end
 
-local drawRect = function(frame, line_width)
+local drawRect = function(frame)
 	local line_width = love.graphics.getLineWidth()
 
 	local x = frame.x + line_width / 2
@@ -26,6 +26,28 @@ local drawRect = function(frame, line_width)
 	local h = frame.h - line_width 
 
 	love.graphics.rectangle('line', x, y, w, h)
+end
+
+local drawLine = function(x1, y1, x2, y2, state)
+	local state = state == 'disabled' and 'disabled' or 'normal'
+	local c = getColorsForState(state)
+
+	local line_width = love.graphics.getLineWidth()
+	local x1 = x1 + line_width / 2
+	local x2 = x2 - line_width
+	local y1 = y1 + line_width / 2
+	local y2 = y2 - line_width
+
+	love.graphics.setColor(c.fg)
+	love.graphics.line(x1, y1, x2, y2)
+end
+
+local drawBorder = function(frame, state)	
+	local state = state == 'disabled' and 'disabled' or 'normal'
+	local c = getColorsForState(state)
+
+	love.graphics.setColor(c.fg)
+	drawRect(frame)
 end
 
 --[[ RECT ]]--
@@ -154,10 +176,7 @@ function Button:draw()
 	love.graphics.setColor(c.bg)
 	love.graphics.rectangle('fill', self.frame:unpack())
 
-	--love.graphics.setFont(font)
 	love.graphics.setColor(c.fg)
-	drawRect(self.frame)
-
 	love.graphics.print(
 		self.text, 
 		mfloor(text_x), 
@@ -166,6 +185,8 @@ function Button:draw()
 		mceil(self.text_size.w / 2), 
 		mceil(self.text_size.h / 2)
 	)
+
+	drawBorder(self.frame, self.state)
 end
 
 function Button:__tostring()
@@ -227,9 +248,8 @@ function ImageButton:draw()
 		local oy = (ih - self.frame.h) / 2
 		love.graphics.draw(self.image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
 	end
-	
-	-- use original foreground color for the border
-	self.drawBorder(c)
+
+	drawBorder(self.frame, self.state)
 end
 
 function ImageButton:__tostring()
@@ -293,20 +313,23 @@ function ScrollView:draw()
 	
 	local line_w = love.graphics.getLineWidth()
 	local line_x = self.frame:maxX() - ScrollView.BUTTON_SIZE + line_w / 2
-	local btn_w = self.btn_up.frame.w
 
-	love.graphics.setColor(c.fg)
-	love.graphics.line(line_x, self.frame.y + line_w / 2, line_x, self.frame:maxY() - line_w)
-	drawRect(self.frame)
+	-- draw outer border
+	drawBorder(self.frame, self.state)
+
+	-- draw border between content area and scroll area
+	love.graphics.line(line_x, self.frame.y + line_w / 2, line_x, self.frame:maxY() - line_w / 2)
 
 	self.btn_up:draw()
 	self.btn_dn:draw()
 
+	-- draw borders for scroll up & down buttons
 	love.graphics.setColor(c.fg)
 	for _, y in ipairs({ self.btn_up.frame:maxY(), self.btn_dn.frame.y }) do
 		love.graphics.line(line_x, y, line_x + ScrollView.BUTTON_SIZE - line_w, y)
 	end
 
+	-- finally draw scroller so scroller border always appears on top
 	self.scroller:draw()
 end
 
