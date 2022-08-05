@@ -15,6 +15,7 @@ local Dummy = Object:extend()
 function Dummy:draw() end
 function Dummy:update(dt) end
 function Dummy:layoutChildren() end
+function Dummy:setFrame() end
 function Dummy:__tostring() return F.describe('Dummy', self) end
 
 function Cols:new(children)
@@ -175,7 +176,8 @@ function Col:layoutChildren()
 			self.child.frame = self.frame
 			self.child:layoutChildren()
 		else
-			self.child.frame = { self.frame:unpack() }
+			-- either Control or Dummy
+			self.child:setFrame(self.frame:unpack())
 		end
 	end
 end
@@ -192,7 +194,8 @@ function Row:layoutChildren()
 			self.child.frame = self.frame
 			self.child:layoutChildren()
 		else
-			self.child.frame = { self.frame:unpack() }
+			-- either Control or Dummy
+			self.child:setFrame(self.frame:unpack())
 		end
 	end
 end

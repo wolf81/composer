@@ -32,7 +32,7 @@ local Control = Object:extend()
 
 function Control:new()
     self.color = F.randomColor()
-
+    self.state = 'normal'
     self.frame = { 0, 0, 0, 0 }
 end
 
@@ -99,10 +99,6 @@ function Button:new(opts)
 	Control.new(self)
 
 	local opts = opts or {}
-
-	self.is_selected = false
-	self.is_highlighted = false
-
 	self.text = opts.text or ''
 
 	local font = love.graphics.getFont()
@@ -111,19 +107,13 @@ end
 
 function Button:update(dt)
 	local m_x, m_y = love.mouse.getPosition()
-	self.is_highlighted = rectContainsPoint(self.frame, m_x, m_y)
+	self.state = rectContainsPoint(self.frame, m_x, m_y) and 'hovered' or 'normal'
 end
 
 function Button:draw()
 	local state = "normal"
 
-	if self.is_selected then 
-		state = "active"
-	elseif self.is_highlighted then
-		state = "hovered"
-	end
-
-	local c = getColorsForState(state)
+	local c = getColorsForState(self.state)
 	local text_x, text_y = getMidXY(self.frame)
 
 	love.graphics.setColor(c.bg)
@@ -155,40 +145,84 @@ function ImageButton:new(opts)
 
 	local opts = opts or {}
 
-	self.is_selected = false
-	self.is_highlighted = false
+	self.state = 'normal'
 	self.image = opts.image and love.graphics.newImage(opts.image) or nil
 end
 
 function ImageButton:update(dt)
 	local m_x, m_y = love.mouse.getPosition()
-	self.is_highlighted = rectContainsPoint(self.frame, m_x, m_y)
+	self.state = rectContainsPoint(self.frame, m_x, m_y) and 'hovered' or 'normal'
 end
 
 function ImageButton:draw()
-	local state = "normal"
-
-	if self.is_selected then 
-		state = "active"
-	elseif self.is_highlighted then
-		state = "hovered"
-	end
-
-	local c = getColorsForState(state)
+	local c = getColorsForState(self.state)
+	
+	love.graphics.setColor(c.fg)		
 
 	if self.image then
 		local iw, ih = self.image:getDimensions()
 		local ox = (iw - self.frame[3]) / 2
 		local oy = (ih - self.frame[4]) / 2
-
-		love.graphics.setColor(c.fg)		
 		love.graphics.draw(self.image, self.frame[1], self.frame[2], 0, 1, 1, ox, oy)		
-		love.graphics.rectangle('line', unpack(self.frame))
 	end
+	
+	love.graphics.rectangle('line', unpack(self.frame))		
 end
 
 function ImageButton:__tostring()
 	return F.describe('ImageButton', self)
+end
+
+--[[ SCROLL VIEW ]]--
+
+local ScrollView = Control:extend()
+
+ScrollView.BUTTON_SIZE = 24
+ScrollView.SCROLL_SPEED = 100
+
+function ScrollView:new(...)
+	Control.new(self)
+
+	self.btn_up = ImageButton({ image = 'composer/assets/arrow_up.png' })
+	self.btn_dn = ImageButton({ image = 'composer/assets/arrow_dn.png' })
+	self.scroller = ImageButton({ image = 'composer/assets/scroller.png' })
+end
+
+function ScrollView:setFrame(x, y, w, h)
+	Control.setFrame(self, x, y, w, h)
+
+	local control_x = x + w - ScrollView.BUTTON_SIZE
+	local control_s = ScrollView.BUTTON_SIZE
+
+	self.btn_up:setFrame(control_x, y, control_s, control_s)
+	self.btn_dn:setFrame(control_x, y + h - control_s, control_s, control_s)
+	self.scroller:setFrame(control_x, y + control_s, control_s, control_s)
+
+	print(self.frame, self.btn_up.frame, self.btn_dn.frame, self.scroller.frame)
+end
+
+function ScrollView:update(dt)
+	self.btn_up:update(dt)
+	self.btn_dn:update(dt)
+	self.scroller:update(dt)
+end
+
+function ScrollView:draw()
+	local c = getColorsForState(self.state)
+	
+	love.graphics.setColor(c.fg)
+
+	local line_x = self.frame[1] + self.frame[3] - ScrollView.BUTTON_SIZE
+	love.graphics.line(line_x, self.frame[2], line_x, self.frame[2] + self.frame[4])
+	love.graphics.rectangle('line', unpack(self.frame))
+
+	self.btn_up:draw()
+	self.btn_dn:draw()
+	self.scroller:draw()
+end
+
+function ScrollView:__tostring()
+	return F.describe('ScrollView', self)
 end
 
 --[[ MODULE ]]--
@@ -198,4 +232,5 @@ return {
     Label = Label,
     Button = Button,
     ImageButton = ImageButton,
+    ScrollView = ScrollView,
 }

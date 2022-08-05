@@ -14,6 +14,7 @@ local CONTROL_IMPORTS = [[
 local Button = controls.Button
 local Label = controls.Label
 local ImageButton = controls.ImageButton
+local ScrollView = controls.ScrollView
 ]]
 
 -- this pattern matches the full component directive with square hooks
