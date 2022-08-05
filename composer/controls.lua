@@ -225,17 +225,11 @@ end
 function ImageButton:draw()
 	local c = getColorsForState(self.state)
 
-	-- create a copy, so we don't modify the original theme colors
-	local bg, fg = shallowCopy(c.bg), shallowCopy(c.fg)
-
-	-- in case of image button, we use the background color as foreground color
-	-- when hovering
-	if self.state == 'hovered' then
-		bg, fg = c.fg, c.bg
-	end
+	love.graphics.setColor(c.bg)
+	love.graphics.rectangle('fill', self.frame:unpack())
 
 	-- now we can use the color for drawing
-	love.graphics.setColor(fg)
+	love.graphics.setColor(c.fg)
 
 	-- draw the image
 	if self.image then
