@@ -10,21 +10,34 @@ local getColorsForState = function(state)
 end
 
 local getTextSize = function(text, font)
-	return font:getWidth(text), font:getHeight()
+	return { w = font:getWidth(text), h = font:getHeight() }
 end
 
-local rectContainsPoint = function(rect, x, y)
+--[[ RECT ]]--
+
+local Rect = Object:extend()
+
+function Rect:new(x, y, w, h)
+	self.x = x
+	self.y = y
+	self.w = w
+	self.h = h
+end
+
+function Rect:midXY() return self.x + self.w / 2, self.y + self.h / 2 end
+
+function Rect:maxX() return self.x + self.w end
+
+function Rect:maxY() return self.y + self.h end
+
+function Rect:containsPoint(x, y)
 	return (
-		x > rect[1] and 
-		x < rect[1] + rect[3] and 
-		y > rect[2] and 
-		y < rect[2] + rect[4]
+		x >= self.x and x < self.x + self.w and 
+		y >= self.y and y < self.y + self.h
 	)
 end
 
-local getMidXY = function(rect)
-	return rect[1] + rect[3] / 2, rect[2] + rect[4] / 2
-end
+function Rect:unpack() return self.x, self.y, self.w, self.h end
 
 --[[ CONTROL ]]--
 
@@ -33,11 +46,11 @@ local Control = Object:extend()
 function Control:new()
     self.color = F.randomColor()
     self.state = 'normal'
-    self.frame = { 0, 0, 0, 0 }
+    self.frame = Rect(0, 0, 0, 0)
 end
 
 function Control:setFrame(x, y, w, h)
-    self.frame = { x, y, w, h }
+    self.frame = Rect(x, y, w, h)
 end
 
 function Control:update(dt)
@@ -65,12 +78,12 @@ function Label:new(opts)
 	self.text = opts.text or ''
 
 	local font = love.graphics.getFont()
-	self.text_size = { getTextSize(self.text, font) }
+	self.text_size = getTextSize(self.text, font)
 end
 
 function Label:draw()
 	local c = getColorsForState('normal')
-	local text_x, text_y = getMidXY(self.frame)
+	local text_x, text_y = self.frame:midXY()
 
 	-- love.graphics.setColor(c.bg)
 	-- love.graphics.rectangle('fill', unpack(self.frame))
@@ -82,8 +95,8 @@ function Label:draw()
 		mfloor(text_x), 
 		mfloor(text_y), 
 		0, 1, 1,
-		mceil(self.text_size[1] / 2), 
-		mceil(self.text_size[2] / 2)
+		mceil(self.text_size.w / 2), 
+		mceil(self.text_size.h / 2)
 	)
 end
 
@@ -102,33 +115,33 @@ function Button:new(opts)
 	self.text = opts.text or ''
 
 	local font = love.graphics.getFont()
-	self.text_size = { getTextSize(self.text, font) }
+	self.text_size = getTextSize(self.text, font)
 end
 
 function Button:update(dt)
 	local m_x, m_y = love.mouse.getPosition()
-	self.state = rectContainsPoint(self.frame, m_x, m_y) and 'hovered' or 'normal'
+	self.state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
 end
 
 function Button:draw()
 	local state = "normal"
 
 	local c = getColorsForState(self.state)
-	local text_x, text_y = getMidXY(self.frame)
+	local text_x, text_y = self.frame:midXY(self.frame)
 
 	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', unpack(self.frame))
+	love.graphics.rectangle('fill', self.frame:unpack())
 
 	--love.graphics.setFont(font)
 	love.graphics.setColor(c.fg)
-	love.graphics.rectangle('line', unpack(self.frame))
+	love.graphics.rectangle('line', self.frame:unpack())
 	love.graphics.print(
 		self.text, 
 		mfloor(text_x), 
 		mfloor(text_y), 
 		0, 1, 1,
-		mceil(self.text_size[1] / 2), 
-		mceil(self.text_size[2] / 2)
+		mceil(self.text_size.w / 2), 
+		mceil(self.text_size.h / 2)
 	)
 end
 
@@ -151,7 +164,7 @@ end
 
 function ImageButton:update(dt)
 	local m_x, m_y = love.mouse.getPosition()
-	self.state = rectContainsPoint(self.frame, m_x, m_y) and 'hovered' or 'normal'
+	self.state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
 end
 
 function ImageButton:draw()
@@ -161,12 +174,12 @@ function ImageButton:draw()
 
 	if self.image then
 		local iw, ih = self.image:getDimensions()
-		local ox = (iw - self.frame[3]) / 2
-		local oy = (ih - self.frame[4]) / 2
-		love.graphics.draw(self.image, self.frame[1], self.frame[2], 0, 1, 1, ox, oy)		
+		local ox = (iw - self.frame.w) / 2
+		local oy = (ih - self.frame.h) / 2
+		love.graphics.draw(self.image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
 	end
 	
-	love.graphics.rectangle('line', unpack(self.frame))		
+	love.graphics.rectangle('line', self.frame:unpack())		
 end
 
 function ImageButton:__tostring()
@@ -211,11 +224,11 @@ function ScrollView:draw()
 	-- love.graphics.setColor(c.bg)
 	-- love.graphics.rectangle('fill', unpack(self.frame))
 	
-	local line_x = self.frame[1] + self.frame[3] - ScrollView.BUTTON_SIZE
+	local line_x = self.frame:maxX() - ScrollView.BUTTON_SIZE
 
 	love.graphics.setColor(c.fg)
-	love.graphics.line(line_x, self.frame[2], line_x, self.frame[2] + self.frame[4])
-	love.graphics.rectangle('line', unpack(self.frame))
+	love.graphics.line(line_x, self.frame.y, line_x, self.frame:maxY())
+	love.graphics.rectangle('line', self.frame:unpack())
 
 	self.btn_up:draw()
 	self.btn_dn:draw()
