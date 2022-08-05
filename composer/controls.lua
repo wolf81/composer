@@ -322,14 +322,22 @@ function ScrollView:draw()
 	drawBorder(self.frame, self.state)
 
 	-- draw border between content area and scroll area
-	love.graphics.line(line_x, self.frame.y + line_w / 2, line_x, self.frame:maxY() - line_w / 2)
+	love.graphics.line(
+		line_x, 
+		self.frame.y + line_w / 2, 
+		line_x, 
+		self.frame:maxY() - line_w / 2
+	)
 
 	self.btn_up:draw()
 	self.btn_dn:draw()
 
 	-- draw borders for scroll up & down buttons
 	love.graphics.setColor(c.fg)
-	for _, y in ipairs({ self.btn_up.frame:maxY(), self.btn_dn.frame.y }) do
+	for _, y in ipairs({ 
+		self.btn_up.frame:maxY() - line_w / 2, 
+		self.btn_dn.frame.y + line_w / 2 
+	}) do
 		love.graphics.line(line_x, y, line_x + ScrollView.BUTTON_SIZE - line_w, y)
 	end
 
