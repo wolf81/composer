@@ -4,7 +4,7 @@ local Object = require(PATH .. 'classic')
 local Margin = Object:extend()
 
 function Margin:new(t, l, b, r)
-    self.t = t
+    self.t = t or 0
     self.l = l or self.t
     self.b = b or self.t
     self.r = r or self.l
