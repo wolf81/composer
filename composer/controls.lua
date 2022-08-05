@@ -9,6 +9,10 @@ local getColorsForState = function(state)
 	return Theme[state] or Theme['normal']
 end
 
+local shallowCopy = function(tbl)
+	return { unpack(tbl) }
+end
+
 local getTextSize = function(text, font)
 	return { w = font:getWidth(text), h = font:getHeight() }
 end
@@ -47,10 +51,16 @@ function Control:new()
     self.color = F.randomColor()
     self.state = 'normal'
     self.frame = Rect(0, 0, 0, 0)
+    self.alpha = 1.0
 end
 
 function Control:setFrame(x, y, w, h)
     self.frame = Rect(x, y, w, h)
+end
+
+function Control:setEnabled(is_enabled)
+	self.state = is_enabled and 'normal' or 'disabled'
+	self.alpha = is_enabled and 1.0 or 0.5
 end
 
 function Control:update(dt)
@@ -124,7 +134,7 @@ function Button:update(dt)
 end
 
 function Button:draw()
-	local state = "normal"
+	local state = 'normal'
 
 	local c = getColorsForState(self.state)
 	local text_x, text_y = self.frame:midXY(self.frame)
@@ -171,7 +181,7 @@ function ImageButton:draw()
 	local c = getColorsForState(self.state)
 
 	-- create a copy, so we don't modify the original theme colors
-	local bg, fg = { unpack(c.bg) }, { unpack(c.fg) }
+	local bg, fg = shallowCopy(c.bg), shallowCopy(c.fg)
 
 	-- in case of image button, we use the background color as foreground color
 	-- when hovering
@@ -236,18 +246,11 @@ function ScrollView:update(dt)
 	self.btn_dn:update(dt)
 	self.scroller:update(dt)
 
-	if self.scroller.state == 'normal' then
-		self.scroller.alpha = 0.5
-	else
-		self.scroller.alpha = 1.0
-	end
+	self.scroller.alpha = self.scroller.state == 'normal' and 0.5 or nil
 end
 
 function ScrollView:draw()
 	local c = getColorsForState(self.state)
-
-	-- love.graphics.setColor(c.bg)
-	-- love.graphics.rectangle('fill', unpack(self.frame))
 	
 	local line_x = self.frame:maxX() - ScrollView.BUTTON_SIZE
 
