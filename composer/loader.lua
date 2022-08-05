@@ -1,6 +1,9 @@
 local PATH = (...):match('(.-)[^%.]+$') 
-local layout = require(PATH .. 'layout')
 local controls = require(PATH .. 'controls')
+
+local ATTR_IMPORTS = [[
+local Margin = attr.Margin
+]]
 
 local LAYOUT_IMPORTS = [[
 local Layout = layout.Layout
@@ -78,10 +81,12 @@ local function load(path, is_debug)
 
 	-- combine layout file with composer modules into one file
 	local contents = table.concat({
-		'local layout = require \'' .. PATH .. 'layout\'',		
+		'local layout = require "' .. PATH .. 'layout"',		
 		LAYOUT_IMPORTS,
-		'local controls = require \'' .. PATH .. 'controls\'',		
+		'local controls = require "' .. PATH .. 'controls"',		
 		CONTROL_IMPORTS,
+		'local attr = require "' .. PATH .. 'attributes"',		
+		ATTR_IMPORTS,
 		'return ' .. contents,
 	}, '\n')
 

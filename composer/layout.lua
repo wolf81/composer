@@ -2,6 +2,7 @@ local PATH = (...):match('(.-)[^%.]+$')
 local F = require(PATH .. 'functions')
 local Object = require(PATH .. 'classic')
 local Rect = require(PATH .. 'rect')
+local attr = require(PATH .. 'attributes')
 
 --[[ LAYOUT ]]--
 
@@ -125,6 +126,7 @@ function Layout:new(...)
 	self.frame = Rect(0, 0, 0, 0)
 	self.child = Dummy()
     self.color = F.randomColor()
+    self.margin = attr.Margin(0)
 
 	for _, arg in ipairs({...}) do
 		if arg == nil then goto continue end
@@ -132,7 +134,11 @@ function Layout:new(...)
 		if type(arg) == 'number' then
 			self.size = arg
 		elseif arg.is ~= nil then
-			self.child = arg
+			if arg:is(attr.Margin) then
+				self.margin = arg
+			else
+				self.child = arg				
+			end
 		end
 
 		::continue::
@@ -140,7 +146,7 @@ function Layout:new(...)
 end
 
 function Layout:resize(w, h)
-	self.frame = Rect(self.frame.x, self.frame.y, w, h)
+	self.frame = Rect(self.frame.x, self.frame.y, w, h):inset(self.margin:unpack())
 	self:layoutChildren()
 end
 
@@ -158,7 +164,7 @@ function Layout:draw()
 
 	love.graphics.setColor(unpack(self.color))
 	local x, y, w, h = self.frame:unpack()
-	-- love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
+	love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
 
 	self.child:draw()
 end
@@ -168,7 +174,6 @@ function Layout:__tostring()
 end
 
 --[[ COL ]]--
-
 
 function Col:layoutChildren()
 	if self.child then
