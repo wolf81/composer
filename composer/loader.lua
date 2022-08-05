@@ -99,7 +99,6 @@ local function load(path, is_debug)
 
 	-- get list of controls
 	local controls = getControls(ui)
-	print('controls: ' .. #controls)
 
 	-- return a facade 
 	return {
