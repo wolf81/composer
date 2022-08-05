@@ -29,6 +29,8 @@ local drawRect = function(frame)
 end
 
 local drawLine = function(x1, y1, x2, y2, state)
+	-- TODO: color should probably be set in draw() function or we can get 
+	-- unexpected results
 	local state = state == 'disabled' and 'disabled' or 'normal'
 	local c = getColorsForState(state)
 
@@ -43,6 +45,8 @@ local drawLine = function(x1, y1, x2, y2, state)
 end
 
 local drawBorder = function(frame, state)	
+	-- TODO: color should probably be set in draw() function or we can get 
+	-- unexpected results
 	local state = state == 'disabled' and 'disabled' or 'normal'
 	local c = getColorsForState(state)
 
