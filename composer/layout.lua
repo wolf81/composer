@@ -19,20 +19,30 @@ function Dummy:layoutChildren() end
 function Dummy:setFrame() end
 function Dummy:__tostring() return F.describe('Dummy', self) end
 
-function Cols:new(children)
-	assert(children ~= nil)
-
+function Cols:new(...)
 	self.frame = Rect(0, 0, 0, 0)
+	self.spacing = attr.Spacing(0)
+	self.children = {}
 
-	for _, child in ipairs(children) do
-		assert(child:is(Col), 'child should be of type Col')
+	for _, arg in pairs({...}) do
+		if arg.is ~= nil then
+			if arg:is(attr.Spacing) then
+				self.spacing = arg
+			end
+		else
+			if type(arg) == 'table' then
+				for _, child in ipairs(arg) do
+					assert(child:is(Col), 'child should be of type Col')					
+				end
+
+				self.children = arg
+			end
+		end
 	end
-
-	self.children = children
 end
 
 function Cols:layoutChildren()
-	local fixed_w = 0
+	local fixed_w = math.max(#self.children - 1, 0) * self.spacing.v
 	local flex_cols = 0
 
 	for _, col in ipairs(self.children) do
@@ -50,7 +60,7 @@ function Cols:layoutChildren()
 		local w = child.size == math.huge and flex_w or child.size
 		child.frame = Rect(x, y, w, h)
 		child:layoutChildren()
-		x = x + w
+		x = x + w + self.spacing.v
 	end
 end
 
@@ -70,20 +80,30 @@ function Cols:__tostring()
 	return F.describe('Cols', self)
 end
 
-function Rows:new(children)
-	assert(children ~= nil)
-
+function Rows:new(...)
 	self.frame = Rect(0, 0, 0, 0)
+	self.spacing = attr.Spacing(0)
+	self.children = {}
 
-	for _, child in ipairs(children) do
-		assert(child:is(Row), 'child should be of type Row')
+	for _, arg in pairs({...}) do
+		if arg.is ~= nil then
+			if arg:is(attr.Spacing) then
+				self.spacing = arg
+			end
+		else
+			if type(arg) == 'table' then
+				for _, child in ipairs(arg) do
+					assert(child:is(Row), 'child should be of type Row')					
+				end
+
+				self.children = arg
+			end
+		end
 	end
-
-	self.children = children
 end
 
 function Rows:layoutChildren()
-	local fixed_h = 0
+	local fixed_h = math.max(#self.children - 1, 0) * self.spacing.v
 	local flex_rows = 0
 
 	for _, row in ipairs(self.children) do
@@ -101,7 +121,7 @@ function Rows:layoutChildren()
 		local h = child.size == math.huge and flex_h or child.size
 		child.frame = Rect(x, y, w, h)
 		child:layoutChildren()
-		y = y + h
+		y = y + h + self.spacing.v
 	end
 end
 
@@ -164,7 +184,7 @@ function Layout:draw()
 
 	love.graphics.setColor(unpack(self.color))
 	local x, y, w, h = self.frame:unpack()
-	love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
+	-- love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
 
 	self.child:draw()
 end

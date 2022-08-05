@@ -3,6 +3,7 @@ local controls = require(PATH .. 'controls')
 
 local ATTR_IMPORTS = [[
 local Margin = attr.Margin
+local Spacing = attr.Spacing
 ]]
 
 local LAYOUT_IMPORTS = [[

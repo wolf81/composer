@@ -1,6 +1,8 @@
 local PATH = (...):match('(.-)[^%.]+$') 
 local Object = require(PATH .. 'classic')
 
+--[[ MARGIN ]]--
+
 local Margin = Object:extend()
 
 function Margin:new(t, l, b, r)
@@ -14,6 +16,17 @@ function Margin:unpack()
     return self.t, self.l, self.b, self.r
 end
 
+--[[ SPACING ]]--
+
+local Spacing = Object:extend()
+
+function Spacing:new(v)
+    self.v = v
+end
+
+--[[ MODULE ]]--
+
 return {
     Margin = Margin,
+    Spacing = Spacing,
 }
