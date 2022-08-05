@@ -88,7 +88,6 @@ function Control:new()
     self.color = F.randomColor()
     self.state = 'normal'
     self.frame = Rect(0, 0, 0, 0)
-    self.alpha = 1.0
 end
 
 function Control:setFrame(x, y, w, h)
@@ -97,7 +96,6 @@ end
 
 function Control:setEnabled(is_enabled)
 	self.state = is_enabled and 'normal' or 'disabled'
-	self.alpha = is_enabled and 1.0 or 0.5
 end
 
 function Control:update(dt)
@@ -236,12 +234,6 @@ function ImageButton:draw()
 		bg, fg = c.fg, c.bg
 	end
 
-	-- if custom alpha value is set, replace alpha value of color
-	if self.alpha then
-		bg[4] = self.alpha
-		fg[4] = self.alpha
-	end
-
 	-- now we can use the color for drawing
 	love.graphics.setColor(fg)
 
@@ -305,11 +297,6 @@ function ScrollView:update(dt)
 	self.btn_up:update(dt)
 	self.btn_dn:update(dt)
 	self.scroller:update(dt)
-
-	self.scroller.alpha = self.scroller.state == 'normal' and 0.5 or nil
-	if self.scroller.state == 'active' then
-		self.scroller.alpha = 0.5
-	end
 end
 
 function ScrollView:draw()
