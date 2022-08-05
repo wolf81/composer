@@ -19,7 +19,7 @@ end
 
 local parseFont = function(font_info)
 	local font_size = 16
-	local font_name = 'Bitstream Vera Sans'
+	local font_name = nil
 
 	if type(font_info) == 'string' then
 		font_name = font_info
@@ -33,7 +33,11 @@ local parseFont = function(font_info)
 		end
 	end
 
-	return love.graphics.newFont(font_name, font_size)
+	if font_name == nil then
+		return love.graphics.newFont(font_size)
+	else
+		return love.graphics.newFont(font_name, font_size)
+	end
 end
 
 local drawRect = function(frame)
@@ -172,7 +176,7 @@ function Button:new(opts)
 	Control.new(self)
 
 	local opts = opts or {}
-	
+
 	self.text = opts.text or ''
 	self.font = opts.font and parseFont(opts.font) or love.graphics.getFont()	
 	self.text_size = getTextSize(self.text, self.font)
