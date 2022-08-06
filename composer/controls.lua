@@ -82,16 +82,6 @@ local drawLine = function(x1, y1, x2, y2, state)
 	love.graphics.line(x1, y1, x2, y2)
 end
 
-local drawBorder = function(frame, state, corner_r)	
-	-- TODO: color should probably be set in draw() function or we can get 
-	-- unexpected results
-	local state = state == 'disabled' and 'disabled' or 'normal'
-	local c = getColorsForState(state)
-
-	love.graphics.setColor(c.fg)
-	drawRect(frame, corner_r)
-end
-
 --[[ RECT ]]--
 
 local Rect = Object:extend()
@@ -237,7 +227,7 @@ function Button:draw()
 		mceil(self.text_size.h / 2)
 	)
 
-	drawBorder(self.frame, self.state, r)
+	drawRect(self.frame, r)
 end
 
 function Button:__tostring()
@@ -266,13 +256,17 @@ function Checkbox:draw()
 
 	local c = getColorsForState(self.state)
 
-	local border_c = getColorsForState('normal')
-	love.graphics.setColor(border_c.fg)
+	local x, y, w, h = self.frame:unpack()
+	local r = self.corner_radius
+
+	-- TODO: should use stencil mask to deal with rounded corner images
+	love.graphics.setColor(c.bg)
+	love.graphics.rectangle('fill', x, y, Checkbox.SIZE, Checkbox.SIZE, r, r)
+
+	love.graphics.setColor(c.fg)
 	love.graphics.draw(self.border, x, y)		
 
-	if self.checked then		
-		local check_c = (self.state == 'hovered' or self.state == 'active') and c.bg or c.fg
-		love.graphics.setColor(check_c)
+	if self.checked then
 		love.graphics.draw(self.check, x, y)
 	end
 end
@@ -334,7 +328,7 @@ function ImageButton:draw()
 		love.graphics.setStencilTest()
 	end
 
-	drawBorder(self.frame, self.state, self.corner_radius)
+	drawRect(self.frame, self.corner_radius)
 end
 
 function ImageButton:__tostring()
@@ -417,7 +411,7 @@ function ScrollView:draw()
 	-- draw scroller so scroller border always appears on top
 	if self.content_h > self.frame:maxY() then
 		self.scroller:draw()
-		drawBorder(self.scroller.frame, self.state)
+		drawRect(self.scroller.frame)
 	end
 
 	-- draw border between content area and scroll area
@@ -429,11 +423,11 @@ function ScrollView:draw()
 		self.frame:maxY() - line_w / 2
 	)
 
-	drawBorder(self.btn_up.frame, self.state)
-	drawBorder(self.btn_dn.frame, self.state)
+	drawRect(self.btn_up.frame)
+	drawRect(self.btn_dn.frame)
 
 	-- draw outer border
-	drawBorder(self.frame, self.state)
+	drawRect(self.frame)
 end
 
 function ScrollView:__tostring()
