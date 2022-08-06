@@ -1,13 +1,11 @@
-return Layout(Margin(10), Cols {
-    Col(300, Rows {
-        Row(Cols {
-            Col(100),
-            Col(),
-        }),
-        Row(50),
-        Row(50),
-        Row(),
-    }),
-    Col(),
-    Col(100, Button()),
+return Layout(Margin(10), Rows {
+    Row(),
+    Row(400, Cols(Spacing(10), {
+        Col(),
+        Col(300, ScrollView()),
+        Col(300, ScrollView()),
+        Col(300, ScrollView()),
+        Col(),
+    })),
+    Row(),
 })

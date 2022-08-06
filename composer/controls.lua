@@ -137,8 +137,24 @@ function Control:setEnabled(is_enabled)
 end
 
 function Control:update(dt)
-    -- body
+	if self.state == 'disabled' then return end
+
+	local m_x, m_y = love.mouse.getPosition()
+	local next_state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
+
+	if next_state == 'hovered' and love.mouse.isDown(1) then
+		next_state = 'active'
+	end	
+
+	if self.state == 'active' and next_state == 'hovered' then
+		self:hit()
+	end
+
+	self.state = next_state
 end
+
+-- can be overidden by subclasses to respond on hit
+function Control:hit() end
 
 function Control:draw()
     love.graphics.setColor(unpack(self.color))
@@ -198,15 +214,6 @@ function Button:new(opts)
 	self.corner_radius = opts.corner_radius or 0
 end
 
-function Button:update(dt)
-	local m_x, m_y = love.mouse.getPosition()
-	self.state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
-
-	if self.state == 'hovered' and love.mouse.isDown(1) then
-		self.state = 'active'
-	end
-end
-
 function Button:draw()
 	local state = 'normal'
 
@@ -249,15 +256,8 @@ function Checkbox:new(opts)
 	self.checked = true
 end
 
-function Checkbox:update(dt)
-	if self.state == 'disabled' then return end
-
-	local m_x, m_y = love.mouse.getPosition()
-	self.state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
-
-	if self.state == 'hovered' and love.mouse.isDown(1) then
-		self.state = 'active'
-	end	
+function Checkbox:hit()
+	self.checked = not self.checked
 end
 
 function Checkbox:draw()
@@ -305,17 +305,6 @@ function ImageButton:setFrame(x, y, w, h)
 	Control.setFrame(self, x, y, w, h)
 
 	self.stencilFunc = getStencilFunc(self.frame, self.corner_radius)
-end
-
-function ImageButton:update(dt)
-	if self.state == 'disabled' then return end
-
-	local m_x, m_y = love.mouse.getPosition()
-	self.state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
-
-	if self.state == 'hovered' and love.mouse.isDown(1) then
-		self.state = 'active'
-	end	
 end
 
 function ImageButton:draw()
@@ -400,6 +389,8 @@ function ScrollView:setContentView(content_view)
 end
 
 function ScrollView:update(dt)
+	Control.update(self, dt)
+
 	self.btn_up:update(dt)
 	self.btn_dn:update(dt)
 	self.scroller:update(dt)
