@@ -3,7 +3,7 @@ local Object = require(PATH .. 'classic')
 local F = require(PATH .. 'functions')
 local Theme = require(PATH .. 'theme')
 
-local mfloor, mceil = math.floor, math.ceil
+local mfloor, mceil, mmax = math.floor, math.ceil, math.max
 
 local getColorsForState = function(state)
 	return Theme[state] or Theme['normal']
@@ -239,10 +239,37 @@ end
 
 --[[ CHECK BOX ]]--
 
-local Checkbox = Object:extend()
+local Checkbox = Control:extend()
+Checkbox.SIZE = 32
 
 function Checkbox:new(opts)
-	-- body
+	self.border = love.graphics.newImage('composer/assets/checkbox_border.png')
+	self.check = love.graphics.newImage('composer/assets/checkbox_check.png')
+
+	self.checked = true
+end
+
+function Checkbox:update(dt)
+	local m_x, m_y = love.mouse.getPosition()
+	self.state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
+
+	if self.state == 'hovered' and love.mouse.isDown(1) then
+		self.state = 'active'
+	end
+end
+
+function Checkbox:draw()
+	local x = self.frame.x
+	local y = self.frame.y + mmax(mfloor((self.frame.h - Checkbox.SIZE) / 2), 0)
+
+	local c = getColorsForState(self.state)
+
+	love.graphics.setColor(c.fg)
+	love.graphics.draw(self.border, x, y)
+
+	if self.checked then		
+		love.graphics.draw(self.check, x, y)
+	end
 end
 
 function Checkbox:__tostring()
