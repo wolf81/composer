@@ -9,26 +9,20 @@ local getColorsForState = function(state)
 	return Theme[state] or Theme['normal']
 end
 
-local shallowCopy = function(tbl)
-	return { unpack(tbl) }
-end
-
 local getTextSize = function(text, font)
 	return { w = font:getWidth(text), h = font:getHeight() }
 end
 
-local getAlignment = function(alignment)
+local getAlignment = function(align)
 	local alignments = { 'center', 'left', 'right' }
 
-	if alignment then
-		for _, a in ipairs(alignments) do
-			if a == alignment then return alignment end
-		end
+	if not align then return alignments[1] end
 
-		error('invalid alignment, valid values are: ' .. table.concat(alignments, ', '))
+	for _, alignment in ipairs(alignments) do
+		if align == alignment then return alignment end
 	end
 
-	return alignments[1]
+	error('invalid alignment, valid values are: ' .. table.concat(alignments, ', '))
 end
 
 local getStencilFunc = function(frame, corner_radius)
@@ -78,22 +72,6 @@ local drawRect = function(frame, corner_r)
 	local h = frame.h - line_width 
 
 	love.graphics.rectangle('line', x, y, w, h, corner_r, corner_r)
-end
-
-local drawLine = function(x1, y1, x2, y2, state)
-	-- TODO: color should probably be set in draw() function or we can get 
-	-- unexpected results
-	local state = state == 'disabled' and 'disabled' or 'normal'
-	local c = getColorsForState(state)
-
-	local line_width = love.graphics.getLineWidth()
-	local x1 = x1 + line_width / 2
-	local x2 = x2 - line_width
-	local y1 = y1 + line_width / 2
-	local y2 = y2 - line_width
-
-	love.graphics.setColor(c.fg)
-	love.graphics.line(x1, y1, x2, y2)
 end
 
 --[[ RECT ]]--
