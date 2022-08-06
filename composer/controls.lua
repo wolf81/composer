@@ -250,12 +250,14 @@ function Checkbox:new(opts)
 end
 
 function Checkbox:update(dt)
+	if self.state == 'disabled' then return end
+
 	local m_x, m_y = love.mouse.getPosition()
 	self.state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
 
 	if self.state == 'hovered' and love.mouse.isDown(1) then
 		self.state = 'active'
-	end
+	end	
 end
 
 function Checkbox:draw()
@@ -264,11 +266,13 @@ function Checkbox:draw()
 
 	local c = getColorsForState(self.state)
 
-	love.graphics.setColor(c.fg)
-
+	local border_c = getColorsForState('normal')
+	love.graphics.setColor(border_c.fg)
 	love.graphics.draw(self.border, x, y)		
 
 	if self.checked then		
+		local check_c = (self.state == 'hovered' or self.state == 'active') and c.bg or c.fg
+		love.graphics.setColor(check_c)
 		love.graphics.draw(self.check, x, y)
 	end
 end
