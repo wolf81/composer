@@ -4,8 +4,8 @@ return Layout(Rows {
 		Col(),
 		Col(400, Rows(Spacing(10), {
 			Row(40, Checkbox {}),
-			Row(Button {}),
-			Row(Button {}),
+			Row(100, Button { text = 'BUTTON 1', font = 20 }),
+			Row(100, Button { text = 'BUTTON 2', font = 20 }),
 		})),
 		Col(),
 	}),
