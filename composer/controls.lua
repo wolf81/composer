@@ -17,6 +17,20 @@ local getTextSize = function(text, font)
 	return { w = font:getWidth(text), h = font:getHeight() }
 end
 
+local getAlignment = function(alignment)
+	local alignments = { 'center', 'left', 'right' }
+
+	if alignment then
+		for _, a in ipairs(alignments) do
+			if a == alignment then return alignment end
+		end
+
+		error('invalid alignment, valid values are: ' .. table.concat(alignments, ', '))
+	end
+
+	return alignments[1]
+end
+
 local getStencilFunc = function(frame, corner_radius)
 	local x, y, w, h = frame:unpack()
 
@@ -165,6 +179,7 @@ function Label:new(opts)
 	local opts = opts or {}
 
 	self.text = opts.text or ''
+	self.align = getAlignment(opts.align)
 	self.font = opts.font and parseFont(opts.font) or love.graphics.getFont()	
 	self.text_size = getTextSize(self.text, self.font)
 end
@@ -173,6 +188,14 @@ function Label:draw()
 	local c = getColorsForState('normal')
 	local text_x, text_y = self.frame:midXY()
 
+	local x = self.text_size.w / 2
+
+	if self.align == 'left' then		
+		x = self.frame.w / 2
+	elseif self.align == 'right' then
+		x = -self.frame.w / 2 + self.text_size.w
+	end
+
 	love.graphics.setColor(c.fg)
 	love.graphics.setFont(self.font)
 	love.graphics.print(
@@ -180,7 +203,7 @@ function Label:draw()
 		mfloor(text_x), 
 		mfloor(text_y), 
 		0, 1, 1,
-		mceil(self.text_size.w / 2), 
+		x, 
 		mceil(self.text_size.h / 2)
 	)
 end
