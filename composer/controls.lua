@@ -253,7 +253,7 @@ function Checkbox:new(opts)
 	self.border = love.graphics.newImage('composer/assets/checkbox_border.png')
 	self.check = love.graphics.newImage('composer/assets/checkbox_check.png')
 
-	self.checked = true
+	self.checked = false
 end
 
 function Checkbox:hit()
