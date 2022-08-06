@@ -3,7 +3,7 @@ return Layout(Rows {
 	Row(400, Cols {
 		Col(),
 		Col(400, Rows(Spacing(10), {
-			Row(Checkbox {}),
+			Row(40, Checkbox {}),
 			Row(Button {}),
 			Row(Button {}),
 		})),
