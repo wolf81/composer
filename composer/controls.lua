@@ -265,7 +265,8 @@ function Checkbox:draw()
 	local c = getColorsForState(self.state)
 
 	love.graphics.setColor(c.fg)
-	love.graphics.draw(self.border, x, y)
+
+	love.graphics.draw(self.border, x, y)		
 
 	if self.checked then		
 		love.graphics.draw(self.check, x, y)
