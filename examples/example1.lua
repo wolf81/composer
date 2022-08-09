@@ -12,13 +12,23 @@ local function makeButton(title)
     }
 end
 
+local function makeCheckbox()
+    return Checkbox {
+        image = {
+            normal = 'assets/checkbox_normal.png',
+            hovered = 'assets/checkbox_normal.png',
+            active = 'assets/checkbox_active.png',
+        }
+    }
+end
+
 return Layout(Margin(10), Rows {
     Row(),
     Row(300, Cols(Spacing(10), {
         Col(),
-        Col(300, makeButton('BUTTON 1')),
-        Col(300, makeButton('BUTTON 2')),
-        Col(300, makeButton('BUTTON 3')),
+        Col(300, makeButton('BTN')),
+        Col(300, makeButton('BTN')),
+        Col(300, makeCheckbox()),
         Col(),
     })),
     Row(),

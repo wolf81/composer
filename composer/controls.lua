@@ -25,6 +25,24 @@ local getAlignment = function(align)
 	error('invalid alignment, valid values are: ' .. table.concat(alignments, ', '))
 end
 
+local parseImages = function(images)
+	if not images then return {} end
+
+	local image = {}
+
+	if images and type(images) == 'table' then
+		for _, state in ipairs({ 'hovered', 'active', 'normal', 'disabled '}) do
+			local image_path = images[state] 
+
+			if image_path then 
+				image[state] = love.graphics.newImage(image_path)
+			end
+		end
+	end
+
+	return image
+end
+
 local parseFont = function(font_info)
 	local font_size = 16
 	local font_name = nil
@@ -102,7 +120,6 @@ end
 
 function Control:setFrame(x, y, w, h)
     self.frame = Rect(x, y, w, h)
-    print('set frame', self.frame)
 end
 
 function Control:setEnabled(is_enabled)
@@ -153,32 +170,22 @@ function Label:new(opts)
 
 	self.text = opts.text or ''
 	self.align = getAlignment(opts.align)
-	self.font = opts.font and parseFont(opts.font) or love.graphics.getFont()	
+	self.font = parseFont(opts.font)
 	self.text_size = getTextSize(self.text, self.font)
 end
 
 function Label:draw()
 	local c = getColorsForState('normal')
-	local text_x, text_y = self.frame:midXY()
-
-	local x = self.text_size.w / 2
-
-	if self.align == 'left' then		
-		x = self.frame.w / 2
-	elseif self.align == 'right' then
-		x = -self.frame.w / 2 + self.text_size.w
-	end
-
 	love.graphics.setColor(c.fg)
 	love.graphics.setFont(self.font)
-	love.graphics.print(
-		self.text, 
-		mfloor(text_x), 
-		mfloor(text_y), 
-		0, 1, 1,
-		x, 
-		mceil(self.text_size.h / 2)
-	)
+	love.graphics.printf(
+		self.text,
+		self.font,
+		mfloor(self.frame.x),
+		mfloor(self.frame.y + (self.frame.h - self.text_size.h) / 2),
+		self.frame.w,
+		self.align
+	)		
 end
 
 function Label:__tostring()
@@ -195,7 +202,7 @@ function Button:new(opts)
 	local opts = opts or {}
 
 	self.text = opts.text or ''
-	self.font = opts.font and parseFont(opts.font) or love.graphics.getFont()
+	self.font = parseFont(opts.font)
 	self.text_size = getTextSize(self.text, self.font)
 	self.corner_radius = opts.corner_radius or 0
 end
@@ -236,35 +243,47 @@ local Checkbox = Control:extend()
 Checkbox.SIZE = 32
 
 function Checkbox:new(opts)
-	self.border = love.graphics.newImage('composer/assets/checkbox_border.png')
-	self.check = love.graphics.newImage('composer/assets/checkbox_check.png')
+	self.image = parseImages(opts.image)
+	self.state = 'normal'
 
 	self.checked = false
 end
 
 function Checkbox:hit()
+	if self.state == 'disabled' then return end
+
 	self.checked = not self.checked
+
+	self.state = self.checked and 'active' or 'normal'
 end
 
 function Checkbox:draw()
-	local x = self.frame.x
-	local y = self.frame.y + mmax(mfloor((self.frame.h - Checkbox.SIZE) / 2), 0)
-
 	local c = getColorsForState(self.state)
 
 	local x, y, w, h = self.frame:unpack()
-	local r = self.corner_radius
 
-	-- TODO: should use stencil mask to deal with rounded corner images
-	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', x, y, Checkbox.SIZE, Checkbox.SIZE, r, r)
+	-- draw the image
+	local image = self.image[self.state]
 
-	love.graphics.setColor(c.fg)
-	love.graphics.draw(self.border, x, y)		
-
-	if self.checked then
-		love.graphics.draw(self.check, x, y)
+	if self.state ~= 'disabled' then
+		if self.checked then image = self.image['active'] end
 	end
+
+	if image then
+		love.graphics.setColor(1.0, 1.0, 1.0)
+		local iw, ih = image:getDimensions()
+		local ox = (iw - self.frame.w) / 2
+		local oy = (ih - self.frame.h) / 2
+		love.graphics.draw(image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
+	end
+end
+
+function Checkbox:sizeThatFits(w, h)
+	local image = self.image[self.state]
+
+	if image then return image:getDimensions() end
+
+	return w, h
 end
 
 function Checkbox:__tostring()
@@ -281,20 +300,10 @@ function ImageButton:new(opts)
 	local opts = opts or {}
 
 	self.state = 'normal'
-	self.image = {}
-
-	if opts.image and type(opts.image) == 'table' then
-		for _, state in ipairs({ 'hovered', 'active', 'normal', 'disabled '}) do
-			local image_path = opts.image[state] 
-
-			if image_path then 
-				self.image[state] = love.graphics.newImage(image_path)
-			end
-		end
-	end
-
+	self.text = opts.text or ''
+	self.image = parseImages(opts.image)
 	self.font = parseFont(opts.font)
-	self.text_size = getTextSize(self.text or '', self.font)
+	self.text_size = getTextSize(self.text, self.font)
 end
 
 function ImageButton:draw()
@@ -315,7 +324,7 @@ function ImageButton:draw()
 	love.graphics.setColor(c.fg)
 	love.graphics.setFont(self.font)
 	love.graphics.printf(
-		'ABC', 
+		self.text, 
 		self.font,
 		mfloor(x),
 		mfloor(y + (self.frame.h - self.text_size.h) / 2),
