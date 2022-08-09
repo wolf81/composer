@@ -68,11 +68,16 @@ function love.update(dt)
 end
 
 function love.draw()
+    love.graphics.push()
+    -- love.graphics.scale(2)
+
 	-- draw white background
 	love.graphics.setColor(0.0, 0.0, 0.0)
 	love.graphics.rectangle('fill', 0, 0, window_w, window_h)
 
 	layout.draw()
+
+    love.graphics.pop()
 end
 
 function love.resize(w, h)

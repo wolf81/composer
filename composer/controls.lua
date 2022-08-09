@@ -25,20 +25,6 @@ local getAlignment = function(align)
 	error('invalid alignment, valid values are: ' .. table.concat(alignments, ', '))
 end
 
-local getStencilFunc = function(frame, corner_radius)
-	local x, y, w, h = frame:unpack()
-
-	if corner_radius > 0 then
-		local r = corner_radius
-
-		return function()
-			love.graphics.rectangle('fill', x, y, w, h, r, r)
-		end
-	end
-
-	return nil
-end
-
 local parseFont = function(font_info)
 	local font_size = 16
 	local font_name = nil
@@ -100,6 +86,10 @@ end
 
 function Rect:unpack() return self.x, self.y, self.w, self.h end
 
+function Rect:__tostring()
+	return '{ ' .. table.concat({ self.x, self.y, self.w, self.h }, ', ') .. ' }'
+end
+
 --[[ CONTROL ]]--
 
 local Control = Object:extend()
@@ -112,6 +102,7 @@ end
 
 function Control:setFrame(x, y, w, h)
     self.frame = Rect(x, y, w, h)
+    print('set frame', self.frame)
 end
 
 function Control:setEnabled(is_enabled)
@@ -141,6 +132,10 @@ function Control:hit() end
 function Control:draw()
     love.graphics.setColor(unpack(self.color))
     love.graphics.rectangle('fill', unpack(self.frame))
+end
+
+function Control:sizeThatFits(w, h)
+	return w, h
 end
 
 function Control:__tostring()
@@ -286,153 +281,59 @@ function ImageButton:new(opts)
 	local opts = opts or {}
 
 	self.state = 'normal'
-	self.image = opts.image and love.graphics.newImage(opts.image) or nil
-	self.corner_radius = opts.corner_radius or 0
-	self.stencilFunc = nil
+	self.image = {}
 
-	self.drawBorder = function(c)
-		love.graphics.setColor(c.fg)
-		drawRect(self.frame)
+	if opts.image and type(opts.image) == 'table' then
+		for _, state in ipairs({ 'hovered', 'active', 'normal', 'disabled '}) do
+			local image_path = opts.image[state] 
+
+			if image_path then 
+				self.image[state] = love.graphics.newImage(image_path)
+			end
+		end
 	end
-end
 
-function ImageButton:setFrame(x, y, w, h)
-	Control.setFrame(self, x, y, w, h)
-
-	self.stencilFunc = getStencilFunc(self.frame, self.corner_radius)
+	self.font = parseFont(opts.font)
+	self.text_size = getTextSize(self.text or '', self.font)
 end
 
 function ImageButton:draw()
 	local c = getColorsForState(self.state)
 
 	local x, y, w, h = self.frame:unpack()
-	local r = self.corner_radius
-
-	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', x, y, w, h, r, r)
-
-	-- now we can use the color for drawing
-	love.graphics.setColor(c.fg)
 
 	-- draw the image
-	if self.image then
-		if self.stencilFunc then
-			love.graphics.stencil(self.stencilFunc)
-			love.graphics.setStencilTest('greater', 0)
-		end
-
-		local iw, ih = self.image:getDimensions()
+	local image = self.image[self.state]
+	if image then
+		love.graphics.setColor(1.0, 1.0, 1.0)
+		local iw, ih = image:getDimensions()
 		local ox = (iw - self.frame.w) / 2
 		local oy = (ih - self.frame.h) / 2
-		love.graphics.draw(self.image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
-
-		love.graphics.setStencilTest()
+		love.graphics.draw(image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
 	end
 
-	drawRect(self.frame, self.corner_radius)
+	love.graphics.setColor(c.fg)
+	love.graphics.setFont(self.font)
+	love.graphics.printf(
+		'ABC', 
+		self.font,
+		mfloor(x),
+		mfloor(y + (self.frame.h - self.text_size.h) / 2),
+		self.frame.w,
+		'center'
+	)	
+end
+
+function ImageButton:sizeThatFits(w, h)
+	local image = self.image[self.state]
+
+	if image then return image:getDimensions() end
+
+	return w, h
 end
 
 function ImageButton:__tostring()
 	return F.describe('ImageButton', self)
-end
-
---[[ SCROLL VIEW ]]--
-
-local ScrollView = Control:extend()
-
-ScrollView.BUTTON_SIZE = 24
-ScrollView.SCROLL_SPEED = 100
-
-function ScrollView:new(...)
-	Control.new(self)
-
-	self.btn_up = ImageButton({ image = 'composer/assets/arrow_up.png' })
-	self.btn_dn = ImageButton({ image = 'composer/assets/arrow_dn.png' })
-	self.scroller = ImageButton({ image = 'composer/assets/scroller.png' })
-
-	self.btn_up:setEnabled(false)
-	self.btn_dn:setEnabled(false)
-	self.scroller:setEnabled(false)
-
-	self.btn_up.drawBorder = function() end
-	self.btn_dn.drawBorder = function() end
-	self.scroller.drawBorder = function() end
-
-	self.content_y = 0
-	self.content_h = 0
-end
-
-function ScrollView:setFrame(x, y, w, h)
-	Control.setFrame(self, x, y, w, h)
-
-	local control_x = x + w - ScrollView.BUTTON_SIZE
-	local control_s = ScrollView.BUTTON_SIZE
-
-	local line_w = love.graphics:getLineWidth()
-
-	self.btn_up:setFrame(control_x, y, control_s, control_s)
-	self.btn_dn:setFrame(control_x, y + h - control_s, control_s, control_s)
-	self.scroller:setFrame(control_x, y + control_s - line_w, control_s, control_s)
-end
-
-function ScrollView:setContentView(content_view)
-	if not content_view then return end
-
-	local _, h = content_view:sizeThatFits(self.frame.w, math.huge)
-	self.content_y = 0
-	self.content_h = h
-end
-
-function ScrollView:update(dt)
-	Control.update(self, dt)
-
-	self.btn_up:update(dt)
-	self.btn_dn:update(dt)
-	self.scroller:update(dt)
-end
-
-function ScrollView:draw()
-	local c = getColorsForState(self.state)
-	
-	local line_w = love.graphics.getLineWidth()
-	local line_x = self.frame:maxX() - ScrollView.BUTTON_SIZE + line_w / 2
-
-	self.btn_up:draw()
-	self.btn_dn:draw()
-
-	-- draw seperator between up & down buttons and scroll area
-	love.graphics.setColor(c.fg)
-	for _, y in ipairs({ 
-		self.btn_up.frame:maxY() - line_w / 2, 
-		self.btn_dn.frame.y + line_w / 2 
-	}) do
-		love.graphics.line(line_x, y, line_x + ScrollView.BUTTON_SIZE - line_w, y)
-	end
-
-	-- draw scroller so scroller border always appears on top
-	if self.content_h > self.frame:maxY() then
-		self.scroller:draw()
-		drawRect(self.scroller.frame)
-	end
-
-	-- draw border between content area and scroll area
-	love.graphics.setColor(c.fg)
-	love.graphics.line(
-		line_x, 
-		self.frame.y + line_w / 2, 
-		line_x, 
-		self.frame:maxY() - line_w / 2
-	)
-
-	drawRect(self.btn_up.frame)
-	drawRect(self.btn_dn.frame)
-
-	-- draw outer border
-	drawRect(self.frame)
-end
-
-function ScrollView:__tostring()
-	return F.describe('ScrollView', self)
 end
 
 --[[ MODULE ]]--
@@ -442,6 +343,5 @@ return {
     Label = Label,
     Button = Button,
     ImageButton = ImageButton,
-    ScrollView = ScrollView,
     Checkbox = Checkbox,
 }

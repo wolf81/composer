@@ -18,7 +18,6 @@ local CONTROL_IMPORTS = [[
 local Button = controls.Button
 local Label = controls.Label
 local ImageButton = controls.ImageButton
-local ScrollView = controls.ScrollView
 local Checkbox = controls.Checkbox
 ]]
 

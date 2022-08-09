@@ -17,6 +17,7 @@ function Dummy:draw() end
 function Dummy:update(dt) end
 function Dummy:layoutChildren() end
 function Dummy:setFrame() end
+function Dummy:sizeThatFits(w, h) return w, h end
 function Dummy:__tostring() return F.describe('Dummy', self) end
 
 function Cols:new(...)
@@ -203,6 +204,7 @@ function Col:layoutChildren()
 		else
 			-- either Control or Dummy
 			local x, y, w, h = self.frame:unpack()
+			local w, h = self.child:sizeThatFits(w, h)
 			self.child:setFrame(x, y, w, h)
 		end
 	end
@@ -222,7 +224,8 @@ function Row:layoutChildren()
 		else
 			-- either Control or Dummy
 			local x, y, w, h = self.frame:unpack()
-			self.child:setFrame(x, y, w, h)			
+			local w, h = self.child:sizeThatFits(w, h)
+			self.child:setFrame(x, y, w, h)
 		end
 	end
 end
