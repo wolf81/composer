@@ -16,7 +16,11 @@ local function makeCheckbox()
     return Checkbox { corner_radius = 3, checked = true }
 end
 
-return Layout(Margin(10), Rows {
+local function makeSlider()
+    return Slider { corner_radius = 3 }
+end
+
+return Layout(Margin(10), Rows(Spacing(10), {
     Row(),
     Row(40, Cols(Spacing(10), {
         Col(),
@@ -26,5 +30,10 @@ return Layout(Margin(10), Rows {
         Col(40, makeCheckbox()),
         Col(),
     })),
+    Row(40, Cols {
+        Col(),
+        Col(100, makeSlider()),
+        Col(),
+    }),
     Row(),
-})
+}))

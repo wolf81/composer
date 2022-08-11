@@ -318,6 +318,42 @@ function ImageButton:__tostring()
 	return F.describe('ImageButton', self)
 end
 
+--[[ SLIDER ]]--
+
+local Slider = Control:extend()
+Slider.BAR_HEIGHT = 10
+Slider.KNOB_HEIGHT = 30
+
+function Slider:new(opts)
+	Control.new(self)
+
+	local opts = opts or {}
+
+	self.corner_radius = opts.corner_radius or 0
+end
+
+function Slider:update(dt)
+	Control.update(self, dt)
+end
+
+function Slider:draw()
+	local c = getColorsForState(self.state)
+
+	local x, y, w, h = self.frame:unpack()
+	local r = self.corner_radius
+
+	love.graphics.setColor(c.bg)
+	love.graphics.rectangle('fill', x, y, w, h, r, r)
+
+	love.graphics.setColor(c.fg)
+	love.graphics.rectangle('line', x, y, w, h, r, r)
+
+end
+
+function Slider:__tostring()
+	return F.describe('Slider', self)
+end
+
 --[[ MODULE ]]--
 
 return {
@@ -326,4 +362,5 @@ return {
     Button = Button,
     ImageButton = ImageButton,
     Checkbox = Checkbox,
+    Slider = Slider,
 }
