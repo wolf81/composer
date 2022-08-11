@@ -336,10 +336,25 @@ function Slider:new(opts)
 	local opts = opts or {}
 
 	self.corner_radius = opts.corner_radius or 0
+
+	self.min = opts.min or 0
+	self.max = opts.max or 10
+	self.step = (self.max - self.min) / 10
+	self.value = opts.value or 3
 end
 
 function Slider:update(dt)
 	Control.update(self, dt)
+
+	if self.state == 'active' then
+		local m_x, m_y = core.getMousePosition()
+
+		local x = m_x - self.frame.x
+		local v = x / self.frame.w * self.step
+		self.value = v
+		print(v, self.step)
+
+	end
 end
 
 function Slider:draw()
@@ -349,13 +364,13 @@ function Slider:draw()
 	local r = self.corner_radius
 
 	local bar_y = y + (h - Slider.BAR_HEIGHT) / 2
+	local bar_w = w / (self.max - self.min) * self.value
 
 	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', x, bar_y, w, Slider.BAR_HEIGHT, r, r)
+	love.graphics.rectangle('fill', x, bar_y, bar_w, Slider.BAR_HEIGHT, r, r)
 
 	love.graphics.setColor(c.fg)
 	love.graphics.rectangle('line', x, bar_y, w, Slider.BAR_HEIGHT, r, r)
-
 end
 
 function Slider:__tostring()
