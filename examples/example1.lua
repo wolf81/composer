@@ -32,7 +32,7 @@ return Layout(Margin(10), Rows(Spacing(10), {
     })),
     Row(40, Cols {
         Col(),
-        Col(100, makeSlider()),
+        Col(210, makeSlider()),
         Col(),
     }),
     Row(),

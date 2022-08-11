@@ -179,6 +179,8 @@ end
 
 local Button = Control:extend()
 
+Button.TEXT_VERTICAL_PADDING = 10
+
 function Button:new(opts)
 	Control.new(self)
 
@@ -214,6 +216,10 @@ function Button:draw()
 		mceil(self.text_size.w / 2), 
 		mceil(self.text_size.h / 2)
 	)
+end
+
+function Button:sizeThatFits(w, h)
+	return w, self.text_size.h + Button.TEXT_VERTICAL_PADDING * 2
 end
 
 function Button:__tostring()
@@ -342,16 +348,22 @@ function Slider:draw()
 	local x, y, w, h = self.frame:unpack()
 	local r = self.corner_radius
 
+	local bar_y = y + (h - Slider.BAR_HEIGHT) / 2
+
 	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', x, y, w, h, r, r)
+	love.graphics.rectangle('fill', x, bar_y, w, Slider.BAR_HEIGHT, r, r)
 
 	love.graphics.setColor(c.fg)
-	love.graphics.rectangle('line', x, y, w, h, r, r)
+	love.graphics.rectangle('line', x, bar_y, w, Slider.BAR_HEIGHT, r, r)
 
 end
 
 function Slider:__tostring()
 	return F.describe('Slider', self)
+end
+
+function Slider:sizeThatFits(w, h)
+	return w, Slider.KNOB_HEIGHT
 end
 
 --[[ MODULE ]]--
