@@ -2,6 +2,7 @@ local PATH = (...):match('(.-)[^%.]+$')
 local Object = require(PATH .. 'classic')
 local F = require(PATH .. 'functions')
 local Theme = require(PATH .. 'theme')
+local core = require (PATH .. 'core')
 
 local mfloor, mceil, mmax = math.floor, math.ceil, math.max
 
@@ -129,10 +130,10 @@ end
 function Control:update(dt)
 	if self.state == 'disabled' then return end
 
-	local m_x, m_y = love.mouse.getPosition()
+	local m_x, m_y = core.getMousePosition()
 	local next_state = self.frame:containsPoint(m_x, m_y) and 'hovered' or 'normal'
 
-	if next_state == 'hovered' and love.mouse.isDown(1) then
+	if next_state == 'hovered' and core.isMouseButtonDown() then
 		next_state = 'active'
 	end	
 
@@ -253,8 +254,6 @@ function Checkbox:hit()
 	if self.state == 'disabled' then return end
 
 	self.checked = not self.checked
-
-	self.state = self.checked and 'active' or 'normal'
 end
 
 function Checkbox:draw()
@@ -262,19 +261,23 @@ function Checkbox:draw()
 
 	local x, y, w, h = self.frame:unpack()
 
+	-- for the checkbox, the active state contains only the checkmark image, so
+	-- when in active state, use normal image for background
+	local state = self.state == 'active' and 'normal' or self.state
+
 	-- draw the image
-	local image = self.image[self.state]
-
-	if self.state ~= 'disabled' then
-		if self.checked then image = self.image['active'] end
-	end
-
+	local image = self.image[state]
 	if image then
 		love.graphics.setColor(1.0, 1.0, 1.0)
 		local iw, ih = image:getDimensions()
 		local ox = (iw - self.frame.w) / 2
 		local oy = (ih - self.frame.h) / 2
 		love.graphics.draw(image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
+	end
+
+	-- if checked, draw active image on top of background image
+	if self.checked then
+		love.graphics.draw(self.image['active'], self.frame.x, self.frame.y, 0, 1, 1, ox, oy)
 	end
 end
 

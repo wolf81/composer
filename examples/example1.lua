@@ -3,9 +3,9 @@
 local function makeButton(title)
     return ImageButton {
         image = {
-            normal = 'assets/btn_gray_normal.png',
-            hovered = 'assets/btn_gray_hovered.png',            
-            active = 'assets/btn_gray_hovered.png',            
+            normal = 'assets/btn_brown_normal.png',
+            hovered = 'assets/btn_brown_normal.png',
+            active = 'assets/btn_brown_active.png',            
         },
         text = title,
         font = { 12 },
@@ -17,7 +17,7 @@ local function makeCheckbox()
         image = {
             normal = 'assets/checkbox_normal.png',
             hovered = 'assets/checkbox_normal.png',
-            active = 'assets/checkbox_active.png',
+            active = 'assets/checkbox_check.png',
         }
     }
 end
@@ -26,9 +26,9 @@ return Layout(Margin(10), Rows {
     Row(),
     Row(300, Cols(Spacing(10), {
         Col(),
-        Col(300, makeButton('BTN')),
-        Col(300, makeButton('BTN')),
-        Col(300, makeCheckbox()),
+        Col(100, makeButton('BTN')),
+        Col(100, makeButton('BTN')),
+        Col(100, makeCheckbox()),
         Col(),
     })),
     Row(),

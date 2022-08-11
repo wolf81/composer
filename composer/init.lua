@@ -1,5 +1,7 @@
 local PATH = (...):gsub('%.init$', '')
 
+local core = require(PATH .. '.core')
+
 local composer = {
 	_VERSION = "0.1.0",
 	_DESCRIPTION = "A simple layout engine.",
@@ -30,5 +32,7 @@ local composer = {
 }
 
 composer.load = require(PATH .. ".loader")
+composer.init = core.init
+composer.updateMouse = core.updateMouse
 
 return composer

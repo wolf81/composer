@@ -8,6 +8,8 @@ local layout = nil
 local window_w = 0
 local window_h = 0
 
+local scale = 2.0
+
 local function updateLayout()
 	local is_debug = true
 
@@ -29,7 +31,7 @@ local function updateLayout()
 end
 
 local function resizeLayout()
-    layout.resize(window_w, window_h)
+    layout.resize(window_w / scale, window_h / scale)
 end
 
 function love.load(args)
@@ -54,6 +56,9 @@ function love.load(args)
     math.randomseed(os.time())
     love.graphics.setLineWidth(2)
 
+    -- required for composer to hook up updates for mouse position
+    composer.init()
+
     -- add custom controls to the layout engine loader
     updateLayout()
 
@@ -64,12 +69,19 @@ function love.load(args)
 end
 
 function love.update(dt)
+    -- we only need to update mouse position manually if scale is not equal to 1
+    composer.updateMouse(
+        love.mouse.getX() / scale, 
+        love.mouse.getY() / scale, 
+        love.mouse.isDown(1)
+    )
+
 	layout.update(dt)
 end
 
 function love.draw()
     love.graphics.push()
-    -- love.graphics.scale(2)
+    love.graphics.scale(scale)
 
 	-- draw white background
 	love.graphics.setColor(0.0, 0.0, 0.0)
