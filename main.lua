@@ -8,7 +8,7 @@ local layout = nil
 local window_w = 0
 local window_h = 0
 
-local scale = 2.0
+local scale = 1.0
 
 local function updateLayout()
 	local is_debug = true

@@ -1,34 +1,29 @@
 -- hovered, active, normal, disabled
 
-local function makeButton(title)
-    return ImageButton {
-        image = {
-            normal = 'assets/btn_brown_normal.png',
-            hovered = 'assets/btn_brown_normal.png',
-            active = 'assets/btn_brown_active.png',            
-        },
+local function makeButton(title, is_enabled)
+    local button = Button {
         text = title,
         font = { 12 },
+        corner_radius = 3,
     }
+
+    button:setEnabled(is_enabled ~= false)
+
+    return button
 end
 
 local function makeCheckbox()
-    return Checkbox {
-        image = {
-            normal = 'assets/checkbox_normal.png',
-            hovered = 'assets/checkbox_normal.png',
-            active = 'assets/checkbox_check.png',
-        }
-    }
+    return Checkbox { corner_radius = 3, checked = true }
 end
 
 return Layout(Margin(10), Rows {
     Row(),
-    Row(300, Cols(Spacing(10), {
+    Row(40, Cols(Spacing(10), {
         Col(),
-        Col(100, makeButton('BTN')),
-        Col(100, makeButton('BTN')),
-        Col(100, makeCheckbox()),
+        Col(80, makeButton('BTN 1')),
+        Col(80, makeButton('BTN 2', false)),
+        Col(80, makeButton('BTN 3')),
+        Col(40, makeCheckbox()),
         Col(),
     })),
     Row(),

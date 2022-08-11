@@ -26,24 +26,6 @@ local getAlignment = function(align)
 	error('invalid alignment, valid values are: ' .. table.concat(alignments, ', '))
 end
 
-local parseImages = function(images)
-	if not images then return {} end
-
-	local image = {}
-
-	if images and type(images) == 'table' then
-		for _, state in ipairs({ 'hovered', 'active', 'normal', 'disabled '}) do
-			local image_path = images[state] 
-
-			if image_path then 
-				image[state] = love.graphics.newImage(image_path)
-			end
-		end
-	end
-
-	return image
-end
-
 local parseFont = function(font_info)
 	local font_size = 16
 	local font_name = nil
@@ -221,6 +203,8 @@ function Button:draw()
 	love.graphics.rectangle('fill', x, y, w, h, r, r)
 
 	love.graphics.setColor(c.fg)
+	love.graphics.rectangle('line', x, y, w, h, r, r)
+
 	love.graphics.setFont(self.font)
 	love.graphics.print(
 		self.text, 
@@ -230,8 +214,6 @@ function Button:draw()
 		mceil(self.text_size.w / 2), 
 		mceil(self.text_size.h / 2)
 	)
-
-	drawRect(self.frame, r)
 end
 
 function Button:__tostring()
@@ -241,13 +223,15 @@ end
 --[[ CHECK BOX ]]--
 
 local Checkbox = Control:extend()
-Checkbox.SIZE = 32
+Checkbox.SIZE = 20
 
 function Checkbox:new(opts)
-	self.image = parseImages(opts.image)
-	self.state = 'normal'
+	Control.new(self)
 
-	self.checked = false
+	local opts = opts or {}
+
+	self.checked = opts.checked == true
+	self.corner_radius = opts.corner_radius or 0
 end
 
 function Checkbox:hit()
@@ -264,29 +248,25 @@ function Checkbox:draw()
 	-- for the checkbox, the active state contains only the checkmark image, so
 	-- when in active state, use normal image for background
 	local state = self.state == 'active' and 'normal' or self.state
+	local r = self.corner_radius
 
-	-- draw the image
-	local image = self.image[state]
-	if image then
-		love.graphics.setColor(1.0, 1.0, 1.0)
-		local iw, ih = image:getDimensions()
-		local ox = (iw - self.frame.w) / 2
-		local oy = (ih - self.frame.h) / 2
-		love.graphics.draw(image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
-	end
+	love.graphics.setColor(c.bg)
+	love.graphics.rectangle('fill', x, y, w, h, r, r)
 
-	-- if checked, draw active image on top of background image
+	love.graphics.setColor(c.fg)
+	love.graphics.rectangle('line', x, y, w, h, r, r)
+
+	-- if checked, draw checkmark
 	if self.checked then
-		love.graphics.draw(self.image['active'], self.frame.x, self.frame.y, 0, 1, 1, ox, oy)
+		local lw = love.graphics.getLineWidth()
+		x, y = self.frame:midXY()
+		local r = Checkbox.SIZE / 2 - lw * 2
+		love.graphics.circle('fill', x, y, r)
 	end
 end
 
 function Checkbox:sizeThatFits(w, h)
-	local image = self.image[self.state]
-
-	if image then return image:getDimensions() end
-
-	return w, h
+	return Checkbox.SIZE, Checkbox.SIZE
 end
 
 function Checkbox:__tostring()
@@ -302,44 +282,34 @@ function ImageButton:new(opts)
 
 	local opts = opts or {}
 
-	self.state = 'normal'
-	self.text = opts.text or ''
-	self.image = parseImages(opts.image)
-	self.font = parseFont(opts.font)
-	self.text_size = getTextSize(self.text, self.font)
+	self.image = opts.image and love.graphics.newImage(opts.image)
+	self.corner_radius = opts.corner_radius or 0
 end
 
 function ImageButton:draw()
 	local c = getColorsForState(self.state)
 
 	local x, y, w, h = self.frame:unpack()
+	local r = self.corner_radius
+
+	love.graphics.setColor(c.bg)
+	love.graphics.rectangle('fill', x, y, w, h, r, r)
+
+	love.graphics.setColor(c.fg)
+	love.graphics.rectangle('line', x, y, w, h, r, r)
 
 	-- draw the image
-	local image = self.image[self.state]
+	local image = self.image
 	if image then
-		love.graphics.setColor(1.0, 1.0, 1.0)
 		local iw, ih = image:getDimensions()
 		local ox = (iw - self.frame.w) / 2
 		local oy = (ih - self.frame.h) / 2
 		love.graphics.draw(image, self.frame.x, self.frame.y, 0, 1, 1, ox, oy)		
 	end
-
-	love.graphics.setColor(c.fg)
-	love.graphics.setFont(self.font)
-	love.graphics.printf(
-		self.text, 
-		self.font,
-		mfloor(x),
-		mfloor(y + (self.frame.h - self.text_size.h) / 2),
-		self.frame.w,
-		'center'
-	)	
 end
 
 function ImageButton:sizeThatFits(w, h)
-	local image = self.image[self.state]
-
-	if image then return image:getDimensions() end
+	if self.image then return self.image:getDimensions() end
 
 	return w, h
 end
