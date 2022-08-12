@@ -3,6 +3,7 @@ local Object = require(PATH .. 'classic')
 local F = require(PATH .. 'functions')
 local Theme = require(PATH .. 'theme')
 local core = require (PATH .. 'core')
+local utf8 = require 'utf8'
 
 local mfloor, mceil, mmax, mmin = math.floor, math.ceil, math.max, math.min
 
@@ -497,6 +498,21 @@ function Input:new(opts)
 	self.align = getAlignment(opts.align)
 	self.font = parseFont(opts.font)
 	self.text_size = getTextSize(self.text, self.font)
+
+	self.cursor = mmax(1, utf8.len(self.text) + 1)
+	-- cursor is position *before* the character (including EOS) i.e. in "hello":
+	--   position 1: |hello
+	--   position 2: h|ello
+	--   ...
+	--   position 6: hello|
+
+	self.cursor_pos = 0
+	if self.cursor > 1 then
+		local s = self.text:sub(1, utf8.offset(self.text, self.cursor) - 1)
+		self.cursor_pos = self.font:getWidth(s)
+	end
+
+	print(self.cursor, self.cursor_pos)
 end
 
 function Input:draw()
@@ -509,10 +525,12 @@ function Input:draw()
 	local r = self.corner_radius
 
 	-- draw fill
+	c = getColorsForState('normal')
 	love.graphics.setColor(c.bg)
 	love.graphics.rectangle('fill', x, y, w, h, r, r)
 
 	-- draw outline
+	c = getColorsForState(self.state)
 	love.graphics.setColor(c.fg)
 	love.graphics.rectangle('line', x, y, w, h, r, r)
 
@@ -522,7 +540,7 @@ function Input:draw()
 	love.graphics.printf(
 		self.text,
 		self.font,
-		self.frame.x + Input.SPACING,
+		mfloor(self.frame.x + Input.SPACING),
 		mfloor(self.frame.y + (self.frame.h - self.text_size.h) / 2),
 		self.frame.w - Input.SPACING * 2,
 		self.align

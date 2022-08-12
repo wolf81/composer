@@ -181,11 +181,10 @@ function Layout:update(dt)
 end
 
 function Layout:draw()
-	local l = love.graphics.getLineWidth()
-
-	love.graphics.setColor(unpack(self.color))
-	local x, y, w, h = self.frame:unpack()
-	love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
+	-- local l = love.graphics.getLineWidth()
+	-- love.graphics.setColor(unpack(self.color))
+	-- local x, y, w, h = self.frame:unpack()
+	-- love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
 
 	self.child:draw()
 end
