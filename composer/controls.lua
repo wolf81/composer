@@ -524,6 +524,11 @@ end
 function Input:update(dt)
 	Control.update(self, dt)
 
+	if self.cursor > 0 then
+		local s = self.text:sub(1, utf8.offset(self.text, self.cursor) - 1)
+		self.cursor_pos = self.font:getWidth(s)
+	end
+
 	local keycode, char = core.getPressedKey()
 
 	if char and char ~= '' then
@@ -543,7 +548,7 @@ function Input:update(dt)
 	end
 
 	if keycode == 'left' then
-		self.cursor = math.max(self.cursor - 1, 0)
+		self.cursor = math.max(self.cursor - 1, 1)
 	elseif keycode == 'right' then
 		self.cursor = math.min(self.cursor + 1, utf8.len(self.text) + 1)
 	elseif keycode == 'home' then
@@ -582,7 +587,28 @@ function Input:draw()
 		mfloor(self.frame.y + (self.frame.h - self.text_size.h) / 2),
 		self.frame.w - Input.SPACING * 2,
 		self.align
-	)		
+	)	
+
+	-- draw cursor
+	if (love.timer.getTime() % 1) > 0.5 then
+		local c = self.text:sub(self.cursor - 1, self.cursor - 1)
+		local ws = self.cursor == 1 and 0 or self.font:getWidth(c)
+
+		if ws == 0 then x = x + Input.SPACING end
+
+		local lw = love.graphics.getLineWidth()
+		local ls = love.graphics.getLineStyle()
+		
+		love.graphics.setLineWidth(1)
+		love.graphics.setLineStyle('rough')
+		love.graphics.line(
+			x + self.cursor_pos + ws / 2, y + (h - self.text_size.h) / 2, 
+			x + self.cursor_pos + ws / 2, y + (h + self.text_size.h) / 2
+		)
+
+		love.graphics.setLineStyle(ls)
+		love.graphics.setLineWidth(lw)
+	end
 end
 
 function Input:__tostring()
