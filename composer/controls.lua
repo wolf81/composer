@@ -364,7 +364,7 @@ function Progress:draw()
 	local x, y, w, h = self.frame:unpack()
 	local r = self.corner_radius
 
-	local bar_y = y + (h - Progress.BAR_HEIGHT) / 2
+	local bar_y = y + mfloor(h - Progress.BAR_HEIGHT) / 2
 	local bar_w = self.value * w
 
 	if self.value > 0 then
@@ -437,7 +437,7 @@ function Slider:draw()
 	local r = self.corner_radius
 
 	local bar_y = y + (h - Slider.BAR_HEIGHT) / 2
-	local bar_step = (w - self.text_size.w) / self.step
+	local bar_step = (w - self.text_size.w - Slider.SPACING) / self.step
 	local bar_w = self.value * bar_step
 
 	-- draw bar fill based on current value
@@ -448,7 +448,7 @@ function Slider:draw()
 
 	-- draw bar outline
 	love.graphics.setColor(c.fg)
-	love.graphics.rectangle('line', x, bar_y, w - self.text_size.w, Slider.BAR_HEIGHT, r, r)
+	love.graphics.rectangle('line', x, bar_y, w - self.text_size.w - Slider.SPACING, Slider.BAR_HEIGHT, r, r)
 
 	-- draw knob
 	c = getColorsForState(self.state)
@@ -467,7 +467,7 @@ function Slider:draw()
 	love.graphics.printf(
 		tostring(self.value),
 		self.font,
-		self.frame:maxX() - self.text_size.w + Slider.SPACING,
+		self.frame:maxX() - self.text_size.w,
 		mfloor(self.frame.y + (self.frame.h - self.text_size.h) / 2),
 		self.frame.w,
 		self.align

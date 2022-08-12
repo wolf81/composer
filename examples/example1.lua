@@ -16,6 +16,10 @@ local function makeCheckbox()
     return Checkbox { corner_radius = 3, checked = true }
 end
 
+local function makeLabel(text)
+    return Label { text = text, font = { 16 }, align = 'left' }
+end
+
 local function makeInput(text)
     return Input { corner_radius = 3, text = text, font = { 20 }, align = 'left' }
 end
@@ -32,12 +36,15 @@ return Layout(Margin(10), Rows(Spacing(10), {
     Row(),
     Row(40, Cols(Spacing(10), {
         Col(),
-        Col(80, makeButton('BTN 1')),
-        Col(80, makeButton('BTN 2', false)),
-        Col(80, makeButton('BTN 3')),
-        Col(40, makeCheckbox()),
+        Col(100, makeButton('BUTTON')),
         Col(),
     })),
+    Row(40, Cols(Spacing(10), {
+        Col(),
+        Col(20, makeCheckbox()),
+        Col(100, makeLabel('Label')),
+        Col(),
+    })),    
     Row(40, Cols {
         Col(),
         Col(210, makeSlider()),

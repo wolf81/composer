@@ -1,4 +1,4 @@
-local mouse = { x = 0, y = 0, is_down = false }
+local mouse = { x = 0, y = 0, is_down = is_down }
 
 local function updateMouse(x, y, is_down)
     mouse = { x = x, y = y, is_down = is_down }
