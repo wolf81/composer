@@ -19,6 +19,11 @@ local getTextSize = function(text, font)
 	return { w = font:getWidth(text), h = font:getHeight() }
 end
 
+local function split(str, pos)
+	local offset = utf8.offset(str, pos) or 0
+	return str:sub(1, offset - 1), str:sub(offset)
+end
+
 local getAlignment = function(align)
 	local alignments = { 'center', 'left', 'right' }
 
@@ -498,6 +503,7 @@ function Input:new(opts)
 	self.align = getAlignment(opts.align)
 	self.font = parseFont(opts.font)
 	self.text_size = getTextSize(self.text, self.font)
+	-- self.text_draw_offset = 0
 
 	self.cursor = mmax(1, utf8.len(self.text) + 1)
 	-- cursor is position *before* the character (including EOS) i.e. in "hello":
@@ -513,6 +519,38 @@ function Input:new(opts)
 	end
 
 	print(self.cursor, self.cursor_pos)
+end
+
+function Input:update(dt)
+	Control.update(self, dt)
+
+	local keycode, char = core.getPressedKey()
+
+	if char and char ~= '' then
+		local a, b = split(self.text, self.cursor)
+		self.text = table.concat({ a, char, b })
+		self.cursor = self.cursor + utf8.len(char)
+	end
+
+	if keycode == 'backspace' then
+		local a, b = split(self.text, self.cursor)
+		self.text = table.concat({ split(a, utf8.len(a)), b })
+		self.cursor = math.max(1, self.cursor - 1)
+	elseif keycode == 'delete' then
+		local a, b = split(self.text, self.cursor)
+		local _, b = split(b, 2)
+		self.text = table.concat({ a, b })
+	end
+
+	if keycode == 'left' then
+		self.cursor = math.max(self.cursor - 1, 0)
+	elseif keycode == 'right' then
+		self.cursor = math.min(self.cursor + 1, utf8.len(self.text) + 1)
+	elseif keycode == 'home' then
+		self.cursor = 0
+	elseif keycode == 'end' then
+		self.cursor = utf8.len(self.text) + 1
+	end
 end
 
 function Input:draw()

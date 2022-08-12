@@ -97,8 +97,8 @@ function love.resize(w, h)
     resizeLayout()
 end
 
-function love.keypressed(key, code)
-	if key == 'g' then
+function love.keypressed(key)
+	if key == 'tab' then
 		updateLayout()
 		
 		local window_w, window_h = love.window.getMode()
