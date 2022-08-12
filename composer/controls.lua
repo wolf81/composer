@@ -339,7 +339,6 @@ function Progress:new(opts)
 	local opts = opts or {}
 
 	self.corner_radius = opts.corner_radius or 0
-
 	self.value = opts.value or 0
 end
 
@@ -391,6 +390,7 @@ local Slider = Control:extend()
 Slider.BAR_HEIGHT = 10
 Slider.KNOB_HEIGHT = 30
 Slider.KNOB_WIDTH = 12
+Slider.SPACING = 10
 
 function Slider:new(opts)
 	Control.new(self)
@@ -403,6 +403,10 @@ function Slider:new(opts)
 	self.max = opts.max or 10
 	self.step = opts.step or 20
 	self.value = opts.value or 0
+	self.font = parseFont(opts.font)
+
+	self.text_size = getTextSize(tostring(self.max), self.font)
+	self.text_size.w = self.text_size.w
 end
 
 function Slider:getValue()
@@ -418,7 +422,8 @@ function Slider:update(dt)
 
 	if self.state == 'active' then
 		local m_x, m_y = core.getMousePosition()
-		self.value = round((m_x - self.frame.x) / self.frame.w * self.step)
+		self.value = round((m_x - self.frame.x) / (self.frame.w - self.text_size.w - Slider.SPACING) * self.step)
+		self.value = math.min(self.value, self.max)
 	end
 end
 
@@ -432,28 +437,41 @@ function Slider:draw()
 	local r = self.corner_radius
 
 	local bar_y = y + (h - Slider.BAR_HEIGHT) / 2
-	local bar_step = w / self.step
+	local bar_step = (w - self.text_size.w) / self.step
 	local bar_w = self.value * bar_step
 
+	-- draw bar fill based on current value
 	if self.value > 0 then
 		love.graphics.setColor(c.bg)
 		love.graphics.rectangle('fill', x, bar_y, bar_w, Slider.BAR_HEIGHT, r, r)
 	end
 
+	-- draw bar outline
 	love.graphics.setColor(c.fg)
-	love.graphics.rectangle('line', x, bar_y, w, Slider.BAR_HEIGHT, r, r)
+	love.graphics.rectangle('line', x, bar_y, w - self.text_size.w, Slider.BAR_HEIGHT, r, r)
 
-	if self.state == 'active' then
-		c = getColorsForState(self.state)
+	-- draw knob
+	c = getColorsForState(self.state)
+	local knob_x = x + bar_w - Slider.KNOB_WIDTH / 2	
+	love.graphics.setColor(c.bg)
+	love.graphics.rectangle('fill', knob_x, y, Slider.KNOB_WIDTH, h, r, r)
+	love.graphics.setColor(c.fg)
+	love.graphics.rectangle('line', knob_x, y, Slider.KNOB_WIDTH, h, r, r)
 
-		local knob_x = x + bar_w - Slider.KNOB_WIDTH / 2
-
-		love.graphics.setColor(c.bg)
-		love.graphics.rectangle('fill', knob_x, y, Slider.KNOB_WIDTH, h, r, r)
-
-		love.graphics.setColor(c.fg)
-		love.graphics.rectangle('line', knob_x, y, Slider.KNOB_WIDTH, h, r, r)
+	-- draw value on right side
+	if self.state == 'active' or self.state == 'hovered' then
+		c = getColorsForState('normal')
 	end
+	love.graphics.setColor(c.fg)
+	love.graphics.setFont(self.font)
+	love.graphics.printf(
+		tostring(self.value),
+		self.font,
+		self.frame:maxX() - self.text_size.w + Slider.SPACING,
+		mfloor(self.frame.y + (self.frame.h - self.text_size.h) / 2),
+		self.frame.w,
+		self.align
+	)			
 end
 
 function Slider:__tostring()
@@ -461,7 +479,7 @@ function Slider:__tostring()
 end
 
 function Slider:sizeThatFits(w, h)
-	return w, Slider.KNOB_HEIGHT
+	return w, mmax(Slider.KNOB_HEIGHT, self.text_size.h)
 end
 
 --[[ MODULE ]]--
