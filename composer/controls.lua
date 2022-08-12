@@ -359,7 +359,7 @@ function Progress:update(dt)
 end
 
 function Progress:draw()
-	local c = getColorsForState(self.state)
+	local c = getColorsForState('active')
 
 	local x, y, w, h = self.frame:unpack()
 	local r = self.corner_radius
@@ -372,6 +372,7 @@ function Progress:draw()
 		love.graphics.rectangle('fill', x, bar_y, bar_w, Progress.BAR_HEIGHT, r, r)
 	end
 
+	c = getColorsForState('normal')
 	love.graphics.setColor(c.fg)
 	love.graphics.rectangle('line', x, bar_y, w, Progress.BAR_HEIGHT, r, r)
 end
