@@ -6,6 +6,7 @@ local core = require (PATH .. 'core')
 local utf8 = require 'utf8'
 
 local mfloor, mceil, mmax, mmin = math.floor, math.ceil, math.max, math.min
+local tconcat = table.concat
 
 local getColorsForState = function(state)
 	return Theme[state] or Theme['normal']
@@ -33,7 +34,7 @@ local getAlignment = function(align)
 		if align == alignment then return alignment end
 	end
 
-	error('invalid alignment, valid values are: ' .. table.concat(alignments, ', '))
+	error('invalid alignment, valid values are: ' .. tconcat(alignments, ', '))
 end
 
 local parseFont = function(font_info)
@@ -531,24 +532,24 @@ function Input:update(dt)
 
 	if char and char ~= '' then
 		local a, b = split(self.text, self.cursor)
-		self.text = table.concat({ a, char, b })
+		self.text = tconcat({ a, char, b })
 		self.cursor = self.cursor + utf8.len(char)
 	end
 
 	if keycode == 'backspace' then
 		local a, b = split(self.text, self.cursor)
-		self.text = table.concat({ split(a, utf8.len(a)), b })
-		self.cursor = math.max(1, self.cursor - 1)
+		self.text = tconcat({ split(a, utf8.len(a)), b })
+		self.cursor = mmax(1, self.cursor - 1)
 	elseif keycode == 'delete' then
 		local a, b = split(self.text, self.cursor)
 		local _, b = split(b, 2)
-		self.text = table.concat({ a, b })
+		self.text = tconcat({ a, b })
 	end
 
 	if keycode == 'left' then
-		self.cursor = math.max(self.cursor - 1, 1)
+		self.cursor = mmax(self.cursor - 1, 1)
 	elseif keycode == 'right' then
-		self.cursor = math.min(self.cursor + 1, utf8.len(self.text) + 1)
+		self.cursor = mmin(self.cursor + 1, utf8.len(self.text) + 1)
 	elseif keycode == 'home' then
 		self.cursor = 0
 	elseif keycode == 'end' then
@@ -607,7 +608,6 @@ function Input:draw()
 			x + self.cursor_pos + ws / 2, y + (h - self.text_size.h) / 2, 
 			x + self.cursor_pos + ws / 2, y + (h + self.text_size.h) / 2
 		)
-
 		love.graphics.setLineStyle(ls)
 		love.graphics.setLineWidth(lw)
 	end
