@@ -328,6 +328,63 @@ function ImageButton:__tostring()
 	return F.describe('ImageButton', self)
 end
 
+--[[ PROGRESS ]]--
+
+local Progress = Control:extend()
+Progress.BAR_HEIGHT = 20
+
+function Progress:new(opts)
+	Control.new(self)
+
+	local opts = opts or {}
+
+	self.corner_radius = opts.corner_radius or 0
+
+	self.value = opts.value or 0
+end
+
+function Progress:setValue(x)
+	self.value = mmin(mmax(x, 0), 1.0)
+end
+
+function Progress:getValue()
+	return self.value
+end
+
+function Progress:update(dt)
+	Control.update(self, dt)
+
+	if self.state == 'active' then
+		self.state = 'hovered'
+	end
+end
+
+function Progress:draw()
+	local c = getColorsForState(self.state)
+
+	local x, y, w, h = self.frame:unpack()
+	local r = self.corner_radius
+
+	local bar_y = y + (h - Progress.BAR_HEIGHT) / 2
+	local bar_w = self.value * w
+
+	if self.value > 0 then
+		love.graphics.setColor(c.bg)
+		love.graphics.rectangle('fill', x, bar_y, bar_w, Progress.BAR_HEIGHT, r, r)
+	end
+
+	love.graphics.setColor(c.fg)
+	love.graphics.rectangle('line', x, bar_y, w, Progress.BAR_HEIGHT, r, r)
+end
+
+function Progress:__tostring()
+	return F.describe('Progress', self)
+end
+
+function Progress:sizeThatFits(w, h)
+	return w, Progress.BAR_HEIGHT
+end
+
 --[[ SLIDER ]]--
 
 local Slider = Control:extend()
@@ -415,5 +472,6 @@ return {
     Button = Button,
     ImageButton = ImageButton,
     Checkbox = Checkbox,
+    Progress = Progress,
     Slider = Slider,
 }

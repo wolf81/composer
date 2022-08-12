@@ -20,6 +20,10 @@ local function makeSlider()
     return Slider { corner_radius = 3, value = 3, step = 10 }
 end
 
+local function makeProgress()
+    return Progress { corner_radius = 3, value = 0.1 }
+end
+
 return Layout(Margin(10), Rows(Spacing(10), {
     Row(),
     Row(40, Cols(Spacing(10), {
@@ -33,6 +37,11 @@ return Layout(Margin(10), Rows(Spacing(10), {
     Row(40, Cols {
         Col(),
         Col(210, makeSlider()),
+        Col(),
+    }),
+    Row(40, Cols {
+        Col(),
+        Col(210, makeProgress()),
         Col(),
     }),
     Row(),

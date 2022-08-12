@@ -20,6 +20,7 @@ local Label = controls.Label
 local ImageButton = controls.ImageButton
 local Checkbox = controls.Checkbox
 local Slider = controls.Slider
+local Progress = controls.Progress
 ]]
 
 -- this pattern matches the full component directive with square hooks
