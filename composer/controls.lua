@@ -354,8 +354,8 @@ end
 function Progress:update(dt)
 	Control.update(self, dt)
 
-	if self.state == 'active' then
-		self.state = 'hovered'
+	if self.state == 'active' or self.state == 'hovered' then
+		self.state = 'normal'
 	end
 end
 
