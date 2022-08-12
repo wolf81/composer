@@ -399,7 +399,6 @@ function Slider:new(opts)
 	local opts = opts or {}
 
 	self.corner_radius = opts.corner_radius or 0
-
 	self.min = opts.min or 0
 	self.max = opts.max or 10
 	self.step = opts.step or 20
@@ -483,6 +482,61 @@ function Slider:sizeThatFits(w, h)
 	return w, mmax(Slider.KNOB_HEIGHT, self.text_size.h)
 end
 
+--[[ INPUT ]]--
+
+local Input = Control:extend()
+Input.SPACING = 5
+
+function Input:new(opts)
+	Control.new(self)
+
+	local opts = opts or {}
+
+	self.corner_radius = opts.corner_radius or 0
+	self.text = opts.text or ''
+	self.align = getAlignment(opts.align)
+	self.font = parseFont(opts.font)
+	self.text_size = getTextSize(self.text, self.font)
+end
+
+function Input:draw()
+	local c = (self.state == 'active' and 
+		getColorsForState('hovered') or 
+		getColorsForState(self.state)
+	)
+
+	local x, y, w, h = self.frame:unpack()
+	local r = self.corner_radius
+
+	-- draw fill
+	love.graphics.setColor(c.bg)
+	love.graphics.rectangle('fill', x, y, w, h, r, r)
+
+	-- draw outline
+	love.graphics.setColor(c.fg)
+	love.graphics.rectangle('line', x, y, w, h, r, r)
+
+	-- draw text
+	love.graphics.setColor(c.fg)
+	love.graphics.setFont(self.font)
+	love.graphics.printf(
+		self.text,
+		self.font,
+		self.frame.x + Input.SPACING,
+		mfloor(self.frame.y + (self.frame.h - self.text_size.h) / 2),
+		self.frame.w - Input.SPACING * 2,
+		self.align
+	)		
+end
+
+function Input:__tostring()
+	return F.describe('Input', self)
+end
+
+function Input:sizeThatFits(w, h)
+	return w, self.text_size.h + Input.SPACING * 2
+end
+
 --[[ MODULE ]]--
 
 return {
@@ -493,4 +547,5 @@ return {
     Checkbox = Checkbox,
     Progress = Progress,
     Slider = Slider,
+    Input = Input,
 }

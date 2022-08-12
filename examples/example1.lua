@@ -16,6 +16,10 @@ local function makeCheckbox()
     return Checkbox { corner_radius = 3, checked = true }
 end
 
+local function makeInput(text)
+    return Input { corner_radius = 3, text = text, font = { 20 }, align = 'left' }
+end
+
 local function makeSlider()
     return Slider { corner_radius = 3, value = 3, step = 10 }
 end
@@ -37,6 +41,11 @@ return Layout(Margin(10), Rows(Spacing(10), {
     Row(40, Cols {
         Col(),
         Col(210, makeSlider()),
+        Col(),
+    }),
+    Row(40, Cols {
+        Col(),
+        Col(210, makeInput('blaat')),
         Col(),
     }),
     Row(40, Cols {
