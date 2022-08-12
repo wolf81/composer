@@ -10,6 +10,10 @@ local getColorsForState = function(state)
 	return Theme[state] or Theme['normal']
 end
 
+local round = function(x)
+	return x >= 0 and mfloor(x + 0.5) or mceil(x - 0.5)
+end
+
 local getTextSize = function(text, font)
 	return { w = font:getWidth(text), h = font:getHeight() }
 end
@@ -339,8 +343,8 @@ function Slider:new(opts)
 
 	self.min = opts.min or 0
 	self.max = opts.max or 10
-	self.step = (self.max - self.min) / 10
-	self.value = opts.value or 3
+	self.step = opts.step or 20
+	self.value = opts.value or 0
 end
 
 function Slider:update(dt)
@@ -348,12 +352,7 @@ function Slider:update(dt)
 
 	if self.state == 'active' then
 		local m_x, m_y = core.getMousePosition()
-
-		local x = m_x - self.frame.x
-		local v = x / self.frame.w * self.step
-		self.value = v
-		print(v, self.step)
-
+		self.value = round((m_x - self.frame.x) / self.frame.w * self.step)
 	end
 end
 
@@ -364,10 +363,13 @@ function Slider:draw()
 	local r = self.corner_radius
 
 	local bar_y = y + (h - Slider.BAR_HEIGHT) / 2
-	local bar_w = w / (self.max - self.min) * self.value
+	local bar_step = w / self.step
+	local bar_w = self.value * bar_step
 
-	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', x, bar_y, bar_w, Slider.BAR_HEIGHT, r, r)
+	if self.value > 0 then
+		love.graphics.setColor(c.bg)
+		love.graphics.rectangle('fill', x, bar_y, bar_w, Slider.BAR_HEIGHT, r, r)
+	end
 
 	love.graphics.setColor(c.fg)
 	love.graphics.rectangle('line', x, bar_y, w, Slider.BAR_HEIGHT, r, r)
