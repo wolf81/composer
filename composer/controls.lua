@@ -4,7 +4,7 @@ local F = require(PATH .. 'functions')
 local Theme = require(PATH .. 'theme')
 local core = require (PATH .. 'core')
 
-local mfloor, mceil, mmax = math.floor, math.ceil, math.max
+local mfloor, mceil, mmax, mmin = math.floor, math.ceil, math.max, math.min
 
 local getColorsForState = function(state)
 	return Theme[state] or Theme['normal']
@@ -333,6 +333,7 @@ end
 local Slider = Control:extend()
 Slider.BAR_HEIGHT = 10
 Slider.KNOB_HEIGHT = 30
+Slider.KNOB_WIDTH = 12
 
 function Slider:new(opts)
 	Control.new(self)
@@ -347,6 +348,14 @@ function Slider:new(opts)
 	self.value = opts.value or 0
 end
 
+function Slider:getValue()
+	return self.min + self.value
+end
+
+function Slider:setValue(x)
+	self.value = mmin(mmax(x, self.min), self.max) - self.min
+end
+
 function Slider:update(dt)
 	Control.update(self, dt)
 
@@ -357,7 +366,10 @@ function Slider:update(dt)
 end
 
 function Slider:draw()
-	local c = getColorsForState(self.state)
+	local c = (self.state == 'active' and 
+		getColorsForState('hovered') or 
+		getColorsForState(self.state)
+	)
 
 	local x, y, w, h = self.frame:unpack()
 	local r = self.corner_radius
@@ -373,6 +385,18 @@ function Slider:draw()
 
 	love.graphics.setColor(c.fg)
 	love.graphics.rectangle('line', x, bar_y, w, Slider.BAR_HEIGHT, r, r)
+
+	if self.state == 'active' then
+		c = getColorsForState(self.state)
+
+		local knob_x = x + bar_w - Slider.KNOB_WIDTH / 2
+
+		love.graphics.setColor(c.bg)
+		love.graphics.rectangle('fill', knob_x, y, Slider.KNOB_WIDTH, h, r, r)
+
+		love.graphics.setColor(c.fg)
+		love.graphics.rectangle('line', knob_x, y, Slider.KNOB_WIDTH, h, r, r)
+	end
 end
 
 function Slider:__tostring()
