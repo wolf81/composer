@@ -503,9 +503,9 @@ function Input:new(opts)
 	self.align = getAlignment(opts.align)
 	self.font = parseFont(opts.font)
 	self.text_size = getTextSize(self.text, self.font)
-	-- self.text_draw_offset = 0
 
 	self.cursor = mmax(1, utf8.len(self.text) + 1)
+	self.draw_offset = 0
 	-- cursor is position *before* the character (including EOS) i.e. in "hello":
 	--   position 1: |hello
 	--   position 2: h|ello
@@ -517,8 +517,6 @@ function Input:new(opts)
 		local s = self.text:sub(1, utf8.offset(self.text, self.cursor) - 1)
 		self.cursor_pos = self.font:getWidth(s)
 	end
-
-	print(self.cursor, self.cursor_pos)
 end
 
 function Input:update(dt)
@@ -577,6 +575,10 @@ function Input:draw()
 	love.graphics.setColor(c.fg)
 	love.graphics.rectangle('line', x, y, w, h, r, r)
 
+	-- set scissors
+	local sx, sy, sw, sh = love.graphics.getScissor()
+	love.graphics.setScissor(x - 1, y, w + 2, h)
+
 	-- draw text
 	love.graphics.setColor(c.fg)
 	love.graphics.setFont(self.font)
@@ -609,6 +611,8 @@ function Input:draw()
 		love.graphics.setLineStyle(ls)
 		love.graphics.setLineWidth(lw)
 	end
+
+	love.graphics.setScissor()
 end
 
 function Input:__tostring()
