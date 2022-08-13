@@ -57,10 +57,10 @@ function Cols:layoutChildren()
 	local x, y, w, h = self.frame.x, self.frame.y, self.frame.w, self.frame.h
 	local flex_w = math.floor((w - fixed_w) / flex_cols)
 
-	for _, child in ipairs(self.children) do
-		local w = child.size == math.huge and flex_w or child.size
-		child.frame = Rect(x, y, w, h)
-		child:layoutChildren()
+	for _, col in ipairs(self.children) do
+		local w = col.size == math.huge and flex_w or col.size
+		col.frame = Rect(x, y, w, h)
+		col:layoutChildren()
 		x = x + w + self.spacing.v
 	end
 end
@@ -118,10 +118,10 @@ function Rows:layoutChildren()
 	local x, y, w, h = self.frame.x, self.frame.y, self.frame.w, self.frame.h
 	local flex_h = math.floor((h - fixed_h) / flex_rows)
 
-	for _, child in ipairs(self.children) do
-		local h = child.size == math.huge and flex_h or child.size
-		child.frame = Rect(x, y, w, h)
-		child:layoutChildren()
+	for _, row in ipairs(self.children) do
+		local h = row.size == math.huge and flex_h or row.size
+		row.frame = Rect(x, y, w, h)
+		row:layoutChildren()
 		y = y + h + self.spacing.v
 	end
 end
