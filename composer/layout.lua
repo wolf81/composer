@@ -50,7 +50,12 @@ function Cols:layoutChildren()
 		if col.size ~= math.huge then
 			fixed_w = fixed_w + col.size
 		else
-			flex_cols = flex_cols + 1
+			if col.child and not col.child:is(Dummy) then
+				col.size = col.child:sizeThatFits(math.huge, math.huge)
+				fixed_w = fixed_w + col.size
+			else
+				flex_cols = flex_cols + 1
+			end
 		end
 	end
 
@@ -181,10 +186,10 @@ function Layout:update(dt)
 end
 
 function Layout:draw()
-	-- local l = love.graphics.getLineWidth()
-	-- love.graphics.setColor(unpack(self.color))
-	-- local x, y, w, h = self.frame:unpack()
-	-- love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
+	local l = love.graphics.getLineWidth()
+	love.graphics.setColor(unpack(self.color))
+	local x, y, w, h = self.frame:unpack()
+	love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
 
 	self.child:draw()
 end

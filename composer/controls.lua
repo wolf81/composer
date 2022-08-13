@@ -183,6 +183,12 @@ function Label:draw()
 	)		
 end
 
+function Label:sizeThatFits(w, h)
+	if w == math.huge then w = self.text_size.w end
+	if h == math.huge then h = self.text_size.h end
+	return w, h
+end
+
 function Label:__tostring()
 	return F.describe('Label', self)
 end
@@ -191,7 +197,7 @@ end
 
 local Button = Control:extend()
 
-Button.TEXT_VERTICAL_PADDING = 10
+Button.PADDING = 10
 
 function Button:new(opts)
 	Control.new(self)
@@ -231,7 +237,9 @@ function Button:draw()
 end
 
 function Button:sizeThatFits(w, h)
-	return w, self.text_size.h + Button.TEXT_VERTICAL_PADDING * 2
+	if w == math.huge then w = self.text_size.w + Button.PADDING * 2 end
+	if h == math.huge then h = self.text_size.h + Button.PADDING * 2 end
+	return w, h
 end
 
 function Button:__tostring()
@@ -268,23 +276,27 @@ function Checkbox:draw()
 	local state = self.state == 'active' and 'normal' or self.state
 	local r = self.corner_radius
 
+	local dx, dy = (w - Checkbox.SIZE) / 2, (h - Checkbox.SIZE) / 2
+
 	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', x, y, w, h, r, r)
+	love.graphics.rectangle('fill', x + dx, y + dy, Checkbox.SIZE, Checkbox.SIZE, r, r)
 
 	love.graphics.setColor(c.fg)
-	love.graphics.rectangle('line', x, y, w, h, r, r)
+	love.graphics.rectangle('line', x + dx, y + dy, Checkbox.SIZE, Checkbox.SIZE, r, r)
 
 	-- if checked, draw checkmark
 	if self.checked then
 		local lw = love.graphics.getLineWidth()
-		x, y = self.frame:midXY()
+		local x, y = self.frame:midXY()
 		local r = Checkbox.SIZE / 2 - lw * 2
 		love.graphics.circle('fill', x, y, r)
 	end
 end
 
 function Checkbox:sizeThatFits(w, h)
-	return Checkbox.SIZE, Checkbox.SIZE
+	if w == math.huge then w = Checkbox.SIZE end
+	if h == math.huge then h = Checkbox.SIZE end
+	return w, h	
 end
 
 function Checkbox:__tostring()
@@ -327,9 +339,10 @@ function ImageButton:draw()
 end
 
 function ImageButton:sizeThatFits(w, h)
-	if self.image then return self.image:getDimensions() end
-
-	return w, h
+	local img_w, img_h = self.image:getDimensions()
+	if w == math.huge then w = img_w end
+	if h == math.huge then h = img_h end
+	return w, h	
 end
 
 function ImageButton:__tostring()
@@ -340,6 +353,7 @@ end
 
 local Progress = Control:extend()
 Progress.BAR_HEIGHT = 20
+Progress.DEFAULT_WIDTH = 150
 
 function Progress:new(opts)
 	Control.new(self)
@@ -400,6 +414,7 @@ Slider.BAR_HEIGHT = 10
 Slider.KNOB_HEIGHT = 30
 Slider.KNOB_WIDTH = 12
 Slider.SPACING = 10
+Slider.DEFAULT_WIDTH = 150
 
 function Slider:new(opts)
 	Control.new(self)
@@ -482,18 +497,21 @@ function Slider:draw()
 	)			
 end
 
-function Slider:__tostring()
-	return F.describe('Slider', self)
+function Slider:sizeThatFits(w, h)
+	if w == math.huge then w = Slider.DEFAULT_WIDTH end
+	if h == math.huge then h = mmax(Slider.KNOB_HEIGHT, self.text_size.h) end
+	return w, h	
 end
 
-function Slider:sizeThatFits(w, h)
-	return w, mmax(Slider.KNOB_HEIGHT, self.text_size.h)
+function Slider:__tostring()
+	return F.describe('Slider', self)
 end
 
 --[[ INPUT ]]--
 
 local Input = Control:extend()
 Input.SPACING = 5
+Input.DEFAULT_WIDTH = 150
 
 function Input:new(opts)
 	Control.new(self)
@@ -628,12 +646,14 @@ function Input:draw()
 	love.graphics.setScissor()
 end
 
-function Input:__tostring()
-	return F.describe('Input', self)
+function Input:sizeThatFits(w, h)
+	if w == math.huge then w = Input.DEFAULT_WIDTH end
+	if h == math.huge then h = self.text_size.h + Input.SPACING * 2 end
+	return w, h	
 end
 
-function Input:sizeThatFits(w, h)
-	return w, self.text_size.h + Input.SPACING * 2
+function Input:__tostring()
+	return F.describe('Input', self)
 end
 
 --[[ MODULE ]]--
