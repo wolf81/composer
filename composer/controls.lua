@@ -20,7 +20,7 @@ local getTextSize = function(text, font)
 	return { w = font:getWidth(text), h = font:getHeight() }
 end
 
-local function split(str, pos)
+local split = function(str, pos)
 	local offset = utf8.offset(str, pos) or 0
 	return str:sub(1, offset - 1), str:sub(offset)
 end
@@ -131,7 +131,8 @@ function Control:update(dt)
 	end	
 
 	if self.state == 'active' and next_state == 'hovered' then
-		self:hit()
+		core.setActive(self)
+		self:hit()		
 	end
 
 	self.state = next_state
@@ -558,21 +559,18 @@ function Input:update(dt)
 end
 
 function Input:draw()
-	local c = (self.state == 'active' and 
-		getColorsForState('hovered') or 
-		getColorsForState(self.state)
-	)
-
 	local x, y, w, h = self.frame:unpack()
 	local r = self.corner_radius
 
 	-- draw fill
-	c = getColorsForState('normal')
+	local c = getColorsForState('normal')
 	love.graphics.setColor(c.bg)
 	love.graphics.rectangle('fill', x, y, w, h, r, r)
 
 	-- draw outline
-	c = getColorsForState(self.state)
+	local c = core.getActive() == self and
+		getColorsForState('active') or 
+		getColorsForState(self.state)
 	love.graphics.setColor(c.fg)
 	love.graphics.rectangle('line', x, y, w, h, r, r)
 
@@ -581,6 +579,7 @@ function Input:draw()
 	love.graphics.setScissor(x - 1, y, w + 2, h)
 
 	-- draw text
+	c = getColorsForState('normal')
 	love.graphics.setColor(c.fg)
 	love.graphics.setFont(self.font)
 	love.graphics.printf(
@@ -593,7 +592,7 @@ function Input:draw()
 	)	
 
 	-- draw cursor
-	if (love.timer.getTime() % 1) > 0.5 then
+	if core.getActive() == self and (love.timer.getTime() % 1) > 0.5 then
 		local c = self.text:sub(self.cursor - 1, self.cursor - 1)
 		local ws = self.cursor == 1 and 0 or self.font:getWidth(c)
 

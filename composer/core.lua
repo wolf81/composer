@@ -1,5 +1,6 @@
 local mouse = { x = 0, y = 0, is_down = is_down }
 local key = { down = nil, char = nil }
+local active = nil
 
 local function updateMouse(x, y, is_down)
     mouse = { x = x, y = y, is_down = is_down }
@@ -50,10 +51,20 @@ local function init()
     end
 end
 
+local function setActive(control)
+    active = control
+end
+
+local function getActive()
+    return active
+end
+
 return {
     init = init,
     updateMouse = updateMouse,
     getMousePosition = getMousePosition,
     getPressedKey = getPressedKey,
     isMouseButtonDown = isMouseButtonDown,
+    setActive = setActive,
+    getActive = getActive,
 }
