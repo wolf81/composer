@@ -52,40 +52,41 @@ else use col height
 ]]
 return Layout(Margin(10), Rows(Spacing(10), {
     Row(),
-    Row(40, Cols(Spacing(10), {
+    Row(Cols(Spacing(10), {
         Col(),
-        Col(100, makeButton('BUTTON')),
+        Col(makeButton('BUTTON')),
         Col(),
     })),
-    Row(40, Cols(Spacing(10), {
+    Row(Cols(Spacing(10), {
         Col(),
-        Col(20, makeCheckbox()),
-        Col(),
-    })),    
-    Row(40, Cols(Spacing(10), {
-        Col(),
-        Col(100, makeLabel('Label')),
+        Col(makeCheckbox()),
         Col(),
     })),    
-    Row(40, Cols(Spacing(10), {
+    Row(Cols(Spacing(10), {
+        Col(),
+        Col(makeLabel('Label')),
+        Col(),
+    })),    
+    Row(Cols(Spacing(10), {
         Col(),
         Col(makeImageButton('assets/sparkling-sabre.png')),
         Col(),
     })),    
-    Row(40, Cols {
+    Row(Cols {
         Col(),
-        Col(210, makeSlider()),
-        Col(),
-    }),
-    Row(40, Cols {
-        Col(),
-        Col(210, makeInput('blaat')),
+        Col(makeSlider()),
         Col(),
     }),
-    Row(40, Cols {
+    Row(Cols {
         Col(),
-        Col(210, makeProgress()),
+        Col(makeInput('blaat')),
         Col(),
     }),
+    Row(Cols {
+        Col(),
+        Col(makeProgress()),
+        Col(),
+    }),
+    --]]
     Row(),
 }))

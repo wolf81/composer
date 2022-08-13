@@ -404,7 +404,9 @@ function Progress:__tostring()
 end
 
 function Progress:sizeThatFits(w, h)
-	return w, Progress.BAR_HEIGHT
+	if w == math.huge then w = Progress.DEFAULT_WIDTH end
+	if h == math.huge then h = Progress.BAR_HEIGHT end
+	return w, h
 end
 
 --[[ SLIDER ]]--

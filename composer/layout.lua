@@ -12,6 +12,8 @@ local Col = Layout:extend()
 local Rows = Layout:extend()
 local Row = Layout:extend()
 
+--[[ DUMMY ]]--
+
 local Dummy = Object:extend()
 function Dummy:draw() end
 function Dummy:update(dt) end
@@ -19,6 +21,8 @@ function Dummy:layoutChildren() end
 function Dummy:setFrame() end
 function Dummy:sizeThatFits(w, h) return w, h end
 function Dummy:__tostring() return F.describe('Dummy', self) end
+
+--[[ COLS ]]--
 
 function Cols:new(...)
 	self.frame = Rect(0, 0, 0, 0)
@@ -51,7 +55,8 @@ function Cols:layoutChildren()
 			fixed_w = fixed_w + col.size
 		else
 			if col.child and not col.child:is(Dummy) then
-				col.size = col.child:sizeThatFits(math.huge, math.huge)
+				local cw, _ = col.child:sizeThatFits(math.huge, math.huge)
+				col.size = cw
 				fixed_w = fixed_w + col.size
 			else
 				flex_cols = flex_cols + 1
@@ -82,9 +87,23 @@ function Cols:draw()
 	end
 end
 
+function Cols:sizeThatFits(w, h)
+	local cw, ch = 0, 0
+	for _, col in ipairs(self.children) do
+		if col.child and not col.child:is(Dummy) then
+			local tw, th = col.child:sizeThatFits(w, h)
+			cw = cw + tw
+			ch = math.max(ch, th)
+		end
+	end
+	return math.min(w, cw), math.min(ch, h)
+end
+
 function Cols:__tostring()
 	return F.describe('Cols', self)
 end
+
+--[[ ROWS ]]--
 
 function Rows:new(...)
 	self.frame = Rect(0, 0, 0, 0)
@@ -116,7 +135,14 @@ function Rows:layoutChildren()
 		if row.size ~= math.huge then			
 			fixed_h = fixed_h + row.size
 		else
-			flex_rows = flex_rows + 1
+			if row.child and not row.child:is(Dummy) then
+				local rw, rh = row.child:sizeThatFits(math.huge, math.huge)
+				row.size = rh
+				print(row.child, row.size)
+				fixed_h = fixed_h + row.size
+			else
+				flex_rows = flex_rows + 1
+			end
 		end
 	end
 
@@ -143,9 +169,23 @@ function Rows:draw()
 	end
 end
 
+function Rows:sizeThatFits(w, h)
+	local rw, rh = 0, 0
+	for _, row in ipairs(self.children) do
+		if row.child and not row.child:is(Dummy) then
+			local tw, th = row.child:sizeThatFits(w, h)
+			rh = rh + th
+			rw = math.max(rw, tw)
+		end
+	end
+	return math.min(w, rw), math.min(rh, h)
+end
+
 function Rows:__tostring()
 	return F.describe('Rows', self)
 end
+
+--[[ LAYOUT ]]--
 
 function Layout:new(...)
 	self.size = math.huge
