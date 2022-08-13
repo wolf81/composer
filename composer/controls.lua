@@ -521,6 +521,20 @@ function Input:new(opts)
 	end
 end
 
+function Input:hit()
+	-- move cursor to mouse position
+	self.cursor = utf8.len(self.text) + 1
+	
+	local x, _ = core.getMousePosition() - self.frame.x	
+	for i = 1, utf8.len(self.text) + 1 do
+		local s = self.text:sub(0, utf8.offset(self.text, i) - 1)
+		if self.font:getWidth(s) >= x then
+			self.cursor = i - 1
+			break
+		end
+	end
+end
+
 function Input:update(dt)
 	Control.update(self, dt)
 
