@@ -476,17 +476,19 @@ function Slider:draw()
 	love.graphics.rectangle('line', x, bar_y, w - self.text_size.w - Slider.SPACING, Slider.BAR_HEIGHT, r, r)
 
 	-- draw knob
-	c = getColorsForState(self.state)
-	local knob_x = x + bar_w - Slider.KNOB_WIDTH / 2	
-	love.graphics.setColor(c.bg)
-	love.graphics.rectangle('fill', knob_x, y, Slider.KNOB_WIDTH, h, r, r)
-	love.graphics.setColor(c.fg)
-	love.graphics.rectangle('line', knob_x, y, Slider.KNOB_WIDTH, h, r, r)
+	if self.state == 'active' or self.state == 'hovered' then
+		c = getColorsForState(self.state)
+		local knob_x = x + bar_w - Slider.KNOB_WIDTH / 2	
+		love.graphics.setColor(c.bg)
+		love.graphics.rectangle('fill', knob_x, y, Slider.KNOB_WIDTH, h, r, r)
+		love.graphics.setColor(c.fg)
+		love.graphics.rectangle('line', knob_x, y, Slider.KNOB_WIDTH, h, r, r)
+	end
 
 	-- draw value on right side
 	if self.state == 'active' or self.state == 'hovered' then
 		c = getColorsForState('normal')
-	end
+	end	
 	love.graphics.setColor(c.fg)
 	love.graphics.setFont(self.font)
 	love.graphics.printf(
