@@ -14,7 +14,11 @@ return Layout(Rows {
     Row(),
     Row(Rows {
         Row(makeButton('BLAAT')),
-        Row(100),
+        Row(100, Rows {
+            Row(),
+            Row(makeButton('BOTTOM')),
+            Row(),
+        }),
         Row(makeLabel('HI')),
     }),
     Row(),

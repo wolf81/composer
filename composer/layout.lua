@@ -49,26 +49,33 @@ end
 function Cols:layoutChildren()
 	local fixed_w = math.max(#self.children - 1, 0) * self.spacing.v
 	local flex_cols = 0
+	local col_widths = {}
 
-	for _, col in ipairs(self.children) do
+	-- calculate fixed width total and flex column count
+	for idx, col in ipairs(self.children) do
+		col_widths[idx] = col.size
+
 		if col.size ~= math.huge then
 			fixed_w = fixed_w + col.size
 		else
 			if col.child and not col.child:is(Dummy) then
-				local cw, _ = col.child:sizeThatFits(math.huge, math.huge)
-				col.size = cw
-				fixed_w = fixed_w + col.size
+				local cw, _ = col.child:sizeThatFits(col.size, math.huge)
+				col_widths[idx] = cw
+				fixed_w = fixed_w + cw
 			else
 				flex_cols = flex_cols + 1
 			end
 		end
 	end
 
+	-- calculate flex width for each flex column
 	local x, y, w, h = self.frame.x, self.frame.y, self.frame.w, self.frame.h
 	local flex_w = math.floor((w - fixed_w) / flex_cols)
 
-	for _, col in ipairs(self.children) do
-		local w = col.size == math.huge and flex_w or col.size
+	-- set column frames and update child layouts
+	for idx, col in ipairs(self.children) do
+		local w = col_widths[idx]
+		if w == math.huge then w = flex_w end
 		col.frame = Rect(x, y, w, h)
 		col:layoutChildren()
 		x = x + w + self.spacing.v
@@ -134,27 +141,33 @@ end
 function Rows:layoutChildren()
 	local fixed_h = math.max(#self.children - 1, 0) * self.spacing.v
 	local flex_rows = 0
+	local row_heights = {}
 
-	for _, row in ipairs(self.children) do
+	-- calculate fixed height total and flex row count
+	for idx, row in ipairs(self.children) do
+		row_heights[idx] = row.size
+
 		if row.size ~= math.huge then			
 			fixed_h = fixed_h + row.size
 		else
 			if row.child and not row.child:is(Dummy) then
-				local rw, rh = row.child:sizeThatFits(math.huge, row.size)
-				-- TODO: don't adjust original layout
-				row.size = rh
-				fixed_h = fixed_h + row.size
+				local _, rh = row.child:sizeThatFits(math.huge, row.size)
+				row_heights[idx] = rh
+				fixed_h = fixed_h + rh
 			else
 				flex_rows = flex_rows + 1
 			end
 		end
 	end
 
+	-- calculate flex height for each flex row
 	local x, y, w, h = self.frame.x, self.frame.y, self.frame.w, self.frame.h
 	local flex_h = math.floor((h - fixed_h) / flex_rows)
 
-	for _, row in ipairs(self.children) do
-		local h = row.size == math.huge and flex_h or row.size
+	-- set row frames and update child layouts
+	for idx, row in ipairs(self.children) do
+		local h = row_heights[idx]
+		if h == math.huge then h = flex_h end
 		row.frame = Rect(x, y, w, h)
 		row:layoutChildren()
 		y = y + h + self.spacing.v
@@ -234,10 +247,10 @@ function Layout:update(dt)
 end
 
 function Layout:draw()
-	local l = love.graphics.getLineWidth()
-	love.graphics.setColor(unpack(self.color))
-	local x, y, w, h = self.frame:unpack()
-	love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
+	-- local l = love.graphics.getLineWidth()
+	-- love.graphics.setColor(unpack(self.color))
+	-- local x, y, w, h = self.frame:unpack()
+	-- love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
 
 	self.child:draw()
 end

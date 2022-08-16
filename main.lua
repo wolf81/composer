@@ -2,7 +2,7 @@ io.stdout:setvbuf('no') -- show debug output live in SublimeText console
 
 local composer = require 'composer'
 
-local layout_idx = 4
+local layout_idx = 0
 local layout = nil
 
 local window_w = 0
