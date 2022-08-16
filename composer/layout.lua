@@ -89,13 +89,17 @@ end
 
 function Cols:sizeThatFits(w, h)
 	local cw, ch = 0, 0
+
 	for _, col in ipairs(self.children) do
-		if col.child and not col.child:is(Dummy) then
+		if col.size ~= math.huge then
+			cw = cw + col.size
+		elseif col.child and not col.child:is(Dummy) then
 			local tw, th = col.child:sizeThatFits(w, h)
 			cw = cw + tw
 			ch = math.max(ch, th)
 		end
 	end
+
 	return math.min(w, cw), math.min(ch, h)
 end
 
@@ -136,9 +140,9 @@ function Rows:layoutChildren()
 			fixed_h = fixed_h + row.size
 		else
 			if row.child and not row.child:is(Dummy) then
-				local rw, rh = row.child:sizeThatFits(math.huge, math.huge)
+				local rw, rh = row.child:sizeThatFits(math.huge, row.size)
+				-- TODO: don't adjust original layout
 				row.size = rh
-				print(row.child, row.size)
 				fixed_h = fixed_h + row.size
 			else
 				flex_rows = flex_rows + 1
@@ -171,13 +175,17 @@ end
 
 function Rows:sizeThatFits(w, h)
 	local rw, rh = 0, 0
+
 	for _, row in ipairs(self.children) do
-		if row.child and not row.child:is(Dummy) then
+		if row.size ~= math.huge then
+			rh = rh + row.size
+		elseif row.child and not row.child:is(Dummy) then
 			local tw, th = row.child:sizeThatFits(w, h)
 			rh = rh + th
 			rw = math.max(rw, tw)
 		end
 	end
+
 	return math.min(w, rw), math.min(rh, h)
 end
 

@@ -2,7 +2,7 @@ io.stdout:setvbuf('no') -- show debug output live in SublimeText console
 
 local composer = require 'composer'
 
-local layout_idx = 0
+local layout_idx = 4
 local layout = nil
 
 local window_w = 0
@@ -14,7 +14,7 @@ local function updateLayout()
 	local is_debug = true
 
 	layout_idx = layout_idx + 1
-	if layout_idx > 4 then layout_idx = 1 end
+	if layout_idx > 6 then layout_idx = 1 end
 
 	local path = 'examples/example' .. layout_idx .. '.lua'
 	print('loading: ', path)
