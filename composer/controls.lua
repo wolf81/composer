@@ -560,10 +560,30 @@ end
 function Input:update(dt)
 	Control.update(self, dt)
 
-	if self.cursor > 0 then
+	if self.cursor > 0 and core.getActive() == self then
 		local s = self.text:sub(1, utf8.offset(self.text, self.cursor) - 1)
 		self.cursor_pos = self.font:getWidth(s)
+	else
+		self.cursor_pos = 0
 	end
+
+	local wm = self.frame.w - Input.SPACING
+
+	if self.cursor_pos - self.draw_offset < 0 then
+		self.draw_offset = self.cursor_pos
+	end
+	if self.cursor_pos - self.draw_offset > wm then
+		self.draw_offset = self.cursor_pos - wm
+	end
+	if self.text_size.w - self.draw_offset < wm and self.text_size.w > wm then
+		self.draw_offset = self.text_size.w - wm
+	end
+
+	if self.cursor_pos < self.frame.w then
+		self.draw_offset = 0
+	end
+
+	if core.getActive() ~= self then return end
 
 	local keycode, char = core.getPressedKey()
 
@@ -614,17 +634,16 @@ function Input:draw()
 	local sx, sy, sw, sh = love.graphics.getScissor()
 	love.graphics.setScissor(x - 1, y, w + 2, h)
 
+	local tx = mfloor(x - self.draw_offset + Input.SPACING)
+
 	-- draw text
 	c = getColorsForState('normal')
 	love.graphics.setColor(c.fg)
 	love.graphics.setFont(self.font)
-	love.graphics.printf(
+	love.graphics.print(
 		self.text,
-		self.font,
-		mfloor(self.frame.x + Input.SPACING),
-		mfloor(self.frame.y + (self.frame.h - self.text_size.h) / 2),
-		self.frame.w - Input.SPACING * 2,
-		self.align
+		tx,
+		mfloor(y + (h - self.text_size.h) / 2)
 	)	
 
 	-- draw cursor
@@ -640,14 +659,14 @@ function Input:draw()
 		love.graphics.setLineWidth(1)
 		love.graphics.setLineStyle('rough')
 		love.graphics.line(
-			x + self.cursor_pos + ws / 2, y + (h - self.text_size.h) / 2, 
-			x + self.cursor_pos + ws / 2, y + (h + self.text_size.h) / 2
+			x + self.cursor_pos + ws / 2 - self.draw_offset, y + (h - self.text_size.h) / 2, 
+			x + self.cursor_pos + ws / 2 - self.draw_offset, y + (h + self.text_size.h) / 2
 		)
 		love.graphics.setLineStyle(ls)
 		love.graphics.setLineWidth(lw)
 	end
 
-	love.graphics.setScissor()
+	love.graphics.setScissor(sx, sy, sw, sh)
 end
 
 function Input:sizeThatFits(w, h)
