@@ -130,9 +130,10 @@ function Control:update(dt)
 		next_state = 'active'
 	end	
 
-	if self.state == 'active' and next_state == 'hovered' then
+	if self.state == 'active' then
 		core.setActive(self)
-		self:hit()		
+
+		if next_state == 'hovered' then self:hit() end
 	end
 
 	self.state = next_state
