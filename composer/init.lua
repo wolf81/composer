@@ -31,7 +31,7 @@ local composer = {
 	]],	
 }
 
-composer.load = require(PATH .. ".loader")
+composer.load = require(PATH .. '.loader')
 composer.init = core.init
 composer.updateMouse = core.updateMouse
 

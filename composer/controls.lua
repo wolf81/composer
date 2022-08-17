@@ -634,17 +634,13 @@ function Input:draw()
 	local sx, sy, sw, sh = love.graphics.getScissor()
 	love.graphics.setScissor(x - 1, y, w + 2, h)
 
-	local tx = mfloor(x - self.draw_offset + Input.SPACING)
-
 	-- draw text
+	local tx = mfloor(x - self.draw_offset + Input.SPACING)
+	local ty = mfloor(y + (h - self.text_size.h) / 2)
 	c = getColorsForState('normal')
 	love.graphics.setColor(c.fg)
 	love.graphics.setFont(self.font)
-	love.graphics.print(
-		self.text,
-		tx,
-		mfloor(y + (h - self.text_size.h) / 2)
-	)	
+	love.graphics.print(self.text, tx, ty)	
 
 	-- draw cursor
 	if core.getActive() == self and (love.timer.getTime() % 1) > 0.5 then
