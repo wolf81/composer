@@ -40,6 +40,7 @@ function love.load(args)
         resizable = true,
         minwidth = desktop_w * 0.4,
         minheight = desktop_h * 0.5,
+        msaa = 8,
     }
     love.window.setMode(desktop_w * 0.6, desktop_h * 0.7, flags)
 
