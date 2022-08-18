@@ -29,10 +29,7 @@ local function updateLayout()
 end
 
 local function resizeLayout()
-	layout.resize(window_w, window_h, function(e)
-		e.widget:setFrame(e.rect.x, e.rect.y, e.rect.w, e.rect.h)
-		print(e)
-	end)
+	layout.resize(window_w, window_h)
 end
 
 function love.load(args)

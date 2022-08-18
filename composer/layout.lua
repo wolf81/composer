@@ -305,7 +305,9 @@ function Elem:expandChildren()
 end
 
 function Elem:layoutChildren(rect)
-	-- body
+	if not self.widget then return end
+
+	self.widget:setFrame(rect.x, rect.y, rect.w, rect.h)
 end
 
 function Elem:__tostring()

@@ -132,13 +132,8 @@ local function load(path, is_debug)
 	-- create a list of wdgets
 	local elements, widgets = getElementsAndWidgets(hud)
 
-	hud.resize = function(w, h, fn)
-		fn = fn or function() end
-		
+	hud.resize = function(w, h)
 		hud:reshape(0, 0, w, h)
-		for _, e in ipairs(elements) do
-			fn(e)
-		end
 	end
 
 	hud.update = function(dt)
