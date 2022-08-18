@@ -286,11 +286,16 @@ function Elem:new(widget, ...)
 		return getmetatable(v) == ID
 	end)
 
+	local size = F.removeMatch(args, function(v)
+		return getmetatable(v) == Size
+	end)
+
 	local this = Layout.new(self, unpack(args))
 	
 	this.id = id
 	this.rect = Rect(0, 0, 0, 0)
 	this.widget = widget
+	this.size = size or Size()
 
 	return setmetatable(this, Elem)
 end
