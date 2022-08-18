@@ -54,8 +54,9 @@ if col no height
 else use col height
 
 ]]
-return Layout(Margin(10), VStack(Spacing(10), {
+return Layout(Margin(10), VStack({
     makeSpace(),
+    makeButton('HELLO'),
     HStack({
         makeSpace(),
         VStack(Spacing(10), {
