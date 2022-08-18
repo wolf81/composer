@@ -8,9 +8,8 @@ local attr = require(PATH .. 'attributes')
 
 local Layout = Object:extend()
 local Cols = Layout:extend()
-local Col = Layout:extend()
 local Rows = Layout:extend()
-local Row = Layout:extend()
+local Elem = Layout:extend()
 
 --[[ DUMMY ]]--
 
@@ -37,7 +36,7 @@ function Cols:new(...)
 		else
 			if type(arg) == 'table' then
 				for _, child in ipairs(arg) do
-					assert(child:is(Col), 'child should be of type Col')					
+					assert(child:is(Elem), 'child should be of type Elem')					
 				end
 
 				self.children = arg
@@ -129,7 +128,7 @@ function Rows:new(...)
 		else
 			if type(arg) == 'table' then
 				for _, child in ipairs(arg) do
-					assert(child:is(Row), 'child should be of type Row')					
+					assert(child:is(Elem), 'child should be of type Elem')					
 				end
 
 				self.children = arg
@@ -259,29 +258,9 @@ function Layout:__tostring()
 	return F.describe('Layout', self)
 end
 
---[[ COL ]]--
+--[[ ELEM ]]--
 
-function Col:layoutChildren()
-	if self.child then
-		if self.child:is(Layout) then
-			self.child.frame = self.frame
-			self.child:layoutChildren()
-		else
-			-- either Control or Dummy
-			local x, y, w, h = self.frame:unpack()
-			w, h = self.child:sizeThatFits(w, h)
-			self.child:setFrame(x, y, w, h)
-		end
-	end
-end
-
-function Col:__tostring()
-	return F.describe('Col', self)
-end
-
---[[ ROW ]]--
-
-function Row:layoutChildren()
+function Elem:layoutChildren()
 	if self.child then
 		if self.child:is(Layout) then
 			self.child.frame = self.frame
@@ -294,8 +273,8 @@ function Row:layoutChildren()
 	end
 end
 
-function Row:__tostring()
-	return F.describe('Row', self)
+function Elem:__tostring()
+	return F.describe('Elem', self)
 end
 
 --[[ MODULE ]]--
@@ -303,7 +282,6 @@ end
 return {
 	Layout = Layout,
 	Rows = Rows,
-	Row = Row,
 	Cols = Cols,
-	Col	= Col,
+	Elem = Elem,
 }

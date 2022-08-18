@@ -12,6 +12,7 @@ local Cols = layout.Cols
 local Col = layout.Col
 local Rows = layout.Rows
 local Row = layout.Row
+local Elem = layout.Elem
 ]]
 
 local CONTROL_IMPORTS = [[
