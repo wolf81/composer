@@ -51,6 +51,8 @@ function love.load(args)
         return love.keyboard.released[key] == true
     end
 
+    love.graphics.setLineWidth(2)
+
     composer.init()
 
     -- add custom controls to the layout engine loader
@@ -68,16 +70,11 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.push()
-    love.graphics.translate(0.5, 0.5)
-
 	-- draw black background
 	love.graphics.setColor(0.0, 0.0, 0.0)
 	love.graphics.rectangle("fill", 0, 0, window_w, window_h)
 
 	layout:draw()
-
-    love.graphics.pop()
 end
 
 function love.resize(w, h)

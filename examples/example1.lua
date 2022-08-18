@@ -1,12 +1,12 @@
 Border(Margin(10), {
     VStack({
         HStack(Spacing(10), {
-            Button(Size(100)),
-            Label(Size(30)),
-            Button(Size(50)),
+            Button({ text = 'BUTTON 1' }, Size()),
+            Label({}, Size(30)),
+            Button({}, Size(50)),
             VStack({
-                Label(Size(30)),
-                Button(Size(50)),
+                Label({}, Size(30)),
+                Button({}, Size(50)),
             }),
             -- Label("Hello", MinSize(0, 50), Stretch(1, 0), ID("test1")),
             -- Button("press G to see next layout", ID("test2")),
@@ -18,9 +18,9 @@ Border(Margin(10), {
             -- })
         }),
         HStack({
-            Button(Size(100)),
-            Label(Size(30)),
-            Button(Size(80)),            
+            Button({}, Size(100)),
+            Label({}, Size(30)),
+            Button({}, Size(80)),            
         })
     }),
 })
