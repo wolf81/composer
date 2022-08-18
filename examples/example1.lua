@@ -7,7 +7,7 @@ local function makeButton(title, is_enabled)
         corner_radius = 3,
     }
 
-    button:setEnabled(is_enabled ~= false)
+    -- button:setEnabled(is_enabled ~= false)
 
     return button
 end
@@ -38,6 +38,10 @@ end
 local function makeProgress()
     return Progress { corner_radius = 3, value = 0.1 }
 end
+
+local function makeSpace()
+    return Space()
+end
 --[[
 if row no height:
     if row no children: fill
@@ -51,6 +55,22 @@ else use col height
 
 ]]
 return Layout(Margin(10), VStack(Spacing(10), {
+    makeSpace(),
+    HStack({
+        makeSpace(),
+        VStack(Spacing(10), {
+            makeButton('HELLO'),
+            makeButton(),
+            makeButton(),
+        }),
+        makeSpace(),
+    }),
+    makeSpace(),
+    -- makeButton('BUTTON'),
+    -- makeLabel('HI'),
+    -- makeButton('BUTTON'),
+    -- makeSpace(),
+    --[[
     Elem(),
     Elem(HStack(Spacing(10), {
         Elem(),
@@ -88,4 +108,5 @@ return Layout(Margin(10), VStack(Spacing(10), {
         Elem(),
     }),
     Elem(),
+    --]]
 }))

@@ -27,6 +27,7 @@ function HStack:new(...)
 	self.frame = Rect(0, 0, 0, 0)
 	self.spacing = attr.Spacing(0)
 	self.children = {}
+	self.size = math.huge
 
 	for _, arg in pairs({...}) do
 		if arg.is ~= nil then
@@ -36,7 +37,7 @@ function HStack:new(...)
 		else
 			if type(arg) == 'table' then
 				for _, child in ipairs(arg) do
-					assert(child:is(Elem), 'child should be of type Elem')					
+					assert(child:is(Layout), 'child should be of type Layout')					
 				end
 
 				self.children = arg
@@ -47,34 +48,68 @@ end
 
 function HStack:layoutChildren()
 	local fixed_w = math.max(#self.children - 1, 0) * self.spacing.v
-	local flex_HStack = 0
+	local flex_cols = 0
 	local col_widths = {}
 
 	-- calculate fixed width total and flex column count
 	for idx, col in ipairs(self.children) do
 		col_widths[idx] = col.size
 
+		if col.size ~= math.huge then			
+			fixed_w = fixed_w + col.size
+		else
+			if col.child then
+				print('->', col.child)
+				local cw, _ = col.child:sizeThatFits(col.size, math.huge)
+
+				if cw == math.huge then
+					flex_cols = flex_cols + 1
+				else
+					col_widths[idx] = cw
+					fixed_w = fixed_w + cw
+				end
+			elseif col.children then
+				local cw, _ = col:sizeThatFits(col.size, math.huge)
+
+				if cw == math.huge then
+					flex_cols = flex_cols + 1
+				else
+					col_widths[idx] = cw
+					fixed_w = fixed_w + cw
+				end				
+			else
+				flex_cols = flex_cols + 1
+			end
+		end
+
 		if col.size ~= math.huge then
 			fixed_w = fixed_w + col.size
 		else
-			if col.child and not col.child:is(Dummy) then
+			if col.child then
 				local cw, _ = col.child:sizeThatFits(col.size, math.huge)
 				col_widths[idx] = cw
 				fixed_w = fixed_w + cw
+			elseif col.children then
+				local cw, _ = col:sizeThatFits(col.size, math.huge)
+				col_widths[idx] = cw
+				fixed_w = fixed_w + cw				
 			else
-				flex_HStack = flex_HStack + 1
+				flex_cols = flex_cols + 1
 			end
 		end
 	end
 
 	-- calculate flex width for each flex column
 	local x, y, w, h = self.frame.x, self.frame.y, self.frame.w, self.frame.h
-	local flex_w = math.floor((w - fixed_w) / flex_HStack)
+	if fixed_w == math.huge then fixed_w = 0 end
+	local flex_w = math.floor((w - fixed_w) / flex_cols)
+	print('fw', flex_w, fixed_w, w)
 
 	-- set column frames and update child layouts
 	for idx, col in ipairs(self.children) do
 		local w = col_widths[idx]
 		if w == math.huge then w = flex_w end
+		print(w, h)
 		col.frame = Rect(x, y, w, h)
 		col:layoutChildren()
 		x = x + w + self.spacing.v
@@ -99,7 +134,7 @@ function HStack:sizeThatFits(w, h)
 	for _, col in ipairs(self.children) do
 		if col.size ~= math.huge then
 			cw = cw + col.size
-		elseif col.child and not col.child:is(Dummy) then
+		elseif col.child then
 			local tw, th = col.child:sizeThatFits(w, h)
 			cw = cw + tw
 			ch = math.max(ch, th)
@@ -119,6 +154,7 @@ function VStack:new(...)
 	self.frame = Rect(0, 0, 0, 0)
 	self.spacing = attr.Spacing(0)
 	self.children = {}
+	self.size = math.huge
 
 	for _, arg in pairs({...}) do
 		if arg.is ~= nil then
@@ -128,7 +164,7 @@ function VStack:new(...)
 		else
 			if type(arg) == 'table' then
 				for _, child in ipairs(arg) do
-					assert(child:is(Elem), 'child should be of type Elem')					
+					assert(child:is(Layout), 'child should be of type Layout')	
 				end
 
 				self.children = arg
@@ -139,34 +175,55 @@ end
 
 function VStack:layoutChildren()
 	local fixed_h = math.max(#self.children - 1, 0) * self.spacing.v
-	local flex_VStack = 0
+	local flex_rows = 0
 	local row_heights = {}
 
 	-- calculate fixed height total and flex row count
 	for idx, row in ipairs(self.children) do
+		print('vrow', row.child)
 		row_heights[idx] = row.size
 
 		if row.size ~= math.huge then			
 			fixed_h = fixed_h + row.size
 		else
-			if row.child and not row.child:is(Dummy) then
+			if row.child then
+				print('->', row.child)
 				local _, rh = row.child:sizeThatFits(math.huge, row.size)
-				row_heights[idx] = rh
-				fixed_h = fixed_h + rh
+
+				if rh == math.huge then
+					flex_rows = flex_rows + 1
+				else
+					row_heights[idx] = rh
+					fixed_h = fixed_h + rh
+				end
+			elseif row.children then
+				local _, rh = row:sizeThatFits(math.huge, row.size)
+
+				if rh == math.huge then
+					flex_rows = flex_rows + 1
+				else
+					row_heights[idx] = rh
+					fixed_h = fixed_h + rh
+				end				
 			else
-				flex_VStack = flex_VStack + 1
+				flex_rows = flex_rows + 1
 			end
 		end
 	end
 
 	-- calculate flex height for each flex row
 	local x, y, w, h = self.frame.x, self.frame.y, self.frame.w, self.frame.h
-	local flex_h = math.floor((h - fixed_h) / flex_VStack)
+	print('rect', x, y, w, h)
+	local flex_h = math.floor((h - fixed_h) / flex_rows)
+	print('flex_h', flex_h, fixed_h)
 
 	-- set row frames and update child layouts
 	for idx, row in ipairs(self.children) do
 		local h = row_heights[idx]
 		if h == math.huge then h = flex_h end
+
+		print(row.child, x, y, w, h)
+
 		row.frame = Rect(x, y, w, h)
 		row:layoutChildren()
 		y = y + h + self.spacing.v
@@ -191,7 +248,7 @@ function VStack:sizeThatFits(w, h)
 	for _, row in ipairs(self.children) do
 		if row.size ~= math.huge then
 			rh = rh + row.size
-		elseif row.child and not row.child:is(Dummy) then
+		elseif row.child then
 			local tw, th = row.child:sizeThatFits(w, h)
 			rh = rh + th
 			rw = math.max(rw, tw)

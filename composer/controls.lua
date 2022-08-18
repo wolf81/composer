@@ -2,7 +2,8 @@ local PATH = (...):match('(.-)[^%.]+$')
 local Object = require(PATH .. 'classic')
 local F = require(PATH .. 'functions')
 local Theme = require(PATH .. 'theme')
-local core = require (PATH .. 'core')
+local core = require(PATH .. 'core')
+local layout = require(PATH .. 'layout')
 local utf8 = require 'utf8'
 
 local mfloor, mceil, mmax, mmin = math.floor, math.ceil, math.max, math.min
@@ -144,7 +145,7 @@ function Control:hit() end
 
 function Control:draw()
     love.graphics.setColor(unpack(self.color))
-    love.graphics.rectangle('fill', unpack(self.frame))
+    -- love.graphics.rectangle('fill', self.frame:unpack())
 end
 
 function Control:sizeThatFits(w, h)
@@ -512,6 +513,14 @@ function Slider:__tostring()
 	return F.describe('Slider', self)
 end
 
+--[[ SPACE ]]--
+
+local Space = Control:extend()
+
+function Space:__tostring()
+    return F.describe('Space', self)
+end
+
 --[[ INPUT ]]--
 
 local Input = Control:extend()
@@ -680,11 +689,12 @@ end
 
 return {
     Control = Control,
-    Label = Label,
-    Button = Button,
+    Label = function() return layout.Elem(Label()) end,
+    Button = function() return layout.Elem(Button()) end,
     ImageButton = ImageButton,
     Checkbox = Checkbox,
     Progress = Progress,
     Slider = Slider,
     Input = Input,
+    Space = function() return layout.Elem(Space()) end,
 }
