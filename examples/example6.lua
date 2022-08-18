@@ -10,12 +10,12 @@ local function makeButton(text)
     }
 end
 
-return Layout(Cols {
-    Col(),
-    Col(Cols {
-        Col(makeButton('BLAAT')),
-        Col(500),
-        Col(makeLabel('HI')),
+return Layout(HStack {
+    Elem(),
+    Elem(HStack {
+        Elem(makeButton('BLAAT')),
+        Elem(500),
+        Elem(makeLabel('HI')),
     }),
-    Col(),
+    Elem(),
 })

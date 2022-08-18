@@ -10,16 +10,16 @@ local function makeButton(text)
     }
 end
 
-return Layout(Rows {
-    Row(),
-    Row(Rows {
-        Row(makeButton('BLAAT')),
-        Row(100, Rows {
-            Row(),
-            Row(makeButton('BOTTOM')),
-            Row(),
+return Layout(VStack {
+    Elem(),
+    Elem(VStack {
+        Elem(makeButton('BLAAT')),
+        Elem(100, VStack {
+            Elem(),
+            Elem(makeButton('BOTTOM')),
+            Elem(),
         }),
-        Row(makeLabel('HI')),
+        Elem(makeLabel('HI')),
     }),
-    Row(),
+    Elem(),
 })

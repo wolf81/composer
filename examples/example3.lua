@@ -1,13 +1,13 @@
-return Layout(Rows {
-	Row(),
-	Row(400, Cols {
-		Col(),
-		Col(400, Rows(Spacing(10), {
-			Row(100, Button { text = 'BUTTON 1', font = 20 }),
-			Row(100, Button { text = 'BUTTON 2', font = 20 }),
-			Row(100, Button { text = 'BUTTON 3', font = 20 }),
+return Layout(VStack {
+	Elem(),
+	Elem(400, HStack {
+		Elem(),
+		Elem(400, VStack(Spacing(10), {
+			Elem(100, Button { text = 'BUTTON 1', font = 20 }),
+			Elem(100, Button { text = 'BUTTON 2', font = 20 }),
+			Elem(100, Button { text = 'BUTTON 3', font = 20 }),
 		})),
-		Col(),
+		Elem(),
 	}),
-	Row(),
+	Elem(),
 })

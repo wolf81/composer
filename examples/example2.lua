@@ -1,18 +1,18 @@
 local function makeButton(image_path)
     return ImageButton { 
         image = image_path,
-        corner_radius = 30,
+        corner_radius = 40,
     }
 end
 
-return Layout(Margin(10), Rows {
-    Row(80, Cols(Spacing(1), {
-        Col(Label { text = 'MENU', font = { 'assets/agricola-rough.otf', 20 }, align = 'center' }),
-        Col(),
-        Col(80, makeButton('assets/crossbow.png')),
-        Col(80, makeButton('assets/sparkling-sabre.png')),
-        Col(80, makeButton('assets/switch-weapon.png')),
+return Layout(Margin(10), VStack {
+    Elem(80, HStack(Spacing(5), {
+        Elem(Label { text = 'MENU', font = { 'assets/agricola-rough.otf', 20 }, align = 'center' }),
+        Elem(),
+        Elem(80, makeButton('assets/crossbow.png')),
+        Elem(80, makeButton('assets/sparkling-sabre.png')),
+        Elem(80, makeButton('assets/switch-weapon.png')),
     })),
-    Row(),
-    Row(80),
+    Elem(),
+    Elem(80),
 })
