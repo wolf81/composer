@@ -50,39 +50,39 @@ if col no height
 else use col height
 
 ]]
-return Layout(Margin(10), Rows(Spacing(10), {
+return Layout(Margin(10), VStack(Spacing(10), {
     Elem(),
-    Elem(Cols(Spacing(10), {
+    Elem(HStack(Spacing(10), {
         Elem(),
         Elem(makeButton('BUTTON')),
         Elem(),
     })),
-    Elem(Cols(Spacing(10), {
+    Elem(HStack(Spacing(10), {
         Elem(),
         Elem(makeCheckbox()),
         Elem(),
     })),    
-    Elem(Cols(Spacing(10), {
+    Elem(HStack(Spacing(10), {
         Elem(),
         Elem(makeLabel('Label')),
         Elem(),
     })),    
-    Elem(Cols(Spacing(10), {
+    Elem(HStack(Spacing(10), {
         Elem(),
         Elem(makeImageButton('assets/sparkling-sabre.png')),
         Elem(),
     })),    
-    Elem(Cols {
+    Elem(HStack {
         Elem(),
         Elem(makeSlider()),
         Elem(),
     }),
-    Elem(Cols {
+    Elem(HStack {
         Elem(),
         Elem(makeInput('blaat')),
         Elem(),
     }),
-    Elem(Cols {
+    Elem(HStack {
         Elem(),
         Elem(makeProgress()),
         Elem(),

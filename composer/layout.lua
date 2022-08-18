@@ -7,8 +7,8 @@ local attr = require(PATH .. 'attributes')
 --[[ LAYOUT ]]--
 
 local Layout = Object:extend()
-local Cols = Layout:extend()
-local Rows = Layout:extend()
+local HStack = Layout:extend()
+local VStack = Layout:extend()
 local Elem = Layout:extend()
 
 --[[ DUMMY ]]--
@@ -21,9 +21,9 @@ function Dummy:setFrame() end
 function Dummy:sizeThatFits(w, h) return w, h end
 function Dummy:__tostring() return F.describe('Dummy', self) end
 
---[[ COLS ]]--
+--[[ HStack ]]--
 
-function Cols:new(...)
+function HStack:new(...)
 	self.frame = Rect(0, 0, 0, 0)
 	self.spacing = attr.Spacing(0)
 	self.children = {}
@@ -45,9 +45,9 @@ function Cols:new(...)
 	end
 end
 
-function Cols:layoutChildren()
+function HStack:layoutChildren()
 	local fixed_w = math.max(#self.children - 1, 0) * self.spacing.v
-	local flex_cols = 0
+	local flex_HStack = 0
 	local col_widths = {}
 
 	-- calculate fixed width total and flex column count
@@ -62,14 +62,14 @@ function Cols:layoutChildren()
 				col_widths[idx] = cw
 				fixed_w = fixed_w + cw
 			else
-				flex_cols = flex_cols + 1
+				flex_HStack = flex_HStack + 1
 			end
 		end
 	end
 
 	-- calculate flex width for each flex column
 	local x, y, w, h = self.frame.x, self.frame.y, self.frame.w, self.frame.h
-	local flex_w = math.floor((w - fixed_w) / flex_cols)
+	local flex_w = math.floor((w - fixed_w) / flex_HStack)
 
 	-- set column frames and update child layouts
 	for idx, col in ipairs(self.children) do
@@ -81,19 +81,19 @@ function Cols:layoutChildren()
 	end
 end
 
-function Cols:update(dt)
+function HStack:update(dt)
 	for _, child in ipairs(self.children) do
 		child:update(dt)
 	end
 end
 
-function Cols:draw()
+function HStack:draw()
 	for _, child in ipairs(self.children) do
 		child:draw()
 	end
 end
 
-function Cols:sizeThatFits(w, h)
+function HStack:sizeThatFits(w, h)
 	local cw, ch = 0, 0
 
 	for _, col in ipairs(self.children) do
@@ -109,13 +109,13 @@ function Cols:sizeThatFits(w, h)
 	return math.min(w, cw), math.min(ch, h)
 end
 
-function Cols:__tostring()
-	return F.describe('Cols', self)
+function HStack:__tostring()
+	return F.describe('HStack', self)
 end
 
---[[ ROWS ]]--
+--[[ VStack ]]--
 
-function Rows:new(...)
+function VStack:new(...)
 	self.frame = Rect(0, 0, 0, 0)
 	self.spacing = attr.Spacing(0)
 	self.children = {}
@@ -137,9 +137,9 @@ function Rows:new(...)
 	end
 end
 
-function Rows:layoutChildren()
+function VStack:layoutChildren()
 	local fixed_h = math.max(#self.children - 1, 0) * self.spacing.v
-	local flex_rows = 0
+	local flex_VStack = 0
 	local row_heights = {}
 
 	-- calculate fixed height total and flex row count
@@ -154,14 +154,14 @@ function Rows:layoutChildren()
 				row_heights[idx] = rh
 				fixed_h = fixed_h + rh
 			else
-				flex_rows = flex_rows + 1
+				flex_VStack = flex_VStack + 1
 			end
 		end
 	end
 
 	-- calculate flex height for each flex row
 	local x, y, w, h = self.frame.x, self.frame.y, self.frame.w, self.frame.h
-	local flex_h = math.floor((h - fixed_h) / flex_rows)
+	local flex_h = math.floor((h - fixed_h) / flex_VStack)
 
 	-- set row frames and update child layouts
 	for idx, row in ipairs(self.children) do
@@ -173,19 +173,19 @@ function Rows:layoutChildren()
 	end
 end
 
-function Rows:update(dt)
+function VStack:update(dt)
 	for _, child in ipairs(self.children) do
 		child:update(dt)
 	end
 end
 
-function Rows:draw()
+function VStack:draw()
 	for _, child in ipairs(self.children) do
 		child:draw()
 	end
 end
 
-function Rows:sizeThatFits(w, h)
+function VStack:sizeThatFits(w, h)
 	local rw, rh = 0, 0
 
 	for _, row in ipairs(self.children) do
@@ -201,8 +201,8 @@ function Rows:sizeThatFits(w, h)
 	return math.min(w, rw), math.min(rh, h)
 end
 
-function Rows:__tostring()
-	return F.describe('Rows', self)
+function VStack:__tostring()
+	return F.describe('VStack', self)
 end
 
 --[[ LAYOUT ]]--
@@ -281,7 +281,7 @@ end
 
 return {
 	Layout = Layout,
-	Rows = Rows,
-	Cols = Cols,
+	VStack = VStack,
+	HStack = HStack,
 	Elem = Elem,
 }

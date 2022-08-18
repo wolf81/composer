@@ -8,9 +8,9 @@ local Spacing = attr.Spacing
 
 local LAYOUT_IMPORTS = [[
 local Layout = layout.Layout
-local Cols = layout.Cols
+local HStack = layout.HStack
 local Col = layout.Col
-local Rows = layout.Rows
+local VStack = layout.VStack
 local Row = layout.Row
 local Elem = layout.Elem
 ]]
