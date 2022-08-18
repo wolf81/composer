@@ -6,6 +6,7 @@ local Stretch = attr.Stretch
 local MinSize = attr.MinSize
 local Margin = attr.Margin
 local ExpSize = attr.ExpSize
+local Size = attr.Size
 local ID = attr.ID
 
 --[[

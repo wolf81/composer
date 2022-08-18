@@ -7,6 +7,7 @@ local ATTRIBUTE_IMPORTS = [[
 local Margin = attr.Margin
 local Stretch = attr.Stretch
 local MinSize = attr.MinSize
+local Size = attr.Size
 local ID = attr.ID
 ]]
 

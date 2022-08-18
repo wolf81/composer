@@ -116,6 +116,26 @@ setmetatable(ExpSize, {
 })
 
 --[[
+--	Size
+]]
+
+local Size = {}
+
+function Size:new(x)
+	return setmetatable({
+		value = x or math.huge
+	}, Size)
+end
+
+function Size:__tostring()
+	return F.describe('Size', self)
+end
+
+setmetatable(Size, {
+	__call = Size.new
+})
+
+--[[
 --	Stretch
 --	The Stretch attribute defines how an element stretches inside its container. 
 --	The x and y value should either be 0 to not expand MinSize or 1 to stretch 
@@ -157,6 +177,7 @@ return {
 	MinSize = MinSize,
 	ExpSize = ExpSize,
 	Stretch = Stretch,
+	Size = Size,
 }
 
 -- 
