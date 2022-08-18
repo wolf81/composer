@@ -29,10 +29,7 @@ local composer = {
 	]],	
 }
 
-local Loader = require(PATH .. ".loader")
-composer.require = Loader.require
-composer.unrequire = Loader.unrequire
-composer.load = Loader.load
+composer.load = require(PATH .. ".loader")
 
 local core = require(PATH .. '.core')
 composer.init = core.init

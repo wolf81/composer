@@ -68,11 +68,16 @@ function love.update(dt)
 end
 
 function love.draw()
-	-- draw white background
-	love.graphics.setColor(1.0, 1.0, 1.0)
+    love.graphics.push()
+    love.graphics.translate(0.5, 0.5)
+
+	-- draw black background
+	love.graphics.setColor(0.0, 0.0, 0.0)
 	love.graphics.rectangle("fill", 0, 0, window_w, window_h)
 
 	layout:draw()
+
+    love.graphics.pop()
 end
 
 function love.resize(w, h)
@@ -81,7 +86,7 @@ function love.resize(w, h)
 end
 
 function love.keypressed(key, code)
-	if key == "g" then
+	if key == 'tab' then
 		updateLayout()
 		
 		local window_w, window_h = love.window.getMode()

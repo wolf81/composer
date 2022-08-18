@@ -136,6 +136,26 @@ setmetatable(Size, {
 })
 
 --[[
+--	Spacing
+]]
+
+local Spacing = {}
+
+function Spacing:new(x)
+	return setmetatable({
+		value = x or 0
+	}, Spacing)
+end
+
+function Spacing:__tostring()
+	return F.describe('Spacing', self)
+end
+
+setmetatable(Spacing, {
+	__call = Spacing.new
+})
+
+--[[
 --	Stretch
 --	The Stretch attribute defines how an element stretches inside its container. 
 --	The x and y value should either be 0 to not expand MinSize or 1 to stretch 
@@ -177,6 +197,7 @@ return {
 	MinSize = MinSize,
 	ExpSize = ExpSize,
 	Stretch = Stretch,
+	Spacing = Spacing,
 	Size = Size,
 }
 

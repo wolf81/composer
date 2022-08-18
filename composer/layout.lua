@@ -4,8 +4,9 @@ local F = require(_PATH .. "functions")
 
 local Stretch = attr.Stretch
 local MinSize = attr.MinSize
-local Margin = attr.Margin
 local ExpSize = attr.ExpSize
+local Spacing = attr.Spacing
+local Margin = attr.Margin
 local Size = attr.Size
 local ID = attr.ID
 
@@ -64,32 +65,38 @@ function Layout:new(...)
 	}, Layout)
 end
 
-function Layout:reshape(x, y, w, h)
-	self:expand()
-	self:layout(Rect(x, y, w, h))
+function Layout:sizeThatFits(w, h)
+	return w, h
 end
 
-function Layout:expand()
+function Layout:resize(x, y, w, h)
+	self.rect = Rect(x, y, w, h)
+	self:layoutChildren()
+end
+
+-- function Layout:expand()
+-- 	for _, child in ipairs(self.children) do
+-- 		child:expand()
+-- 	end
+
+-- 	self:expandChildren()
+-- end
+
+-- function Layout:expandChildren()
+-- 	error("implementation required by subclasses")
+-- end
+
+-- function Layout:layout(rect)
+-- 	self:layoutChildren(rect)
+-- 	for _, child in ipairs(self.children) do
+-- 		child:layout(child.rect)
+-- 	end
+-- end
+
+function Layout:layoutChildren()	
 	for _, child in ipairs(self.children) do
-		child:expand()
+		child:layout()
 	end
-
-	self:expandChildren()
-end
-
-function Layout:expandChildren()
-	error("implementation required by subclasses")
-end
-
-function Layout:layout(rect)
-	self:layoutChildren(rect)
-	for _, child in ipairs(self.children) do
-		child:layout(child.rect)
-	end
-end
-
-function Layout:layoutChildren(rect)
-	error("implementation required by subclasses")
 end
 
 function Layout:__tostring()
@@ -123,23 +130,30 @@ function Border:new(...)
 	return setmetatable(this, Border)
 end
 
-function Border:expandChildren()
-	local w, h = self.margin.l + self.margin.r, self.margin.t + self.margin.b
-	for _, child in ipairs(self.children) do
-		w = math.max(w, child.exp_size.x)
-		h = math.max(h, child.exp_size.y)
-	end
-	self.exp_size = ExpSize(w, h)
+function Border:sizeThatFits(w, h)
+	return 
+		math.max(w, self.margin.l + self.margin.r), 
+		math.max(h, self.margin.t + self.margin.b)
 end
 
-function Border:layoutChildren(rect)
+-- function Border:expandChildren()
+-- 	local w, h = self.margin.l + self.margin.r, self.margin.t + self.margin.b
+-- 	for _, child in ipairs(self.children) do
+-- 		w = math.max(w, child.exp_size.x)
+-- 		h = math.max(h, child.exp_size.y)
+-- 	end
+-- 	self.exp_size = ExpSize(w, h)
+-- end
+
+function Border:layoutChildren()
 	for _, child in ipairs(self.children) do 
 		child.rect = Rect(
-			rect.x + self.margin.l, 
-			rect.y + self.margin.t, 
-			rect.w - self.margin.l - self.margin.r,
-			rect.h - self.margin.t - self.margin.b
+			self.rect.x + self.margin.l, 
+			self.rect.y + self.margin.t, 
+			self.rect.w - self.margin.l - self.margin.r,
+			self.rect.h - self.margin.t - self.margin.b
 		)
+		child:layoutChildren()
 	end
 end
 
@@ -162,7 +176,16 @@ local HStack = {}
 HStack.__index = HStack
 
 function HStack:new(...)
-	local this = Layout.new(self, ...)
+	local args = { ... }
+
+	local spacing = F.removeMatch(args, function(v)
+		return getmetatable(v) == Spacing
+	end)
+
+	local this = Layout.new(self, unpack(args))
+
+	this.spacing = spacing or Spacing()
+	this.size = Size()
 
 	return setmetatable(this, HStack)
 end
@@ -177,6 +200,25 @@ function HStack:expandChildren()
 end
 
 function HStack:layoutChildren(rect)
+	local x = self.rect.x
+
+	for _, child in ipairs(self.children) do
+		local w, h = child:sizeThatFits(child.size.value, self.rect.h)
+		print(w, h)
+
+		child.rect = Rect(x, self.rect.y, w, h)
+		child:layoutChildren()
+
+		x = x + w + self.spacing.value
+
+		if child.size.value == math.huge then
+			print('SIZE TO FILL')
+		else
+			print('SIZE TO CONTENT')
+		end
+	end
+
+	--[[
 	local x, y, h = rect.x, rect.y, 0
 	local ch_widths = {}
 	for _, child in ipairs(self.children) do
@@ -200,6 +242,7 @@ function HStack:layoutChildren(rect)
 
 		x = x + w
 	end
+	--]]
 end
 
 function HStack:__tostring()
@@ -221,7 +264,15 @@ local VStack = {}
 VStack.__index = VStack
 
 function VStack:new(...)
-	local this = Layout.new(self, ...)
+	local args = { ... }
+
+	local spacing = F.removeMatch(args, function(v)
+		return getmetatable(v) == Spacing
+	end)
+
+	local this = Layout.new(self, unpack(args))
+	this.spacing = spacing or Spacing()	
+	this.size = Size()
 
 	return setmetatable(this, VStack)
 end
@@ -235,7 +286,26 @@ function VStack:expandChildren()
 	self.exp_size = ExpSize(w, h - 1)
 end
 
-function VStack:layoutChildren(rect)
+function VStack:layoutChildren()
+	local y = self.rect.y
+
+	for _, child in ipairs(self.children) do
+		local w, h = child:sizeThatFits(self.rect.w, child.size.value)
+		print(w, h)
+
+		child.rect = Rect(self.rect.x, y, w, h)
+		child:layoutChildren()
+
+		y = y + h + self.spacing.value
+
+		if child.size.value == math.huge then
+			print('SIZE TO FILL')
+		else
+			print('SIZE TO CONTENT')
+		end
+	end
+
+	--[[
 	local x, y, w = rect.x, rect.y, 0
 	local ch_heights = {}
 	for _, child in ipairs(self.children) do
@@ -259,6 +329,7 @@ function VStack:layoutChildren(rect)
 
 		y = y + h
 	end
+	--]]
 end
 
 function VStack:__tostring()
@@ -300,14 +371,20 @@ function Elem:new(widget, ...)
 	return setmetatable(this, Elem)
 end
 
+function Elem:sizeThatFits(w, h)
+	if self.widget then return self.widget:sizeThatFits(w, h) end
+
+	return w, h
+end
+
 function Elem:expandChildren()
 	self.exp_size = self.min_size
 end
 
-function Elem:layoutChildren(rect)
+function Elem:layoutChildren()
 	if not self.widget then return end
 
-	self.widget:setFrame(rect.x, rect.y, rect.w, rect.h)
+	self.widget:setFrame(self.rect.x, self.rect.y, self.rect.w, self.rect.h)
 end
 
 function Elem:__tostring()

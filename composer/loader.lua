@@ -7,6 +7,7 @@ local ATTRIBUTE_IMPORTS = [[
 local Margin = attr.Margin
 local Stretch = attr.Stretch
 local MinSize = attr.MinSize
+local Spacing = attr.Spacing
 local Size = attr.Size
 local ID = attr.ID
 ]]
@@ -125,65 +126,71 @@ local function load(path, is_debug)
 		print(contents)
 	end
 
-	local hud_contents = loadstring(contents)
-	local hud = hud_contents()
+	local ui = loadstring(contents)()
 
 	-- create a list of elements for use with the eachElement() function
 	-- create a list of wdgets
-	local elements, widgets = getElementsAndWidgets(hud)
+	local elements, widgets = getElementsAndWidgets(ui)
 
-	hud.resize = function(w, h)
-		hud:reshape(0, 0, w, h)
-	end
+	-- hud.resize = function(w, h)
+	-- 	hud:resize(0, 0, w, h)
+	-- end
 
-	hud.update = function(dt)
-		for _, widget in ipairs(widgets) do
-			widget:update(dt)
-		end
-	end
+	-- hud.update = function(dt)
+	-- 	for _, widget in ipairs(widgets) do
+	-- 		widget:update(dt)
+	-- 	end
+	-- end
 
-	hud.draw = function()
-		for _, widget in ipairs(widgets) do
-			widget:draw()
-		end
-	end
+	-- hud.draw = function()
+	-- 	for _, widget in ipairs(widgets) do
+	-- 		widget:draw()
+	-- 	end
+	-- end
 
 	-- create a table of elements by id for use with the getElement() function
-	local elements_by_id = {}
-	for _, element in ipairs(elements) do
-		if element.id ~= nil then
-			elements_by_id[element.id.value] = element
-		end
-	end
+	-- local elements_by_id = {}
+	-- for _, element in ipairs(elements) do
+	-- 	if element.id ~= nil then
+	-- 		elements_by_id[element.id.value] = element
+	-- 	end
+	-- end
 
-	hud.getElement = function(id, fn)
-		local e = elements_by_id[id]
-		if e then fn(e) end
-	end
+	-- hud.getElement = function(id, fn)
+	-- 	local e = elements_by_id[id]
+	-- 	if e then fn(e) end
+	-- end
 
-	hud.eachElement = function(fn)
-		for _, e in ipairs(elements) do
-			fn(e)
-		end
-	end
+	-- hud.eachElement = function(fn)
+	-- 	for _, e in ipairs(elements) do
+	-- 		fn(e)
+	-- 	end
+	-- end
 
-	hud.getWidget = function(element_id, fn)
-		local e = elements_by_id[element_id]
-		if e and e.widget ~= nil then fn(e.widget) end
-	end
+	-- hud.getWidget = function(element_id, fn)
+	-- 	local e = elements_by_id[element_id]
+	-- 	if e and e.widget ~= nil then fn(e.widget) end
+	-- end
 
-	hud.eachWidget = function(fn)
-		for _, w in ipairs(widgets) do
-			fn(w)
-		end
-	end
+	-- hud.eachWidget = function(fn)
+	-- 	for _, w in ipairs(widgets) do
+	-- 		fn(w)
+	-- 	end
+	-- end
 
-	return hud
+	return {
+		draw = function() for _, widget in ipairs(widgets) do widget:draw() end end,
+		update = function(dt) for _, widget in ipairs(widgets) do widget:update(dt) end end,
+		getControl = function(id) end,
+		eachControl = function(fn)
+			for _, control in ipairs(controls) do
+				fn(control)
+			end
+		end,
+		getElement = function(id) end,
+		resize = function(w, h) ui:resize(0, 0, w, h) end,
+	}
 end
 
 -- The module
-return {
-	require = require,
-	unrequire = unrequire,
-	load = load,
-}
+return load
