@@ -1,5 +1,6 @@
 local _PATH = (...):match("(.-)[^%.]+$") 
 local layout = require(_PATH .. "layout")
+local controls = require(_PATH .. 'controls')
 local Elem = layout.Elem
 
 local ATTRIBUTE_IMPORTS = [[
@@ -14,6 +15,11 @@ local Border = layout.Border
 local VStack = layout.VStack
 local HStack = layout.HStack
 local Elem = layout.Elem
+]]
+
+local CONTROL_IMPORTS = [[
+local Label = controls.Label
+local Button = controls.Button
 ]]
 
 -- this pattern matches the full component directive with square hooks
@@ -90,6 +96,7 @@ local function load(path, is_debug)
 
 	local attr_path = _PATH .. "attributes"
 	local layout_path = _PATH .. "layout"
+	local controls_path = _PATH .. "controls"
 
 	local imports = {
 		"--[[ " .. attr_path .. " ]]--",
@@ -98,6 +105,9 @@ local function load(path, is_debug)
 		"--[[ " .. layout_path .. " ]]--",
 		"local layout = require \"" .. layout_path .. "\"",		
 		LAYOUT_IMPORTS,
+		"--[[ " .. controls_path .. " ]]--",
+		"local controls = require \"" .. controls_path .. "\"",		
+		CONTROL_IMPORTS,
 	}
 
 	for path, _ in pairs(registry) do
@@ -132,13 +142,13 @@ local function load(path, is_debug)
 
 	hud.update = function(dt)
 		for _, widget in ipairs(widgets) do
-			widget.update(dt)
+			widget:update(dt)
 		end
 	end
 
 	hud.draw = function()
 		for _, widget in ipairs(widgets) do
-			widget.draw()
+			widget:draw()
 		end
 	end
 

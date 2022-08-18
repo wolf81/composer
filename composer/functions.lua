@@ -1,3 +1,5 @@
+local mrandom = math.random
+
 local function sum(tbl)
 	local total = 0
 	for _, v in ipairs(tbl) do
@@ -76,6 +78,10 @@ local function removeMatch(tbl, fn)
 	end
 end
 
+local function randomColor()
+    return { mrandom(255) / 255, mrandom(255) / 255, mrandom(255) / 255 }
+end
+
 local function describe(name, tbl)
 	local values = {}
 	for k, v in pairs(tbl) do
@@ -90,5 +96,6 @@ return {
 	zip = zip,
 	spread = spread,
 	removeMatch = removeMatch,
+	randomColor = randomColor,
 	describe = describe,
 }

@@ -34,4 +34,7 @@ composer.require = Loader.require
 composer.unrequire = Loader.unrequire
 composer.load = Loader.load
 
+local core = require(PATH .. '.core')
+composer.init = core.init
+
 return composer

@@ -30,7 +30,7 @@ end
 
 local function resizeLayout()
 	layout.resize(window_w, window_h, function(e)
-		e.widget.setFrame(e.rect.x, e.rect.y, e.rect.w, e.rect.h)
+		e.widget:setFrame(e.rect.x, e.rect.y, e.rect.w, e.rect.h)
 		print(e)
 	end)
 end
@@ -54,21 +54,16 @@ function love.load(args)
         return love.keyboard.released[key] == true
     end
 
+    composer.init()
+
     -- add custom controls to the layout engine loader
-    composer.require("widgets/widgets.lua")
+    -- composer.require("widgets/widgets.lua")
     updateLayout()
 
 	window_w, window_h = love.window.getMode()
     resizeLayout()
 
     love.window.setTitle("Composer v" .. composer._VERSION)
-
---[[    print("\n\n")
-    for k, v in pairs(_G.package.loaded) do
-    	print(k, v)
-    end
-    print("\n\n")
---]]
 end
 
 function love.update(dt)
