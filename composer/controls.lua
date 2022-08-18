@@ -689,8 +689,8 @@ end
 
 return {
     Control = Control,
-    Label = function() return layout.Elem(Label()) end,
-    Button = function() return layout.Elem(Button()) end,
+    Label = function(opts) return layout.Elem(Label(opts)) end,
+    Button = function(opts) return layout.Elem(Button(opts)) end,
     ImageButton = ImageButton,
     Checkbox = Checkbox,
     Progress = Progress,

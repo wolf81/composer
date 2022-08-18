@@ -59,9 +59,10 @@ return Layout(Margin(10), VStack(Spacing(10), {
     HStack({
         makeSpace(),
         VStack(Spacing(10), {
+            makeLabel('HELLO HERE I AM'),
             makeButton('HELLO'),
-            makeButton(),
-            makeButton(),
+            makeButton('HERE'),
+            makeButton('WE ARE'),
         }),
         makeSpace(),
     }),
