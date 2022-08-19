@@ -681,12 +681,12 @@ end
 
 return {
     Control = Control,
-    Label = Label,
+    Label = function(...) return layout.Elem(Label(...)) end,
     Button = function(...) return layout.Elem(Button(...)) end,
-    ImageButton = ImageButton,
-    Checkbox = Checkbox,
-    Progress = Progress,
-    Slider = Slider,
-    Input = Input,
+    ImageButton = function(...) return layout.Elem(ImageButton(...)) end,
+    Checkbox = function(...) return layout.Elem(Checkbox(...)) end,
+    Progress = function(...) return layout.Elem(Progress(...)) end,
+    Slider = function(...) return layout.Elem(Slider(...)) end,
+    Input = function(...) return layout.Elem(Input(...)) end,
     Space = function(...) return layout.Elem(...) end,
 }

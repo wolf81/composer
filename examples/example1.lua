@@ -54,38 +54,38 @@ return Layout(Margin(10), VStack(Spacing(10), {
     Space(),
     HStack(Spacing(10), {
         Space(),
-        Elem(makeButton('BUTTON')),
+        makeButton('BUTTON'),
         Space(),
     }),
-    -- HStack(Spacing(10), {
-    --     Elem(),
-    --     Elem(makeCheckbox()),
-    --     Elem(),
-    -- }),    
-    -- HStack(Spacing(10), {
-    --     Elem(),
-    --     Elem(makeLabel('Label')),
-    --     Elem(),
-    -- }),    
-    -- HStack(Spacing(10), {
-    --     Elem(),
-    --     Elem(makeImageButton('assets/sparkling-sabre.png')),
-    --     Elem(),
-    -- }),    
-    -- HStack {
-    --     Elem(),
-    --     Elem(makeSlider()),
-    --     Elem(),
-    -- },
-    -- HStack {
-    --     Elem(),
-    --     Elem(makeInput('blaat')),
-    --     Elem(),
-    -- },
-    -- HStack {
-    --     Elem(),
-    --     Elem(makeProgress()),
-    --     Elem(),
-    -- },
+    HStack(Spacing(10), {
+        Space(),
+        makeCheckbox(),
+        Space(),
+    }),    
+    HStack(Spacing(10), {
+        Space(),
+        makeLabel('Label'),
+        Space(),
+    }),    
+    HStack(Spacing(10), {
+        Space(),
+        makeImageButton('assets/sparkling-sabre.png'),
+        Space(),
+    }),    
+    HStack {
+        Space(),
+        makeSlider(),
+        Space(),
+    },
+    HStack {
+        Space(),
+        makeInput('blaat'),
+        Space(),
+    },
+    HStack {
+        Space(),
+        makeProgress(),
+        Space(),
+    },
     Space(),
 }))

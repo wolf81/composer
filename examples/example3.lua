@@ -1,13 +1,13 @@
 return Layout(VStack {
-	Elem(),
-	Elem(400, HStack {
-		Elem(),
-		Elem(400, VStack(Spacing(10), {
+	Space(),
+	HStack(400, {
+		Space(),
+		VStack(400, Spacing(10), {
 			Elem(100, Button { text = 'BUTTON 1', font = 20 }),
 			Elem(100, Button { text = 'BUTTON 2', font = 20 }),
 			Elem(100, Button { text = 'BUTTON 3', font = 20 }),
-		})),
-		Elem(),
+		}),
+		Space(),
 	}),
-	Elem(),
+	Space(),
 })
