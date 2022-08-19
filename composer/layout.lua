@@ -49,7 +49,7 @@ function HStack:layoutChildren()
 			fixed_w = fixed_w + col.size
 		else
 			if col.child then
-				local cw, _ = col.child:sizeThatFits(col.size, math.huge)
+				local cw, _ = col:sizeThatFits(col.size, math.huge)
 				col_widths[idx] = cw
 				fixed_w = fixed_w + cw
 			else
@@ -91,7 +91,7 @@ function HStack:sizeThatFits(w, h)
 		if col.size ~= math.huge then
 			cw = cw + col.size
 		elseif col.child then
-			local tw, th = col.child:sizeThatFits(w, h)
+			local tw, th = col:sizeThatFits(w, h)
 			cw = cw + tw
 			ch = math.max(ch, th)
 		end
@@ -142,7 +142,7 @@ function VStack:layoutChildren()
 			fixed_h = fixed_h + row.size
 		else
 			if row.child then
-				local _, rh = row.child:sizeThatFits(math.huge, row.size)
+				local _, rh = row:sizeThatFits(math.huge, row.size)
 				row_heights[idx] = rh
 				fixed_h = fixed_h + rh
 			else
@@ -184,7 +184,7 @@ function VStack:sizeThatFits(w, h)
 		if row.size ~= math.huge then
 			rh = rh + row.size
 		elseif row.child then
-			local tw, th = row.child:sizeThatFits(w, h)
+			local tw, th = row:sizeThatFits(w, h)
 			rh = rh + th
 			rw = math.max(rw, tw)
 		end
