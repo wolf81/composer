@@ -11,22 +11,13 @@ local HStack = Layout:extend()
 local VStack = Layout:extend()
 local Elem = Layout:extend()
 
---[[ DUMMY ]]--
-
-local Dummy = Object:extend()
-function Dummy:draw() end
-function Dummy:update(dt) end
-function Dummy:layoutChildren() end
-function Dummy:setFrame() end
-function Dummy:sizeThatFits(w, h) return w, h end
-function Dummy:__tostring() return F.describe('Dummy', self) end
-
 --[[ HStack ]]--
 
 function HStack:new(...)
 	self.frame = Rect(0, 0, 0, 0)
 	self.spacing = attr.Spacing(0)
 	self.children = {}
+	self.size = math.huge
 
 	for _, arg in pairs({...}) do
 		if arg.is ~= nil then
@@ -57,7 +48,7 @@ function HStack:layoutChildren()
 		if col.size ~= math.huge then
 			fixed_w = fixed_w + col.size
 		else
-			if col.child and not col.child:is(Dummy) then
+			if col.child then
 				local cw, _ = col.child:sizeThatFits(col.size, math.huge)
 				col_widths[idx] = cw
 				fixed_w = fixed_w + cw
@@ -99,7 +90,7 @@ function HStack:sizeThatFits(w, h)
 	for _, col in ipairs(self.children) do
 		if col.size ~= math.huge then
 			cw = cw + col.size
-		elseif col.child and not col.child:is(Dummy) then
+		elseif col.child then
 			local tw, th = col.child:sizeThatFits(w, h)
 			cw = cw + tw
 			ch = math.max(ch, th)
@@ -119,6 +110,7 @@ function VStack:new(...)
 	self.frame = Rect(0, 0, 0, 0)
 	self.spacing = attr.Spacing(0)
 	self.children = {}
+	self.size = math.huge
 
 	for _, arg in pairs({...}) do
 		if arg.is ~= nil then
@@ -128,7 +120,7 @@ function VStack:new(...)
 		else
 			if type(arg) == 'table' then
 				for _, child in ipairs(arg) do
-					assert(child:is(Elem), 'child should be of type Elem')					
+					assert(child:is(Layout), 'child should be of type Layout')					
 				end
 
 				self.children = arg
@@ -149,7 +141,7 @@ function VStack:layoutChildren()
 		if row.size ~= math.huge then			
 			fixed_h = fixed_h + row.size
 		else
-			if row.child and not row.child:is(Dummy) then
+			if row.child then
 				local _, rh = row.child:sizeThatFits(math.huge, row.size)
 				row_heights[idx] = rh
 				fixed_h = fixed_h + rh
@@ -191,7 +183,7 @@ function VStack:sizeThatFits(w, h)
 	for _, row in ipairs(self.children) do
 		if row.size ~= math.huge then
 			rh = rh + row.size
-		elseif row.child and not row.child:is(Dummy) then
+		elseif row.child then
 			local tw, th = row.child:sizeThatFits(w, h)
 			rh = rh + th
 			rw = math.max(rw, tw)
@@ -210,7 +202,7 @@ end
 function Layout:new(...)
 	self.size = math.huge
 	self.frame = Rect(0, 0, 0, 0)
-	self.child = Dummy()
+	self.child = nil
     self.color = F.randomColor()
     self.margin = attr.Margin(0)
 
@@ -242,14 +234,18 @@ function Layout:layoutChildren()
 end
 
 function Layout:update(dt)
+	if not self.child then return end
+
 	self.child:update(dt)
 end
 
 function Layout:draw()
-	-- local l = love.graphics.getLineWidth()
-	-- love.graphics.setColor(unpack(self.color))
-	-- local x, y, w, h = self.frame:unpack()
-	-- love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
+	if not self.child then return end
+
+	local l = love.graphics.getLineWidth()
+	love.graphics.setColor(unpack(self.color))
+	local x, y, w, h = self.frame:unpack()
+	love.graphics.rectangle('line', x + l / 2, y + l / 2, math.max(w - l, 0), math.max(h - l, 0))
 
 	self.child:draw()
 end
@@ -271,6 +267,12 @@ function Elem:layoutChildren()
 			self.child:setFrame(x, y, w, h)
 		end
 	end
+end
+
+function Elem:sizeThatFits(w, h)
+	if self.child then return self.child:sizeThatFits(w, h) end
+
+	return w, h
 end
 
 function Elem:__tostring()
