@@ -11,11 +11,11 @@ local function makeButton(text)
 end
 
 return Layout(HStack {
-    Elem(),
+    Space(),
     HStack {
-        Elem(makeButton('BLAAT')),
-        Elem(500),
-        Elem(makeLabel('HI')),
+        makeButton('BLAAT'),
+        Space(500),
+        makeLabel('HI'),
     },
-    Elem(),
+    Space(),
 })

@@ -1,8 +1,8 @@
 local function makeButton(image_path)
-    return ImageButton { 
+    return ImageButton(80, { 
         image = image_path,
         corner_radius = 40,
-    }
+    })
 end
 
 local function makeLabel(text)
@@ -17,12 +17,12 @@ return Layout(Margin(10), VStack {
     HStack(80, Spacing(5), {
         makeLabel('MENU'),
         Space(),
-        Elem(80, makeButton('assets/crossbow.png')),
-        Elem(80, makeButton('assets/sparkling-sabre.png')),
-        Elem(80, makeButton('assets/switch-weapon.png')),
+        makeButton('assets/crossbow.png'),
+        makeButton('assets/sparkling-sabre.png'),
+        makeButton('assets/switch-weapon.png'),
     }),
     Space(40),
     HStack(80, { 
-        Elem(80, makeButton('assets/crossbow.png'))
+        makeButton('assets/crossbow.png')
     })
 })

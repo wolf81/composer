@@ -1,15 +1,11 @@
 -- hovered, active, normal, disabled
 
-local function makeButton(title, is_enabled)
-    local button = Button {
+local function makeButton(title)
+    return Button({
         text = title,
         font = { 12 },
         corner_radius = 3,
-    }
-
-    -- button:setEnabled(is_enabled ~= false)
-
-    return button
+    })
 end
 
 local function makeImageButton(image_path)

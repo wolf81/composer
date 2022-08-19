@@ -11,15 +11,15 @@ local function makeButton(text)
 end
 
 return Layout(VStack {
-    Elem(),
+    Space(),
     VStack {
-        Elem(makeButton('BLAAT')),
+        makeButton('BLAAT'),
         VStack(100, {
-            Elem(),
-            Elem(makeButton('BOTTOM')),
-            Elem(),
+            Space(),
+            makeButton('BOTTOM'),
+            Space(),
         }),
-        Elem(makeLabel('HI')),
+        makeLabel('HI'),
     },
-    Elem(),
+    Space(),
 })

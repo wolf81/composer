@@ -32,9 +32,20 @@ local function isArray(table)
 	return true
 end
 
+-- remove a value from a table if function fn returns true
+local function removeMatch(tbl, fn)
+	for i = #tbl, 1, -1 do
+		local value = tbl[i]
+		if fn(value) then			
+			return table.remove(tbl, i)
+		end
+	end
+end
+
 -- the module
 return {
 	randomColor = randomColor,
+	removeMatch = removeMatch,
 	isArray = isArray,
 	describe = describe,
 }

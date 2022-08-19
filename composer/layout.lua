@@ -226,6 +226,20 @@ end
 
 --[[ ELEM ]]--
 
+function Elem:new(T, ...)
+	Layout.new(self, ...)
+
+	local args = {...}
+
+	F.removeMatch(args, function(v) return type(v) == 'number' end)
+	F.removeMatch(args, function(v) return v.is ~= nil and type(v) == 'function' and v:is(Margin) end)
+	F.removeMatch(args, function(v) return v.is ~= nil and type(v) == 'function' and v:is(Spacing) end)
+
+	local opts = F.removeMatch(args, function(v) return v.is == nil end)
+
+	self.child = T and T(opts or {})
+end
+
 function Elem:layoutChildren()
 	if self.child then
 		if self.child:is(Layout) then

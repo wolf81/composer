@@ -6,15 +6,23 @@ local function makeButton(text)
     }
 end
 
+local function makeLabel(text)
+    return Label { 
+        text = text, 
+        font = { 'assets/agricola-rough.otf', 48 }, 
+        align = 'center' 
+    }
+end
+
 return Layout(HStack {
-	Elem(),
+	Space(),
 	VStack(300, Spacing(8), {
-		Elem(Label { text = 'MY AWESOME GAME', font = { 'assets/agricola-rough.otf', 48 }, align = 'center' }),
-		Elem(70, makeButton('NEW GAME')),
-		Elem(70, makeButton('CONTINUE')),
-		Elem(70, makeButton('SETTINGS')),
-		Elem(70, makeButton('QUIT')),
-		Elem(),
+		makeLabel('MY AWESOME GAME'),
+		makeButton('NEW GAME'),
+		makeButton('CONTINUE'),
+		makeButton('SETTINGS'),
+		makeButton('QUIT'),
+		Space(),
 	}),
-	Elem(),
+	Space(),
 })
