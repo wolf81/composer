@@ -52,40 +52,40 @@ else use col height
 ]]
 return Layout(Margin(10), VStack(Spacing(10), {
     Elem(),
-    Elem(HStack(Spacing(10), {
+    HStack(Spacing(10), {
         Elem(),
         Elem(makeButton('BUTTON')),
         Elem(),
-    })),
-    Elem(HStack(Spacing(10), {
+    }),
+    HStack(Spacing(10), {
         Elem(),
         Elem(makeCheckbox()),
         Elem(),
-    })),    
-    Elem(HStack(Spacing(10), {
+    }),    
+    HStack(Spacing(10), {
         Elem(),
         Elem(makeLabel('Label')),
         Elem(),
-    })),    
-    Elem(HStack(Spacing(10), {
+    }),    
+    HStack(Spacing(10), {
         Elem(),
         Elem(makeImageButton('assets/sparkling-sabre.png')),
         Elem(),
-    })),    
-    Elem(HStack {
+    }),    
+    HStack {
         Elem(),
         Elem(makeSlider()),
         Elem(),
-    }),
-    Elem(HStack {
+    },
+    HStack {
         Elem(),
         Elem(makeInput('blaat')),
         Elem(),
-    }),
-    Elem(HStack {
+    },
+    HStack {
         Elem(),
         Elem(makeProgress()),
         Elem(),
-    }),
+    },
     Elem(),
 }))

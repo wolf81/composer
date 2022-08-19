@@ -8,13 +8,13 @@ end
 
 return Layout(HStack {
 	Elem(),
-	Elem(300, VStack(Spacing(8), {
+	VStack(300, Spacing(8), {
 		Elem(Label { text = 'MY AWESOME GAME', font = { 'assets/agricola-rough.otf', 48 }, align = 'center' }),
 		Elem(70, makeButton('NEW GAME')),
 		Elem(70, makeButton('CONTINUE')),
 		Elem(70, makeButton('SETTINGS')),
 		Elem(70, makeButton('QUIT')),
 		Elem(),
-	})),
+	}),
 	Elem(),
 })

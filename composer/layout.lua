@@ -20,14 +20,16 @@ function HStack:new(...)
 	self.size = math.huge
 
 	for _, arg in pairs({...}) do
-		if arg.is ~= nil then
+		if type(arg) == 'number' then
+			self.size = arg
+		elseif arg.is ~= nil then
 			if arg:is(attr.Spacing) then
 				self.spacing = arg
 			end
 		else
 			if type(arg) == 'table' then
 				for _, child in ipairs(arg) do
-					assert(child:is(Elem), 'child should be of type Elem')					
+					assert(child:is(Layout), 'child should be of type Layout')					
 				end
 
 				self.children = arg
@@ -48,7 +50,7 @@ function HStack:layoutChildren()
 		if col.size ~= math.huge then
 			fixed_w = fixed_w + col.size
 		else
-			if col.child then
+			if col.child or col.children then
 				local cw, _ = col:sizeThatFits(col.size, math.huge)
 				col_widths[idx] = cw
 				fixed_w = fixed_w + cw
@@ -90,7 +92,7 @@ function HStack:sizeThatFits(w, h)
 	for _, col in ipairs(self.children) do
 		if col.size ~= math.huge then
 			cw = cw + col.size
-		elseif col.child then
+		elseif col.child or col.children then
 			local tw, th = col:sizeThatFits(w, h)
 			cw = cw + tw
 			ch = math.max(ch, th)
@@ -113,7 +115,9 @@ function VStack:new(...)
 	self.size = math.huge
 
 	for _, arg in pairs({...}) do
-		if arg.is ~= nil then
+		if type(arg) == 'number' then
+			self.size = arg
+		elseif arg.is ~= nil then
 			if arg:is(attr.Spacing) then
 				self.spacing = arg
 			end
@@ -141,7 +145,7 @@ function VStack:layoutChildren()
 		if row.size ~= math.huge then			
 			fixed_h = fixed_h + row.size
 		else
-			if row.child then
+			if row.child or row.children then
 				local _, rh = row:sizeThatFits(math.huge, row.size)
 				row_heights[idx] = rh
 				fixed_h = fixed_h + rh
@@ -183,7 +187,7 @@ function VStack:sizeThatFits(w, h)
 	for _, row in ipairs(self.children) do
 		if row.size ~= math.huge then
 			rh = rh + row.size
-		elseif row.child then
+		elseif row.child or row.children then
 			local tw, th = row:sizeThatFits(w, h)
 			rh = rh + th
 			rw = math.max(rw, tw)

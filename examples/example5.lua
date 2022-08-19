@@ -12,14 +12,14 @@ end
 
 return Layout(VStack {
     Elem(),
-    Elem(VStack {
+    VStack {
         Elem(makeButton('BLAAT')),
-        Elem(100, VStack {
+        VStack(100, {
             Elem(),
             Elem(makeButton('BOTTOM')),
             Elem(),
         }),
         Elem(makeLabel('HI')),
-    }),
+    },
     Elem(),
 })

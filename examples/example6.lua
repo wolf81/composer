@@ -12,10 +12,10 @@ end
 
 return Layout(HStack {
     Elem(),
-    Elem(HStack {
+    HStack {
         Elem(makeButton('BLAAT')),
         Elem(500),
         Elem(makeLabel('HI')),
-    }),
+    },
     Elem(),
 })
