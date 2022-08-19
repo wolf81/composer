@@ -2,8 +2,7 @@
 
 ## Introduction
 
-Composer is a simple layout engine for UI widgets. Composer doesn't include 
-any widgets, but should be easy to use with most UI widget libraries.
+Composer is both a layout engine and widget library.
 
 With composer the idea is to create a Lua-like layout file. The layout file 
 can be loaded and resized to fit a target area (e.g. the window).
@@ -17,22 +16,32 @@ file properly._
 
 Composer exposes the following layouts for use in a layout file:
 
-* `Border`: a layout that can contain a margin and a single child element
-* `VStack`: a layout that arranges its child elements vertically.
-* `HStack`: a layout that arranges its child elements horizontally.
-* `Elem`: an layout that can be associated with a widget.
+* `Layout`: the root node of a layout file.
+* `VStack`: a node that arranges its child elements vertically.
+* `HStack`: a node that arranges its child elements horizontally.
+* `Elem`: the elem object is a container for a widget.
 
 ## Attributes
 
 Composer exposes the following attributes for use in a layout file:
 
-* `Margin`: can only be used with a `Border` layout; adds spacing between `Border` and
-its child element. A `Margin` has 4 arguments, left, top, right & bottom.
-* `MinSize`: the minimum horizontal & vertical size of the layout in pixels.
-* `Stretch`: control whether the layout stretches horizontally or vertically to 
-fill its container. 
+* `Margin`: can only be used with a `Border` layout; adds spacing between 
+`Border` and its child element. A `Margin` has 4 arguments, left, top, right & 
+bottom.
 * `ID`: can only be used with an `Elem` layout and is used to easily lookup any 
 element in a loaded layout file.
+
+Additionally, providing a numeric value to a `VStack`, `HStack` or `Elem` will 
+use the provided value as it's default size value. Please be aware that the 
+meaning of the size value is dependent on it's context:
+
+* Since a `VStack` always fills it's parent vertically, the size value 
+corresponds to the width of the stack.
+* Since a `HStack` always fills it's parent horizontally, the size value 
+corresponds to the height of the stack.
+* In case of a child `Elem`ent, the meaning of the size value depends on the 
+container. If the container is a `VStack`, the size value corresponds to the 
+height. If the container is a `HStack`, the size value corresponds to the width.
 
 ## Layout file
 
@@ -138,7 +147,7 @@ required widgets from the `Loader`.
 Based on the above widgets, a layout file might now look as follows:
 
 ```lua
-Border(Margin(10), {
+Layout(Margin(10), {
 	VStack({
 		Label("Hello", ID("title"), Stretch(1), MinSize(0, 50)),
 		Label("Welcome", ID("message"), Stretch(1, 0), MinSize(0, 50)),
