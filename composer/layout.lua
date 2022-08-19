@@ -7,13 +7,14 @@ local attr = require(PATH .. 'attributes')
 --[[ LAYOUT ]]--
 
 local Layout = Object:extend()
-local HStack = Layout:extend()
-local VStack = Layout:extend()
 local Elem = Layout:extend()
+local Stack = Layout:extend()
+local HStack = Stack:extend()
+local VStack = Stack:extend()
 
---[[ HStack ]]--
+--[[ STACK ]]--
 
-function HStack:new(...)
+function Stack:new(...)
 	self.frame = Rect(0, 0, 0, 0)
 	self.spacing = attr.Spacing(0)
 	self.children = {}
@@ -38,6 +39,20 @@ function HStack:new(...)
 	end
 end
 
+function Stack:update(dt)
+	for _, child in ipairs(self.children) do
+		child:update(dt)
+	end
+end
+
+function Stack:draw()
+	for _, child in ipairs(self.children) do
+		child:draw()
+	end
+end
+
+--[[ HStack ]]--
+
 function HStack:layoutChildren()
 	local fixed_w = math.max(#self.children - 1, 0) * self.spacing.v
 	local flex_children = 0
@@ -60,7 +75,7 @@ function HStack:layoutChildren()
 		end
 	end
 
-	-- calculate flex width for each flex childumn
+	-- calculate flex width for each flex children
 	local x, y, w, h = self.frame.x, self.frame.y, self.frame.w, self.frame.h
 	local flex_w = math.floor((w - fixed_w) / flex_children)
 
@@ -71,18 +86,6 @@ function HStack:layoutChildren()
 		child.frame = Rect(x, y, w, h)
 		child:layoutChildren()
 		x = x + w + self.spacing.v
-	end
-end
-
-function HStack:update(dt)
-	for _, child in ipairs(self.children) do
-		child:update(dt)
-	end
-end
-
-function HStack:draw()
-	for _, child in ipairs(self.children) do
-		child:draw()
 	end
 end
 
@@ -107,31 +110,6 @@ function HStack:__tostring()
 end
 
 --[[ VStack ]]--
-
-function VStack:new(...)
-	self.frame = Rect(0, 0, 0, 0)
-	self.spacing = attr.Spacing(0)
-	self.children = {}
-	self.size = math.huge
-
-	for _, arg in pairs({...}) do
-		if type(arg) == 'number' then
-			self.size = arg
-		elseif arg.is ~= nil then
-			if arg:is(attr.Spacing) then
-				self.spacing = arg
-			end
-		else
-			if type(arg) == 'table' then
-				for _, child in ipairs(arg) do
-					assert(child:is(Layout), 'child should be of type Layout')					
-				end
-
-				self.children = arg
-			end
-		end
-	end
-end
 
 function VStack:layoutChildren()
 	local fixed_h = math.max(#self.children - 1, 0) * self.spacing.v
@@ -166,18 +144,6 @@ function VStack:layoutChildren()
 		child.frame = Rect(x, y, w, h)
 		child:layoutChildren()
 		y = y + h + self.spacing.v
-	end
-end
-
-function VStack:update(dt)
-	for _, child in ipairs(self.children) do
-		child:update(dt)
-	end
-end
-
-function VStack:draw()
-	for _, child in ipairs(self.children) do
-		child:draw()
 	end
 end
 
@@ -266,7 +232,6 @@ function Elem:layoutChildren()
 			self.child.frame = self.frame
 			self.child:layoutChildren()
 		else
-			-- either Control or Dummy
 			local x, y, w, h = self.frame:unpack()
 			self.child:setFrame(x, y, w, h)
 		end
