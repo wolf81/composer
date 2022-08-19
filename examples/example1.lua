@@ -7,7 +7,7 @@ local function makeButton(title, is_enabled)
         corner_radius = 3,
     }
 
-    button:setEnabled(is_enabled ~= false)
+    -- button:setEnabled(is_enabled ~= false)
 
     return button
 end
@@ -51,41 +51,41 @@ else use col height
 
 ]]
 return Layout(Margin(10), VStack(Spacing(10), {
-    Elem(),
+    Space(),
     HStack(Spacing(10), {
-        Elem(),
+        Space(),
         Elem(makeButton('BUTTON')),
-        Elem(),
+        Space(),
     }),
-    HStack(Spacing(10), {
-        Elem(),
-        Elem(makeCheckbox()),
-        Elem(),
-    }),    
-    HStack(Spacing(10), {
-        Elem(),
-        Elem(makeLabel('Label')),
-        Elem(),
-    }),    
-    HStack(Spacing(10), {
-        Elem(),
-        Elem(makeImageButton('assets/sparkling-sabre.png')),
-        Elem(),
-    }),    
-    HStack {
-        Elem(),
-        Elem(makeSlider()),
-        Elem(),
-    },
-    HStack {
-        Elem(),
-        Elem(makeInput('blaat')),
-        Elem(),
-    },
-    HStack {
-        Elem(),
-        Elem(makeProgress()),
-        Elem(),
-    },
-    Elem(),
+    -- HStack(Spacing(10), {
+    --     Elem(),
+    --     Elem(makeCheckbox()),
+    --     Elem(),
+    -- }),    
+    -- HStack(Spacing(10), {
+    --     Elem(),
+    --     Elem(makeLabel('Label')),
+    --     Elem(),
+    -- }),    
+    -- HStack(Spacing(10), {
+    --     Elem(),
+    --     Elem(makeImageButton('assets/sparkling-sabre.png')),
+    --     Elem(),
+    -- }),    
+    -- HStack {
+    --     Elem(),
+    --     Elem(makeSlider()),
+    --     Elem(),
+    -- },
+    -- HStack {
+    --     Elem(),
+    --     Elem(makeInput('blaat')),
+    --     Elem(),
+    -- },
+    -- HStack {
+    --     Elem(),
+    --     Elem(makeProgress()),
+    --     Elem(),
+    -- },
+    Space(),
 }))

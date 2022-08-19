@@ -2,7 +2,8 @@ local PATH = (...):match('(.-)[^%.]+$')
 local Object = require(PATH .. 'classic')
 local F = require(PATH .. 'functions')
 local Theme = require(PATH .. 'theme')
-local core = require (PATH .. 'core')
+local core = require(PATH .. 'core')
+local layout = require(PATH .. 'layout')
 local utf8 = require 'utf8'
 
 local mfloor, mceil, mmax, mmin = math.floor, math.ceil, math.max, math.min
@@ -681,10 +682,11 @@ end
 return {
     Control = Control,
     Label = Label,
-    Button = Button,
+    Button = function(...) return layout.Elem(Button(...)) end,
     ImageButton = ImageButton,
     Checkbox = Checkbox,
     Progress = Progress,
     Slider = Slider,
     Input = Input,
+    Space = function(...) return layout.Elem(...) end,
 }

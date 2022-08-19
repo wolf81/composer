@@ -8,11 +8,13 @@ end
 return Layout(Margin(10), VStack {
     HStack(80, Spacing(5), {
         Elem(Label { text = 'MENU', font = { 'assets/agricola-rough.otf', 20 }, align = 'center' }),
-        Elem(),
+        Space(),
         Elem(80, makeButton('assets/crossbow.png')),
         Elem(80, makeButton('assets/sparkling-sabre.png')),
         Elem(80, makeButton('assets/switch-weapon.png')),
     }),
-    Elem(),
-    Elem(80),
+    Space(40),
+    HStack(80, { 
+        Elem(80, makeButton('assets/crossbow.png'))
+    })
 })

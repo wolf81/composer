@@ -23,6 +23,7 @@ local Checkbox = controls.Checkbox
 local Slider = controls.Slider
 local Progress = controls.Progress
 local Input = controls.Input
+local Space = controls.Space
 ]]
 
 -- this pattern matches the full component directive with square hooks
