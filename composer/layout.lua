@@ -62,7 +62,11 @@ function HStack:layoutChildren()
 	for idx, child in ipairs(self.children) do
 		child_widths[idx] = child.size
 
-		if child.size ~= math.huge then
+		if child:is(VStack) then
+			local cw, _ = child:sizeThatFits(child.size, math.huge)
+			child_widths[idx] = cw
+			fixed_w = fixed_w + cw
+		elseif child.size ~= math.huge then
 			fixed_w = fixed_w + child.size
 		else
 			if child.child or child.children then
@@ -92,10 +96,18 @@ end
 function HStack:sizeThatFits(w, h)
 	local cw, ch = 0, 0
 
+	cw = cw + math.max(#self.children - 1, 0) * self.spacing.v
+
+	if self.size ~= math.huge then ch = self.size end
+
 	for _, child in ipairs(self.children) do
-		if child.size ~= math.huge then
+		if child:is(VStack) then
+			local tw, th = child:sizeThatFits(w, h)
+			cw = cw + tw
+			ch = math.max(ch, th)			
+		elseif child.size ~= math.huge then
 			cw = cw + child.size
-		elseif child.child or child.children then
+		elseif child.child then
 			local tw, th = child:sizeThatFits(w, h)
 			cw = cw + tw
 			ch = math.max(ch, th)
@@ -120,7 +132,11 @@ function VStack:layoutChildren()
 	for idx, child in ipairs(self.children) do
 		child_heights[idx] = child.size
 
-		if child.size ~= math.huge then			
+		if child:is(HStack) then
+			local _, rh = child:sizeThatFits(math.huge, child.size)
+			child_heights[idx] = rh
+			fixed_h = fixed_h + rh
+		elseif child.size ~= math.huge then			
 			fixed_h = fixed_h + child.size
 		else
 			if child.child or child.children then
@@ -150,11 +166,20 @@ end
 function VStack:sizeThatFits(w, h)
 	local rw, rh = 0, 0
 
+	if self.size ~= math.huge then rw = self.size end
+
+	rh = rh + math.max(#self.children - 1, 0) * self.spacing.v
+
 	for _, child in ipairs(self.children) do
-		if child.size ~= math.huge then
+		local tw, th = child:sizeThatFits(w, h)
+
+		if child:is(HStack) then
+			rh = rh + th
+			rw = math.max(rw, tw)
+		elseif child.size ~= math.huge then
 			rh = rh + child.size
-		elseif child.child or child.children then
-			local tw, th = child:sizeThatFits(w, h)
+			rw = math.max(rw, tw)
+		elseif child.child then
 			rh = rh + th
 			rw = math.max(rw, tw)
 		end
