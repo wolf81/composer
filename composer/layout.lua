@@ -224,6 +224,8 @@ function Layout:resize(w, h)
 end
 
 function Layout:layoutChildren()
+	if not self.child then return end
+	
 	self.child.frame = self.frame
 	self.child:layoutChildren()
 end

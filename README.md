@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Composer is both a layout engine and widget library.
+Composer is both a layout engine & widget library.
 
 With composer the idea is to create a Lua-like layout file. The layout file 
 can be loaded and resized to fit a target area (e.g. the window).
@@ -32,7 +32,7 @@ bottom.
 element in a loaded layout file.
 
 Additionally, providing a numeric value to a `VStack`, `HStack` or `Elem` will 
-use the provided value as it's default size value. Please be aware that the 
+use the provided value as it's size value. Please be aware that the 
 meaning of the size value is dependent on it's context:
 
 * Since a `VStack` always fills it's parent vertically, the size value 
@@ -45,26 +45,28 @@ height. If the container is a `HStack`, the size value corresponds to the width.
 
 ## Layout file
 
-Layouts are defined in a layout file. A layout file is based on Lua, but more 
-restricted. A layout file might look as such:
+Layouts are defined in a layout file. A layout file is based on Lua and might look as such:
 
 ```lua
-Border(Margin(10), {
-	VStack({
-		Elem(Stretch(1, 1), MinSize(0, 50)),
-		Elem(Stretch(1, 0), MinSize(0, 50)),
+return Layout(Margin(10), HStack {
+	Space(),
+	VStack(Spacing(10), {
+		Space(),
+		Button({ text = 'Button 1' }),
+		Button({ text = 'Button 2' }),
+		Button({ text = 'Button 3' }),
+		Space(),
 	}),
+	Space(),
 })
 ```
 
-_*PLEASE NOTE:*
-In the above example we see a layout that has a border margin of 10 on all 
-sides. The `Border` contains a vertical stack with 2 child elements. The top 
-element has a minimum width of 0 and height of 50, but stretches horizontally & 
-vertically. The bottom element has the same size but only stretches horizontally._
+With regards to the above file, please note the following:
 
-A layout file *MUST* return a single root layout and *NOT* contain any require 
-statements. 
+* A valid layout file should always return a root `Layout`.
+* Widgets (`Button`, `Slider`, `Label`, ...), layout elements (`VStack`, `HStack`, `Layout`) & attributes (`Spacing`, `Margin`) are imported automatically.
+* The `Space` widget is used to add flexible spacing.
+* As such, in this example 3 buttons are created of equal size in the middle of the view. 
 
 Optionally a layout file may include other layout files as follows:
 
