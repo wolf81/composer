@@ -80,13 +80,25 @@ Border(Margin(10), {
 })
 ```
 
+## Initialization
+
+Composer needs to hook up with several LÖVE 2D functions in order to properly handle mouse & keyboard interactions. As such, prior to loading a layout, one should call the `init()` method. A good place to do this might be at the start of the app.
+
+```lua
+local composer = require 'composer'
+
+function love.load(args)		
+	composer.init()
+end
+```
+
 ## Loading layout files
 
 Use the `load(path)` function to load a layout file from a path. Loading 
 can be achieved as follows:
 
 ```lua
-local layout = Composer.load("layouts/loading.lua")
+local layout = composer.load("layouts/loading.lua")
 ```
 
 _In the above example we load the layout file at path: layouts/loading.lua_
