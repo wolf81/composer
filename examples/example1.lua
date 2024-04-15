@@ -1,12 +1,34 @@
-Border(Margin(0), {
-	VStack({
-		Label("Hello", MinSize(0, 50), Stretch(1, 0), ID("test1")),
-		Button("press G to see next layout", ID("test2")),
-		Label("...", ID("test3")),
-		HStack(MinSize(0, 80), Stretch(1, 0), {
-			Button("Composer", MinSize(120, 50), Stretch(0, 1)),
-			Label("Says", MinSize(40), Stretch(1)),
-			Button("Hello", MinSize(50), Stretch(0, 1)),		
-		})
-	}),
+local Grid = require 'composer.grid'
+local Button = require 'widgets.button'
+
+local Example = {}
+
+Example.new = function()
+    local layout = Grid(
+        { math.huge, 64 }, 
+        { math.huge, 64, 64, 64, 64, math.huge }
+    )
+    print('size', love.window.getMode())
+    layout:resize(love.window.getMode())
+
+    layout:addChild(Button(love.graphics.newImage('gfx/conversation.png')), 2, 2)
+    layout:addChild(Button(love.graphics.newImage('gfx/cultist.png')), 2, 3)
+    layout:addChild(Button(love.graphics.newImage('gfx/high-shot.png')), 2, 4)
+    layout:addChild(Button(love.graphics.newImage('gfx/magic-potion.png')), 2, 5)
+
+    local draw = function(self) layout:draw() end
+
+    local update = function(self, dt) layout:update(dt) end
+
+    local resize = function(self, w, h) layout:resize(w, h) end
+
+    return setmetatable({
+        draw = draw,
+        resize = resize,
+        update = update,
+    }, Example)
+end
+
+return setmetatable(Example, {
+    __call = function(_, ...) return Example.new(...) end,
 })
