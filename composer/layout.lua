@@ -195,7 +195,7 @@ function HStack:layoutChildren(rect)
 		else
 			h = ch.exp_size.y
 		end
-		ch.rect = Rect(x, y, w - 1, h)
+		ch.rect = Rect(x, y, w, h)
 
 		x = x + w
 	end
@@ -231,7 +231,7 @@ function VStack:expandChildren()
 		w = math.max(w, child.exp_size.x)
 		h = h + child.exp_size.y
 	end
-	self.exp_size = ExpSize(w, h - 1)
+	self.exp_size = ExpSize(w, h)
 end
 
 function VStack:layoutChildren(rect)
@@ -254,7 +254,7 @@ function VStack:layoutChildren(rect)
 		else
 			w = ch.exp_size.x
 		end
-		ch.rect = Rect(x, y, w, h - 1)
+		ch.rect = Rect(x, y, w, h)
 
 		y = y + h
 	end
@@ -285,7 +285,13 @@ function Elem:new(widget, ...)
 		return getmetatable(v) == ID
 	end)
 
-	local this = Layout.new(self, unpack(args))
+	local stretch = F.removeMatch(args, function(v) 
+		return getmetatable(v) == Stretch
+	end)
+
+	stretch = stretch or Stretch(0, 0)
+
+	local this = Layout.new(self, stretch, unpack(args))
 	
 	this.id = id
 	this.rect = Rect(0, 0, 0, 0)
