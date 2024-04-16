@@ -185,7 +185,15 @@ local HStack = {}
 HStack.__index = HStack
 
 function HStack:new(...)
-	local this = Layout.new(self, ...)
+	local args = { ... }
+
+	local stretch = F.removeMatch(args, function(v) 
+		return getmetatable(v) == Stretch
+	end)
+
+	stretch = stretch or Stretch(1, 0)
+
+	local this = Layout.new(self, stretch, ...)
 
 	return setmetatable(this, HStack)
 end
@@ -244,7 +252,15 @@ local VStack = {}
 VStack.__index = VStack
 
 function VStack:new(...)
-	local this = Layout.new(self, ...)
+	local args = { ... }
+
+	local stretch = F.removeMatch(args, function(v) 
+		return getmetatable(v) == Stretch
+	end)
+
+	stretch = stretch or Stretch(0, 1)
+	
+	local this = Layout.new(self, stretch, ...)
 
 	return setmetatable(this, VStack)
 end
