@@ -29,11 +29,6 @@ local composer = {
 	]],	
 }
 
-local Loader = require(PATH .. ".loader")
-composer.require = Loader.require
-composer.unrequire = Loader.unrequire
-composer.load = Loader.load
-
 local layout = require(PATH .. '.layout')
 composer.VStack = layout.VStack
 composer.HStack = layout.HStack

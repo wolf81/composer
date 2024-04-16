@@ -2,28 +2,6 @@ local _PATH = (...):match("(.-)[^%.]+$")
 local F = require(_PATH .. "functions")
 
 --[[
---	ID
---	Use the ID attribute to assign an identifier to an element. This identifier
---	can be used to easily retrieve an element from the layout.
---]]
-
-local ID = {}
-
-function ID:new(value)
-	return setmetatable({ 
-		value = value 
-	}, ID)
-end
-
-function ID:__tostring()
-	return F.describe("ID", self)
-end
-
-setmetatable(ID, {
-	__call = ID.new
-})
-
---[[
 --	Margin
 --	The Margin attribute is only used by the Border element and defines spacing
 --	between the Border and it's child element. The arguments are defined in 
