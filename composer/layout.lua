@@ -154,7 +154,7 @@ function Border:expandChildren()
 		h = math.max(h, child.exp_size.y)
 	end
 
-	self.exp_size = ExpSize(math.max(w, min_w), math.math(h, min_h))
+	self.exp_size = ExpSize(math.max(w, min_w), math.max(h, min_h))
 end
 
 function Border:layoutChildren(rect)
