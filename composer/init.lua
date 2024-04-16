@@ -34,4 +34,15 @@ composer.require = Loader.require
 composer.unrequire = Loader.unrequire
 composer.load = Loader.load
 
+local layout = require(PATH .. '.layout')
+composer.VStack = layout.VStack
+composer.HStack = layout.HStack
+composer.Border = layout.Border
+composer.Elem = layout.Elem
+
+local attr = require(PATH .. '.attributes')
+composer.Margin = attr.Margin
+composer.MinSize = attr.MinSize
+composer.Stretch = attr.Stretch
+
 return composer

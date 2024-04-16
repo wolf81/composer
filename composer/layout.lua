@@ -28,6 +28,10 @@ function Rect:__tostring()
 	return F.describe("Rect", self)
 end
 
+function Rect:unpack()
+	return self.x, self.y, self.w, self.h
+end
+
 setmetatable(Rect, {
 	__call = Rect.new
 })
@@ -63,7 +67,7 @@ function Layout:new(...)
 	}, Layout)
 end
 
-function Layout:reshape(x, y, w, h)
+function Layout:setFrame(x, y, w, h)
 	self:expand()
 	self:layout(Rect(x, y, w, h))
 end
@@ -93,6 +97,26 @@ end
 
 function Layout:__tostring()
 	return F.describe("Layout", self)
+end
+
+function Layout:eachElement()
+	return coroutine.wrap(
+		function()
+			for _, child in ipairs(self.children) do
+				-- TODO: nicer to do with a type check (getmetatable)
+				if child.widget then
+					coroutine.yield(child)
+				else
+					local iter = child:eachElement()
+					local v = iter()
+					while v ~= nil do
+						coroutine.yield(v)
+						v = iter()
+					end
+				end
+			end
+		end
+	)
 end
 
 setmetatable(Layout, {
@@ -296,7 +320,7 @@ function Elem:new(widget, ...)
 	this.id = id
 	this.rect = Rect(0, 0, 0, 0)
 	this.widget = widget
-
+	
 	return setmetatable(this, Elem)
 end
 
