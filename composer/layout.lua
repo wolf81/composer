@@ -6,7 +6,6 @@ local Stretch = attr.Stretch
 local MinSize = attr.MinSize
 local Margin = attr.Margin
 local ExpSize = attr.ExpSize
-local ID = attr.ID
 
 --[[
 --	Rect
@@ -147,12 +146,15 @@ function Border:new(...)
 end
 
 function Border:expandChildren()
+	local min_w, min_h = self.min_size:unpack()
+
 	local w, h = self.margin.l + self.margin.r, self.margin.t + self.margin.b
 	for _, child in ipairs(self.children) do
 		w = math.max(w, child.exp_size.x)
 		h = math.max(h, child.exp_size.y)
 	end
-	self.exp_size = ExpSize(w, h)
+
+	self.exp_size = ExpSize(math.max(w, min_w), math.math(h, min_h))
 end
 
 function Border:layoutChildren(rect)
@@ -199,12 +201,15 @@ function HStack:new(...)
 end
 
 function HStack:expandChildren()
+	local min_w, min_h = self.min_size:unpack()
+
 	local w, h = 0, 0
 	for _, child in ipairs(self.children) do
 		w = w + child.exp_size.x
 		h = math.max(h, child.exp_size.y)
 	end
-	self.exp_size = ExpSize(w, h)
+
+	self.exp_size = ExpSize(math.max(w, min_w), math.max(h, min_h))
 end
 
 function HStack:layoutChildren(rect)
@@ -266,12 +271,15 @@ function VStack:new(...)
 end
 
 function VStack:expandChildren()
+	local min_w, min_h = self.min_size:unpack()
+
 	local w, h = 0, 0
 	for _, child in ipairs(self.children) do
 		w = math.max(w, child.exp_size.x)
 		h = h + child.exp_size.y
 	end
-	self.exp_size = ExpSize(w, h)
+	
+	self.exp_size = ExpSize(math.max(w, min_w), math.max(h, min_h))
 end
 
 function VStack:layoutChildren(rect)
@@ -321,10 +329,6 @@ Elem.__index = Elem
 function Elem:new(widget, ...)
 	local args = { ... }
 
-	local id = F.removeMatch(args, function(v)
-		return getmetatable(v) == ID
-	end)
-
 	local stretch = F.removeMatch(args, function(v) 
 		return getmetatable(v) == Stretch
 	end)
@@ -333,7 +337,6 @@ function Elem:new(widget, ...)
 
 	local this = Layout.new(self, stretch, unpack(args))
 	
-	this.id = id
 	this.rect = Rect(0, 0, 0, 0)
 	this.widget = widget
 	

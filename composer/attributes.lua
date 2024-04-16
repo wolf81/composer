@@ -54,10 +54,15 @@ local MinSize = {}
 function MinSize:new(x, y)
 	x = x or 0
 	y = y or x
+
+	local unpack = function(self)
+		return x, y
+	end
 	
 	return setmetatable({
 		x = x,
 		y = y,
+		unpack = unpack,
 	}, MinSize)
 end
 
