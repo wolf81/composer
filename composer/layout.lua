@@ -6,6 +6,7 @@ local Stretch = attr.Stretch
 local MinSize = attr.MinSize
 local Margin = attr.Margin
 local ExpSize = attr.ExpSize
+local Spacing = attr.Spacing
 
 --[[
 --	Rect
@@ -189,6 +190,10 @@ HStack.__index = HStack
 function HStack:new(...)
 	local args = { ... }
 
+	local spacing = F.removeMatch(args, function(v)
+		return getmetatable(v) == Spacing
+	end)
+
 	local stretch = F.removeMatch(args, function(v) 
 		return getmetatable(v) == Stretch
 	end)
@@ -197,6 +202,8 @@ function HStack:new(...)
 
 	local this = Layout.new(self, stretch, ...)
 
+	this.spacing = spacing or Spacing(0)
+
 	return setmetatable(this, HStack)
 end
 
@@ -204,9 +211,13 @@ function HStack:expandChildren()
 	local min_w, min_h = self.min_size:unpack()
 
 	local w, h = 0, 0
-	for _, child in ipairs(self.children) do
+	for idx, child in ipairs(self.children) do
 		w = w + child.exp_size.x
 		h = math.max(h, child.exp_size.y)
+
+		if idx < #self.children - 1 then
+			h = h + self.spacing.value
+		end
 	end
 
 	self.exp_size = ExpSize(math.max(w, min_w), math.max(h, min_h))
@@ -234,7 +245,7 @@ function HStack:layoutChildren(rect)
 		end
 		ch.rect = Rect(x, y, w, h)
 
-		x = x + w
+		x = x + w + self.spacing.value
 	end
 end
 
@@ -259,6 +270,10 @@ VStack.__index = VStack
 function VStack:new(...)
 	local args = { ... }
 
+	local spacing = F.removeMatch(args, function(v)
+		return getmetatable(v) == Spacing
+	end)
+
 	local stretch = F.removeMatch(args, function(v) 
 		return getmetatable(v) == Stretch
 	end)
@@ -267,6 +282,8 @@ function VStack:new(...)
 	
 	local this = Layout.new(self, stretch, ...)
 
+	this.spacing = spacing or Spacing(0)
+
 	return setmetatable(this, VStack)
 end
 
@@ -274,9 +291,13 @@ function VStack:expandChildren()
 	local min_w, min_h = self.min_size:unpack()
 
 	local w, h = 0, 0
-	for _, child in ipairs(self.children) do
+	for idx, child in ipairs(self.children) do
 		w = math.max(w, child.exp_size.x)
 		h = h + child.exp_size.y
+
+		if idx < #self.children - 1 then
+			h = h + self.spacing.value
+		end
 	end
 	
 	self.exp_size = ExpSize(math.max(w, min_w), math.max(h, min_h))
@@ -304,7 +325,7 @@ function VStack:layoutChildren(rect)
 		end
 		ch.rect = Rect(x, y, w, h)
 
-		y = y + h
+		y = y + h + self.spacing.value
 	end
 end
 

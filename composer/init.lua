@@ -39,5 +39,6 @@ local attr = require(PATH .. '.attributes')
 composer.Margin = attr.Margin
 composer.MinSize = attr.MinSize
 composer.Stretch = attr.Stretch
+composer.Spacing = attr.Spacing
 
 return composer
