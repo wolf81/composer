@@ -6,6 +6,7 @@ local Stretch = attr.Stretch
 local MinSize = attr.MinSize
 local Margin = attr.Margin
 local ExpSize = attr.ExpSize
+local Spacing = attr.Spacing
 
 --[[
 --	Rect
@@ -193,9 +194,14 @@ function HStack:new(...)
 		return getmetatable(v) == Stretch
 	end)
 
+	local spacing = F.removeMatch(args, function(v) 
+		return getmetatable(v) == Spacing	
+	end)
+
 	stretch = stretch or Stretch(1, 0)
 
 	local this = Layout.new(self, stretch, ...)
+	this.spacing = spacing or Spacing(0)
 
 	return setmetatable(this, HStack)
 end
@@ -209,6 +215,8 @@ function HStack:expandChildren()
 		h = math.max(h, child.exp_size.y)
 	end
 
+	w = w + math.max(0, #self.children - 1) * self.spacing.x
+
 	self.exp_size = ExpSize(math.max(w, min_w), math.max(h, min_h))
 end
 
@@ -218,9 +226,11 @@ function HStack:layoutChildren(rect)
 	for _, child in ipairs(self.children) do
 		ch_widths[#ch_widths + 1] = { child.exp_size.x, child.stretch.x }
 	end
+
+	local spacing = math.max(#self.children - 1, 0) * self.spacing.x
 	
 	if #ch_widths > 0 then
-		ch_widths = F.spread(rect.w, unpack(ch_widths))
+		ch_widths = F.spread(rect.w - spacing, unpack(ch_widths))
 	end
 
 	local results = F.zip(self.children, ch_widths)
@@ -234,7 +244,7 @@ function HStack:layoutChildren(rect)
 		end
 		ch.rect = Rect(x, y, w, h)
 
-		x = x + w
+		x = x + w + self.spacing.x
 	end
 end
 
@@ -263,9 +273,14 @@ function VStack:new(...)
 		return getmetatable(v) == Stretch
 	end)
 
+	local spacing = F.removeMatch(args, function(v) 
+		return getmetatable(v) == Spacing	
+	end)
+
 	stretch = stretch or Stretch(0, 1)
-	
+
 	local this = Layout.new(self, stretch, ...)
+	this.spacing = spacing or Spacing(0)
 
 	return setmetatable(this, VStack)
 end
@@ -275,9 +290,11 @@ function VStack:expandChildren()
 
 	local w, h = 0, 0
 	for idx, child in ipairs(self.children) do
-		w = math.max(w, child.exp_size.x)
+		w = math.max(w, child.exp_size.x)		
 		h = h + child.exp_size.y
 	end
+
+	h = h + math.max(0, #self.children - 1) * self.spacing.x
 	
 	self.exp_size = ExpSize(math.max(w, min_w), math.max(h, min_h))
 end
@@ -289,8 +306,10 @@ function VStack:layoutChildren(rect)
 		ch_heights[#ch_heights + 1] = { child.exp_size.y, child.stretch.y }
 	end
 	
+	local spacing = math.max(#self.children - 1, 0) * self.spacing.x
+
 	if #ch_heights > 0 then
-		ch_heights = F.spread(rect.h, unpack(ch_heights))
+		ch_heights = F.spread(rect.h - spacing, unpack(ch_heights))
 	end
 
 	local results = F.zip(self.children, ch_heights)
@@ -304,7 +323,7 @@ function VStack:layoutChildren(rect)
 		end
 		ch.rect = Rect(x, y, w, h)
 
-		y = y + h
+		y = y + h + self.spacing.x
 	end
 end
 

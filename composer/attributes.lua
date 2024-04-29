@@ -131,6 +131,25 @@ setmetatable(Stretch, {
 })
 
 --[[
+--  Spacing
+--]]
+
+local Spacing = {}
+
+function Spacing:new(x)
+	x = x or 0
+
+    return setmetatable({
+    	x = x,
+    }, Spacing)
+end
+
+setmetatable(Spacing, {
+    __call = Spacing.new
+})
+
+
+--[[
 --	Module
 --]]
 
@@ -139,6 +158,7 @@ return {
 	MinSize = MinSize,
 	ExpSize = ExpSize,
 	Stretch = Stretch,
+	Spacing = Spacing,
 }
 
 -- 
