@@ -70,6 +70,12 @@ end
 function Layout:setFrame(x, y, w, h)
 	self:expand()
 	self:layout(Rect(x, y, w, h))
+
+    for e in self:eachElement() do
+        e.widget:setFrame(e.rect:unpack())
+    end
+
+    return self
 end
 
 function Layout:expand()
