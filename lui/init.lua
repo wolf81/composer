@@ -1,9 +1,9 @@
 local PATH = (...):gsub('%.init$', '')
 
-local composer = {
+local lui = {
 	_VERSION = "0.1.0",
 	_DESCRIPTION = "A simple layout engine.",
-	_URL = "http://github.com/wolf81/composer",
+	_URL = "http://github.com/wolf81/lui",
 	_LICENSE = [[
 		MIT License
 
@@ -30,7 +30,7 @@ local composer = {
 }
 
 local Loader = require(PATH .. ".loader")
-composer.require = Loader.require
-composer.load = Loader.load
+lui.require = Loader.require
+lui.load = Loader.load
 
-return composer
+return lui

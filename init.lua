@@ -1,3 +1,3 @@
 local PATH = (...):gsub('%.init$', '')
 
-return require(PATH..".composer")
+return require(PATH..".lui")

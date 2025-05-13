@@ -1,6 +1,6 @@
 io.stdout:setvbuf('no') -- show debug output live in SublimeText console
 
-local composer = require "composer"
+local lui = require "lui"
 
 local layout_idx = 0
 local layout = nil
@@ -14,7 +14,7 @@ local function updateLayout()
 
 	local path = "examples/example" .. layout_idx .. ".lua"
 	print("loading:", path)
-	layout = composer.load(path, true)
+	layout = lui.load(path, true)
 
 	layout.getElement("test1", function(e)
 		e.widget.setText("this text is changed using the ID")
@@ -52,20 +52,13 @@ function love.load(args)
     end
 
     -- add custom controls to the layout engine loader
-    composer.require("widgets/widgets.lua")
+    lui.require("widgets/widgets.lua")
     updateLayout()
 
 	window_w, window_h = love.window.getMode()
     resizeLayout()
 
-    love.window.setTitle("Composer v" .. composer._VERSION)
-
---[[    print("\n\n")
-    for k, v in pairs(_G.package.loaded) do
-    	print(k, v)
-    end
-    print("\n\n")
---]]
+    love.window.setTitle("LUI v" .. lui._VERSION)
 end
 
 function love.update(dt)
@@ -86,7 +79,7 @@ function love.resize(w, h)
 end
 
 function love.keypressed(key, code)
-	if key == "g" then
+	if key == 'g' then
 		updateLayout()
 		
 		local window_w, window_h = love.window.getMode()
