@@ -52,7 +52,6 @@ function love.load(args)
     end
 
     -- add custom controls to the layout engine loader
-    lui.require("widgets/widgets.lua")
     updateLayout()
 
 	window_w, window_h = love.window.getMode()

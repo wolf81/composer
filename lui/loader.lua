@@ -1,5 +1,7 @@
 local _PATH = (...):match("(.-)[^%.]+$") 
 local layout = require(_PATH .. "layout")
+local widgets = require(_PATH .. "widgets")
+
 local Elem = layout.Elem
 
 local ATTRIBUTE_IMPORTS = [[
@@ -14,6 +16,15 @@ local Border = layout.Border
 local VStack = layout.VStack
 local HStack = layout.HStack
 local Elem = layout.Elem
+]]
+
+local WIDGET_IMPORTS = [[
+local TextView = widgets.TextView
+local Button = widgets.Button
+local Label	= widgets.Label
+local ImageButton = widgets.ImageButton
+local FixedSpace = widgets.FixedSpace
+local FlexibleSpace = widgets.FlexibleSpace
 ]]
 
 -- this pattern matches the full component directive with square hooks

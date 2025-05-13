@@ -1,4 +1,11 @@
-local UI = require "widgets.ui"
+local _PATH = (...):match("(.-)[^%.]+$") 
+local UI = require(_PATH .. "ui")
+local layout = require(_PATH .. "layout")
+local Elem = layout.Elem
+local attr = require(_PATH .. "attributes")
+local MinSize = attr.MinSize
+local Stretch = attr.Stretch
+local Margin = attr.Margin
 
 function TextView(text, ...)
 	assert(type(text) == "string", "text is required")
