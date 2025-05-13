@@ -1,4 +1,4 @@
-Border(Margin(40, 40, 0, 0), {
+return Border(Margin(40, 40, 0, 0), {
 	VStack({
 		Button("TOP", MinSize(100, 50), Stretch(1, 0)),
 		[[ "examples/shared.lua" ]],

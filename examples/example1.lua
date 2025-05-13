@@ -1,4 +1,4 @@
-Border(Margin(0), {
+return Border(Margin(0), {
 	VStack({
 		Label("Hello", MinSize(0, 50), Stretch(1, 0), ID("test1")),
 		Button("press G to see next layout", ID("test2")),

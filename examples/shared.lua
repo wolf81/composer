@@ -1,4 +1,4 @@
-HStack(Stretch(1, 0), {
+return HStack(Stretch(1, 0), {
 	FlexibleSpace(),
 	Button("1", MinSize(30), Stretch(0)),
 	Button("2", MinSize(30), Stretch(0)),
